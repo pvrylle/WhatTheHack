@@ -1,0 +1,196 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* Light mode (Day Shift) - Light version of hacker colors */
+    
+    /* Base Colors */
+    --base: 0 0% 100%;
+    --base-foreground: 200 30% 10%; /* Darker for better visibility in light mode */
+    
+    /* Background & Foreground */
+    --background: 136 20% 97%;
+    --foreground: 200 30% 10%; /* Darker for better visibility in light mode */
+    
+    /* Card & Surfaces */
+    --card: 136 15% 95%;
+    --card-foreground: 200 30% 10%; /* Darker for better visibility in light mode */
+    --popover: 136 15% 95%;
+    --popover-foreground: 200 30% 10%; /* Darker for better visibility in light mode */
+    
+    /* Brand Colors */
+    --primary: 136 80% 35%;
+    --primary-foreground: 136 20% 97%;
+    --secondary: 190 85% 35%;
+    --secondary-foreground: 136 20% 97%;
+    --accent: 275 85% 40%;
+    --accent-foreground: 136 20% 97%;
+    
+    /* Semantic Colors */
+    --success: 74 80% 35%;
+    --success-foreground: 136 20% 97%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 200 25% 15%;
+    --info: 190 85% 35%;
+    --info-foreground: 136 20% 97%;
+    --destructive: 0 84% 50%;
+    --destructive-foreground: 136 20% 97%;
+    
+    /* UI Elements */
+    --muted: 136 15% 88%;
+    --muted-foreground: 200 30% 12%; /* Darker for better visibility in light mode */
+    --border: 136 15% 85%;
+    --input: 136 15% 85%;
+    --ring: 136 80% 35%;
+    --radius: 0.25rem;
+
+    /* Sidebar specific colors for light mode */
+    --sidebar-background: 136 20% 93%;
+    --sidebar-foreground: 200 30% 10%; /* Darker for better visibility in light mode */
+    --sidebar-primary: 136 80% 35%;
+    --sidebar-primary-foreground: 136 20% 97%;
+    --sidebar-accent: 275 85% 40%;
+    --sidebar-accent-foreground: 136 20% 97%;
+    --sidebar-border: 136 15% 85%;
+    --sidebar-ring: 136 80% 35%;
+  }
+
+  .dark {
+    /* Dark mode (Stealth Mode) - Original Hacker Theme */
+    
+    /* Base Colors */
+    --base: 150 27% 3%;
+    --base-foreground: 136 100% 80%;
+    
+    /* Background & Foreground */
+    --background: 150 27% 6%; /* Deep Space Black #0A0F0D */
+    --foreground: 136 100% 85%; /* Lighter Terminal Green for better visibility */
+    
+    /* Card & Surfaces */
+    --card: 200 17% 15%; /* Grid Slate #1A2428 */
+    --card-foreground: 215 20% 80%; /* Lighter for better visibility in dark mode */
+    --popover: 200 17% 15%;
+    --popover-foreground: 215 20% 80%; /* Lighter for better visibility in dark mode */
+    
+    /* Brand Colors */
+    --primary: 136 100% 50%; /* Terminal Green #00FF84 */
+    --primary-foreground: 150 27% 6%;
+    --secondary: 190 100% 50%; /* Cyber Cyan #00E5FF */
+    --secondary-foreground: 150 27% 6%;
+    --accent: 275 100% 56%; /* Neon Purple #B300FF */
+    --accent-foreground: 150 27% 6%;
+    
+    /* Semantic Colors */
+    --success: 74 100% 50%; /* Acid Lime #A6FF00 */
+    --success-foreground: 150 27% 6%;
+    --warning: 45 100% 51%; /* Electric Yellow #FFD500 */
+    --warning-foreground: 150 27% 6%;
+    --info: 190 100% 50%; /* Cyber Cyan #00E5FF */
+    --info-foreground: 150 27% 6%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+    
+    /* UI Elements */
+    --muted: 200 17% 15%;
+    --muted-foreground: 215 20% 80%; /* Lighter for better visibility in dark mode */
+    --border: 200 17% 25%;
+    --input: 200 17% 15%;
+    --ring: 136 100% 50%;
+
+    /* Sidebar specific colors for dark mode */
+    --sidebar-background: 150 27% 3%;
+    --sidebar-foreground: 136 100% 80%;
+    --sidebar-primary: 136 100% 50%;
+    --sidebar-primary-foreground: 150 27% 6%;
+    --sidebar-accent: 275 100% 56%;
+    --sidebar-accent-foreground: 150 27% 6%;
+    --sidebar-border: 200 17% 25%;
+    --sidebar-ring: 136 100% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-mono;
+  }
+
+  /* Hacker theme custom styles */
+  .glow-text {
+    text-shadow: 0 0 10px hsl(var(--primary)), 0 0 20px hsl(var(--primary));
+  }
+
+  .glow-border {
+    box-shadow: 0 0 15px hsl(var(--primary) / 0.3);
+  }
+
+  .neon-glow {
+    box-shadow: 0 0 20px hsl(var(--accent) / 0.5), inset 0 0 20px hsl(var(--accent) / 0.1);
+  }
+
+  .pixel-border {
+    border-image: url("data:image/svg+xml,%3csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='m0,0h100v100h-100z' fill='none' stroke='%2300FF84' stroke-width='2'/%3e%3c/svg%3e") 2;
+  }
+
+  .typewriter {
+    overflow: hidden;
+    border-right: 2px solid hsl(var(--primary));
+    white-space: nowrap;
+    animation: typing 2s steps(20), blink-caret 0.75s step-end infinite;
+  }
+
+  @keyframes typing {
+    from { width: 0; }
+    to { width: 100%; }
+  }
+
+  @keyframes blink-caret {
+    from, to { border-color: transparent; }
+    50% { border-color: hsl(var(--primary)); }
+  }
+
+  @keyframes glitch {
+    0%, 100% { transform: translate(0); }
+    20% { transform: translate(-2px, 2px); }
+    40% { transform: translate(-2px, -2px); }
+    60% { transform: translate(2px, 2px); }
+    80% { transform: translate(2px, -2px); }
+  }
+
+  .glitch:hover {
+    animation: glitch 0.3s ease-in-out;
+  }
+
+  .pixel-text {
+    font-family: 'Courier New', monospace;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+  }
+
+  /* Diagonal stripe pattern background */
+  .diagonal-stripes {
+    background-image: linear-gradient(
+      45deg,
+      transparent 24%,
+      hsl(var(--primary) / 0.05) 25%,
+      hsl(var(--primary) / 0.05) 26%,
+      transparent 27%,
+      transparent 74%,
+      hsl(var(--primary) / 0.05) 75%,
+      hsl(var(--primary) / 0.05) 76%,
+      transparent 77%
+    );
+    background-size: 60px 60px;
+  }
+}
+
