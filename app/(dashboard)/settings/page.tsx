@@ -143,6 +143,7 @@ export default function SettingsPage() {
                       placeholder="CyberAgent007"
                       defaultValue="Anonymous"
                       className="font-mono"
+                      aria-label="Agent Codename"
                     />
                   </div>
                   <div className="space-y-2">
@@ -154,6 +155,7 @@ export default function SettingsPage() {
                       value="Elite Hacker"
                       disabled
                       className="font-mono"
+                      aria-label="Current Rank (Read-only)"
                     />
                   </div>
                 </div>
@@ -167,6 +169,7 @@ export default function SettingsPage() {
                     placeholder="Tell other agents about your specialties..."
                     className="min-h-20 font-mono"
                     defaultValue="Specialized in web application security and penetration testing."
+                    aria-label="Agent Bio"
                   />
                 </div>
 
@@ -174,8 +177,8 @@ export default function SettingsPage() {
                   <Label htmlFor="specialization" className="font-mono">
                     Primary Specialization
                   </Label>
-                  <Select defaultValue="web-security">
-                    <SelectTrigger className="font-mono">
+                  <Select defaultValue="web-security" aria-label="Primary Specialization">
+                    <SelectTrigger className="font-mono" id="specialization">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -360,9 +363,9 @@ export default function SettingsPage() {
                 <Separator />
 
                 <div className="space-y-2">
-                  <Label className="font-mono">Interface Density</Label>
-                  <Select defaultValue="comfortable">
-                    <SelectTrigger className="font-mono">
+                  <Label htmlFor="density" className="font-mono">Interface Density</Label>
+                  <Select defaultValue="comfortable" aria-label="Interface Density">
+                    <SelectTrigger className="font-mono" id="density">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -380,9 +383,9 @@ export default function SettingsPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="font-mono">Animation Speed</Label>
-                  <Select defaultValue="normal">
-                    <SelectTrigger className="font-mono">
+                  <Label htmlFor="animation" className="font-mono">Animation Speed</Label>
+                  <Select defaultValue="normal" aria-label="Animation Speed">
+                    <SelectTrigger className="font-mono" id="animation">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -418,9 +421,9 @@ export default function SettingsPage() {
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="space-y-2">
-                  <Label className="font-mono">Preferred Difficulty</Label>
-                  <Select defaultValue="mixed">
-                    <SelectTrigger className="font-mono">
+                  <Label htmlFor="difficulty" className="font-mono">Preferred Difficulty</Label>
+                  <Select defaultValue="mixed" aria-label="Preferred Difficulty">
+                    <SelectTrigger className="font-mono" id="difficulty">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -442,7 +445,7 @@ export default function SettingsPage() {
 
                 <div className="space-y-2">
                   <Label className="font-mono">Mission Categories</Label>
-                  <div className="grid grid-cols-2 gap-3 mt-2">
+                  <div className="grid grid-cols-2 gap-3 mt-2" role="group" aria-label="Mission Categories">
                     {[
                       "Web Security",
                       "Network Security",
@@ -457,6 +460,7 @@ export default function SettingsPage() {
                           id={category}
                           defaultChecked
                           className="rounded"
+                          aria-label={`Include ${category} missions`}
                         />
                         <Label htmlFor={category} className="text-sm font-mono">
                           {category}

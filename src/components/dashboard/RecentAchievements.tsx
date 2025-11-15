@@ -1,20 +1,20 @@
-import { Trophy, Star, Crown, Medal } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { AchievementList } from "@/components/organisms"
 
 interface Achievement {
-  id: number;
-  title: string;
-  description: string;
-  earned: string;
-  rarity: string;
+  id: number
+  title: string
+  description: string
+  earned: string
+  rarity: string
 }
 
 interface RecentAchievementsProps {
-  achievements: Achievement[];
+  achievements: Achievement[]
 }
 
 export const RecentAchievements = ({ achievements }: RecentAchievementsProps) => {
+  return <AchievementList achievements={achievements} />
+}
   const getRarityIcon = (rarity: string) => {
     switch (rarity.toLowerCase()) {
       case 'common':
