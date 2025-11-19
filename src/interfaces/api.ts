@@ -1,27 +1,14 @@
-/**
- * API Response Interfaces
- * TypeScript interfaces matching Django REST Framework serializers
- */
-
-/**
- * Standard API Response Wrapper
- * Django REST Framework typically returns data in this format
- */
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   data?: T
-  results?: T[] // For paginated responses
+  results?: T[]
   count?: number
   next?: string | null
   previous?: string | null
-  detail?: string // Error message
+  detail?: string
   message?: string
   status?: number
 }
 
-/**
- * Paginated Response
- * Django REST Framework pagination format
- */
 export interface PaginatedResponse<T> {
   count: number
   next: string | null
@@ -29,20 +16,14 @@ export interface PaginatedResponse<T> {
   results: T[]
 }
 
-/**
- * Error Response
- */
 export interface ApiError {
   detail?: string
   message?: string
   errors?: Record<string, string[]>
   non_field_errors?: string[]
-  [key: string]: any
+  [key: string]: string | string[] | Record<string, string[]> | undefined
 }
 
-/**
- * Authentication Interfaces
- */
 export interface LoginRequest {
   email: string
   password: string
@@ -56,8 +37,8 @@ export interface RegisterRequest {
 }
 
 export interface AuthResponse {
-  access: string // JWT access token
-  refresh: string // JWT refresh token
+  access: string
+  refresh: string
   user: User
 }
 
@@ -69,9 +50,6 @@ export interface TokenRefreshResponse {
   access: string
 }
 
-/**
- * User Interface
- */
 export interface User {
   id: string | number
   username: string
@@ -96,9 +74,6 @@ export interface UserProfile extends User {
   longest_streak?: number
 }
 
-/**
- * Challenge Interfaces
- */
 export interface Challenge {
   id: string | number
   title: string
@@ -145,9 +120,6 @@ export interface ChallengeSubmissionResponse {
   explanation?: string
 }
 
-/**
- * Mission Interfaces
- */
 export interface Mission {
   id: string
   title: string
@@ -171,9 +143,6 @@ export interface MissionProgress {
   xp_remaining: number
 }
 
-/**
- * Achievement Interfaces
- */
 export interface Achievement {
   id: string | number
   name: string
@@ -187,9 +156,6 @@ export interface Achievement {
   requirement?: number
 }
 
-/**
- * Leaderboard Interfaces
- */
 export interface LeaderboardEntry {
   rank: number
   user: {
@@ -203,18 +169,18 @@ export interface LeaderboardEntry {
   achievements_count: number
 }
 
-/**
- * Statistics Interfaces
- */
 export interface UserStats {
   total_xp: number
   level: number
+  xp_to_next: number
   challenges_completed: number
   achievements_earned: number
   current_streak: number
   longest_streak: number
   total_time_spent: number
   accuracy_percentage: number
+  total_points: number
+  rank: string
 }
 
 export interface GlobalStats {
@@ -225,3 +191,25 @@ export interface GlobalStats {
   active_users_today: number
 }
 
+export interface DashboardData {
+  user_stats: UserStats
+  active_missions: ActiveMission[]
+  recent_achievements: RecentAchievement[]
+}
+
+export interface ActiveMission {
+  id: string | number
+  title: string
+  progress: number
+  reward: string
+  difficulty: 'easy' | 'medium' | 'hard'
+  time_left: string
+}
+
+export interface RecentAchievement {
+  id: string | number
+  title: string
+  description: string
+  earned: string
+  rarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary'
+}

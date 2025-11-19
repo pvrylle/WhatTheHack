@@ -1,31 +1,30 @@
-import { Shield, Star, Trophy, Zap } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
+import { ProfileCard } from "@/components/organisms"
 
 interface AgentProfileProps {
   userStats: {
-    level: number;
-    xp: number;
-    xpToNext: number;
-    hacksCompleted: number;
-    streakDays: number;
-    rank: string;
-    totalPoints: number;
-  };
+    level: number
+    xp: number
+    xpToNext: number
+    hacksCompleted: number
+    streakDays: number
+    rank: string
+    totalPoints: number
+  }
 }
 
 export const AgentProfile = ({ userStats }: AgentProfileProps) => {
-  const progressPercentage = (userStats.xp / userStats.xpToNext) * 100;
-  
   return (
-    <Card className="border-0 bg-card/50">
-      <CardHeader className="pb-4">
-        <CardTitle className="font-orbitron text-lg text-foreground flex items-center gap-2">
-          <Shield className="w-5 h-5 text-primary" />
-          Agent Profile
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-6">
+    <ProfileCard
+      rank={userStats.rank}
+      level={userStats.level}
+      xp={userStats.xp}
+      xpToNext={userStats.xpToNext}
+      hacksCompleted={userStats.hacksCompleted}
+      streakDays={userStats.streakDays}
+      totalPoints={userStats.totalPoints}
+    />
+  )
+}
         {/* Simple Avatar */}
         <div className="text-center">
           <div className="w-16 h-16 bg-primary/10 border border-primary/20 rounded-full flex items-center justify-center mx-auto mb-3">
