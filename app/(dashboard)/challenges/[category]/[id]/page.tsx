@@ -10,6 +10,8 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
+import { Text } from '@/components/atoms'
+import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import { getChallengeDetail, missionPaths } from '@/data/challenges'
 
@@ -181,65 +183,132 @@ export default function ChallengePage({
   }
 
   return (
-    <div className="container mx-auto px-6 py-10 space-y-8">
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <Button variant="outline" size="icon" asChild>
-            <Link href={`/challenges/${mission.id}`}>
-              <ArrowLeft className="w-4 h-4" />
-            </Link>
-          </Button>
-          <div>
-            <h1 className="text-2xl font-orbitron font-semibold">{challenge.title}</h1>
-            <p className="text-sm text-muted-foreground font-mono">{challenge.description}</p>
+    <div className="container mx-auto px-4 sm:px-6 py-8 space-y-6">
+      {/* Header Section */}
+      <div className="space-y-4">
+        <Button variant="outline" size="sm" asChild className="font-mono border-primary/30">
+          <Link href={`/challenges/${mission.id}`}>
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Challenges
+          </Link>
+        </Button>
+
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="space-y-2">
+            <h1 className="text-3xl font-orbitron font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+              {challenge.title}
+            </h1>
+            <p className="text-sm text-muted-foreground font-mono max-w-2xl">
+              {challenge.description}
+            </p>
           </div>
-        </div>
-        <div className="flex items-center gap-3">
-          <Badge variant="outline" className="font-mono">
-            {challenge.category}
-          </Badge>
-          <Badge variant="secondary" className="font-mono">
-            Difficulty: {challenge.difficulty}
-          </Badge>
-          <Badge className="font-mono bg-success/10 text-success">+{challenge.xpReward} XP</Badge>
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge variant="outline" className="font-mono border-primary/30">
+              {challenge.category}
+            </Badge>
+            <Badge
+              variant="outline"
+              className={cn(
+                'font-mono',
+                challenge.difficulty === 'Beginner' && 'border-emerald-500/30 text-emerald-400',
+                challenge.difficulty === 'Intermediate' && 'border-amber-500/30 text-amber-400',
+                challenge.difficulty === 'Advanced' && 'border-red-500/30 text-red-400'
+              )}
+            >
+              {challenge.difficulty}
+            </Badge>
+            <Badge className="font-mono bg-primary/20 text-primary border-primary/30">
+              <Zap className="w-3 h-3 mr-1" />
+              +{challenge.xpReward} XP
+            </Badge>
+          </div>
         </div>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg font-orbitron">
-            <Shield className="w-5 h-5 text-primary" />
-            Question {currentQuestion + 1} of {challenge.questions.length}
+      {/* Progress Indicator */}
+      <Card className="border-2 border-primary/20 bg-gradient-to-br from-card/50 to-card/30">
+        <CardContent className="pt-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-primary/15 border border-primary/25">
+                <Shield className="w-5 h-5 text-primary" />
+              </div>
+              <div>
+                <Text variant="h3" size="lg" weight="semibold" orbitron>
+                  Question {currentQuestion + 1} of {challenge.questions.length}
+                </Text>
+                <Text size="sm" color="muted" mono>
+                  {question.type.replace(/-/g, ' ').toUpperCase()}
+                </Text>
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="flex items-center gap-2 mb-1">
+                <Zap className="w-4 h-4 text-primary" />
+                <Text size="lg" weight="bold" color="primary" orbitron>
+                  {Math.round((score / (currentQuestion + 1)) * 100)}%
+                </Text>
+              </div>
+              <Text size="xs" color="muted" mono>
+                Current Accuracy
+              </Text>
+            </div>
+          </div>
+          <Progress
+            value={((currentQuestion + 1) / challenge.questions.length) * 100}
+            className="h-3 bg-muted/50"
+          />
+        </CardContent>
+      </Card>
+
+      {/* Question Card */}
+      <Card className="border-2 shadow-lg">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-xl font-orbitron flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+            Challenge Question
           </CardTitle>
-          <CardDescription className="flex items-center gap-2 font-mono">
-            {question.type.replace(/-/g, ' ').toUpperCase()}
-            <span className="inline-flex items-center gap-1 text-success">
-              <Zap className="w-4 h-4" />
-              {Math.round((score / challenge.questions.length) * 100)}% accuracy
-            </span>
-          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           {question.context && (
-            <div className="rounded-lg border border-border/60 bg-muted/30 p-4 text-sm font-mono">
+            <div className="rounded-lg border-2 border-primary/20 bg-primary/5 p-4 text-sm font-mono leading-relaxed">
+              <div className="flex items-center gap-2 mb-2">
+                <AlertTriangle className="w-4 h-4 text-primary" />
+                <span className="text-primary font-semibold">Context</span>
+              </div>
               {question.context}
             </div>
           )}
 
           {question.code && (
-            <pre className="rounded-lg border border-border/60 bg-card/70 p-4 text-sm font-mono whitespace-pre-wrap">
-              {question.code}
-            </pre>
+            <div className="rounded-lg border-2 border-secondary/30 bg-secondary/5 overflow-hidden">
+              <div className="bg-secondary/10 px-4 py-2 border-b border-secondary/20">
+                <Text size="xs" weight="semibold" mono className="text-secondary">
+                  CODE BLOCK
+                </Text>
+              </div>
+              <pre className="p-4 text-sm font-mono whitespace-pre-wrap overflow-x-auto bg-card/50">
+                {question.code}
+              </pre>
+            </div>
           )}
 
-          <p className="text-base font-medium">{question.question}</p>
+          <div className="rounded-lg border-2 border-border bg-card/50 p-5">
+            <p className="text-lg font-medium leading-relaxed">{question.question}</p>
+          </div>
 
           {renderAnswerInput()}
 
-          <div className="flex flex-wrap items-center gap-3">
+          {/* Action Buttons */}
+          <div className="flex flex-wrap items-center gap-3 pt-2">
             {!question.options && (
-              <Button onClick={() => handleSubmit()} className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4" /> Submit Answer
+              <Button
+                onClick={() => handleSubmit()}
+                className="flex items-center gap-2 font-mono"
+                size="lg"
+              >
+                <CheckCircle className="w-4 h-4" />
+                Submit Answer
               </Button>
             )}
             {question.hint && (
@@ -247,7 +316,8 @@ export default function ChallengePage({
                 type="button"
                 variant="outline"
                 onClick={toggleHint}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 font-mono"
+                size="lg"
               >
                 {showHints[currentQuestion] ? (
                   <EyeOff className="w-4 h-4" />
@@ -261,61 +331,85 @@ export default function ChallengePage({
               type="button"
               variant="ghost"
               onClick={handleNextQuestion}
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 font-mono"
               disabled={!explanations[currentQuestion]}
+              size="lg"
             >
               Next Question
+              <ArrowLeft className="w-4 h-4 rotate-180" />
             </Button>
           </div>
 
+          {/* Hint Section */}
           {showHints[currentQuestion] && question.hint && (
-            <div className="rounded-lg border border-primary/40 bg-primary/10 p-4 text-sm text-primary font-mono">
-              <strong>Hint:</strong> {question.hint}
+            <div className="rounded-lg border-2 border-primary/30 bg-primary/10 p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <Eye className="w-4 h-4 text-primary" />
+                <Text size="sm" weight="semibold" className="text-primary">
+                  Hint
+                </Text>
+              </div>
+              <p className="text-sm font-mono text-primary/90 leading-relaxed">
+                {question.hint}
+              </p>
             </div>
           )}
 
+          {/* Explanation Section */}
           {explanations[currentQuestion] && question.explanation && (
-            <div className="rounded-lg border border-success/40 bg-success/10 p-4 text-sm text-success font-mono">
-              <strong>Explanation:</strong> {question.explanation}
+            <div className="rounded-lg border-2 border-emerald-500/30 bg-emerald-500/10 p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <CheckCircle className="w-4 h-4 text-emerald-400" />
+                <Text size="sm" weight="semibold" className="text-emerald-400">
+                  Explanation
+                </Text>
+              </div>
+              <p className="text-sm font-mono text-emerald-400/90 leading-relaxed">
+                {question.explanation}
+              </p>
             </div>
           )}
-
-          <Progress
-            value={
-              ((currentQuestion + (explanations[currentQuestion] ? 1 : 0)) /
-                challenge.questions.length) *
-              100
-            }
-            className="h-2"
-          />
         </CardContent>
       </Card>
 
+      {/* Completion Card */}
       {isCompleted && (
-        <Card className="border-success/30 bg-success/5">
+        <Card className="border-2 border-emerald-500/50 bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 shadow-xl">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-success">
-              <CheckCircle className="w-5 h-5" /> Mission Complete
+            <CardTitle className="flex items-center gap-3 text-emerald-400 text-2xl font-orbitron">
+              <div className="p-2 rounded-full bg-emerald-500/20 border-2 border-emerald-500/30">
+                <CheckCircle className="w-6 h-6" />
+              </div>
+              Challenge Complete!
             </CardTitle>
-            <CardDescription className="font-mono">
-              You solved {score} out of {challenge.questions.length} challenges and earned{' '}
-              {challenge.xpReward} XP.
+            <CardDescription className="font-mono text-base mt-2">
+              You solved <span className="text-emerald-400 font-bold">{score}</span> out of{' '}
+              <span className="font-bold">{challenge.questions.length}</span> questions and earned{' '}
+              <span className="text-primary font-bold">+{challenge.xpReward} XP</span>.
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-wrap gap-3">
-            <Button asChild>
-              <Link href={`/challenges/${mission.id}`}>Return to Mission</Link>
+            <Button asChild size="lg" className="font-mono">
+              <Link href={`/challenges/${mission.id}`}>
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Return to Challenges
+              </Link>
             </Button>
-            <Button variant="outline" onClick={handleRetry}>
+            <Button variant="outline" onClick={handleRetry} size="lg" className="font-mono">
+              <Zap className="w-4 h-4 mr-2" />
               Retry Challenge
             </Button>
           </CardContent>
         </Card>
       )}
 
-      <div className="flex items-center gap-3 text-sm text-muted-foreground font-mono">
-        <AlertTriangle className="w-4 h-4" />
-        system@whatthehack:~$ Authorized engagements only. Confirm mission scope before testing.
+      {/* Footer Notice */}
+      <div className="flex items-start gap-3 p-4 rounded-lg border border-border/50 bg-muted/20 text-sm text-muted-foreground font-mono">
+        <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+        <div>
+          <span className="text-foreground">system@whatthehack:~$</span> Authorized engagements
+          only. Confirm mission scope before testing.
+        </div>
       </div>
     </div>
   )

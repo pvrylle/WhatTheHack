@@ -1,7 +1,12 @@
 /**
  * HTTP Request Service
- * Centralized service for making API requests
- * Compatible with Django REST Framework
+ * Centralized service for making API requests to public APIs
+ * 
+ * This service can call:
+ * - Public REST APIs (JSONPlaceholder, ReqRes, etc.)
+ * - Any public API endpoint
+ * 
+ * No custom backend required - this is a frontend-only project!
  */
 
 import { API_URL, REQUEST_TIMEOUT } from '@/constants/api'

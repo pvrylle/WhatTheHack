@@ -1,4 +1,20 @@
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api'
+/**
+ * API Configuration
+ * This project uses public APIs or mock data - NO custom backend required
+ * 
+ * Options:
+ * 1. Mock Data (default) - Uses mock.service.ts for all data
+ * 2. Public APIs - Set NEXT_PUBLIC_API_URL to a public API endpoint
+ * 
+ * Examples of public APIs you could use:
+ * - JSONPlaceholder: https://jsonplaceholder.typicode.com
+ * - ReqRes: https://reqres.in/api
+ * - Any public REST API
+ */
+
+// For public APIs, set this in .env.local:
+// NEXT_PUBLIC_API_URL=https://jsonplaceholder.typicode.com
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://jsonplaceholder.typicode.com'
 
 export const API_VERSION = 'v1'
 
@@ -59,4 +75,15 @@ export const API_ENDPOINTS = {
 
 export const REQUEST_TIMEOUT = 30000
 
-export const USE_MOCK_DATA = process.env.NEXT_PUBLIC_USE_MOCK === 'true' || true
+/**
+ * Use Mock Data by default (no backend required)
+ * Set NEXT_PUBLIC_USE_MOCK=false in .env.local to use public APIs instead
+ */
+export const USE_MOCK_DATA = process.env.NEXT_PUBLIC_USE_MOCK !== 'false'
+
+/**
+ * Helper to check if we should use mock data
+ */
+export const shouldUseMock = (): boolean => {
+  return USE_MOCK_DATA
+}

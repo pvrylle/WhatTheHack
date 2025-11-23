@@ -2,6 +2,17 @@
 
 A modern, gamified cybersecurity learning platform built with **Next.js 16**, **React 19**, and **TypeScript**. This platform provides interactive challenges, missions, and achievements to teach ethical hacking in an engaging way.
 
+## 🎯 Project Type
+
+**Frontend-Only Application** - This project uses:
+- ✅ **Mock Data** (default) - Simulated data for demonstration
+- ✅ **Public APIs** (optional) - Can connect to any public REST API
+- ❌ **No Custom Backend** - No Django, Node.js, or other backend required
+
+All data is either:
+1. **Mocked locally** (using `mock.service.ts`)
+2. **Fetched from public APIs** (like JSONPlaceholder, ReqRes, etc.)
+
 ## 🏗️ Architecture Overview
 
 This project follows **enterprise-level Next.js best practices** with a feature-based, domain-driven architecture:
@@ -195,10 +206,53 @@ npm run lint
 
 1. **API Request**: Page/Component → Hook
 2. **Hook**: Calls service or API client
-3. **Service**: Makes HTTP request via `http.service.ts`
+3. **Service**: Makes HTTP request via `http.service.ts` OR uses `mock.service.ts`
 4. **Response**: Typed with domain types
 5. **State**: Managed by React Query
 6. **UI**: Renders with data
+
+## 🌐 API Strategy (No Backend Required!)
+
+This project uses **public APIs or mock data** - no custom backend needed!
+
+### Option 1: Mock Data (Default) ✅
+- Uses `src/services/mock.service.ts`
+- All data is simulated locally
+- Perfect for demos and development
+- No external dependencies
+
+### Option 2: Public APIs
+You can connect to any public REST API:
+
+**Example Public APIs:**
+- **JSONPlaceholder**: `https://jsonplaceholder.typicode.com`
+- **ReqRes**: `https://reqres.in/api`
+- **PokeAPI**: `https://pokeapi.co/api/v2`
+- **Any public REST API**
+
+**To use public APIs:**
+1. Create `.env.local`:
+```bash
+NEXT_PUBLIC_USE_MOCK=false
+NEXT_PUBLIC_API_URL=https://jsonplaceholder.typicode.com
+```
+
+2. The `http.service.ts` will automatically call the public API instead of mock data.
+
+### How It Works
+
+```typescript
+// In hooks (e.g., use-challenges.ts)
+const shouldUseMockData = shouldUseMock()
+
+if (shouldUseMockData) {
+  return mockChallengesService.getChallenges()  // Mock data
+} else {
+  return challengesService.getChallenges()       // Public API
+}
+```
+
+**Current Setup**: Mock data is enabled by default (no backend needed!)
 
 ## 📦 Component Hierarchy
 

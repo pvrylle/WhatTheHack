@@ -1,7 +1,11 @@
 /**
  * Mock Service
- * Provides mock data for development
- * Can be easily disabled when Django backend is ready
+ * Provides mock data for the application
+ * 
+ * This is the PRIMARY data source - no backend required!
+ * All data is simulated locally for demonstration purposes.
+ * 
+ * To use public APIs instead, set NEXT_PUBLIC_USE_MOCK=false
  */
 
 import { USE_MOCK_DATA } from '@/constants/api'
