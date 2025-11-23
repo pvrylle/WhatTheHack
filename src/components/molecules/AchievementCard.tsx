@@ -1,7 +1,9 @@
+import Link from 'next/link'
 import { Badge } from '@/components/ui/badge'
 import { Text } from '@/components/atoms'
 import { Trophy } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { ROUTES } from '@/constants/routes'
 
 export interface AchievementCardProps {
   id: number | string
@@ -19,12 +21,15 @@ const rarityColors = {
   legendary: 'text-accent border-accent/20',
 }
 
-export const AchievementCard = ({ title, description, earned, rarity }: AchievementCardProps) => {
+export const AchievementCard = ({ id, title, description, earned, rarity }: AchievementCardProps) => {
   const rarityColor =
     rarityColors[rarity.toLowerCase() as keyof typeof rarityColors] || rarityColors.common
 
   return (
-    <div className="flex gap-4 p-4 rounded-lg border border-border hover:border-primary/30 transition-colors">
+    <Link
+      href={ROUTES.DASHBOARD.ACHIEVEMENTS}
+      className="flex gap-4 p-4 rounded-lg border border-border hover:border-primary/30 transition-colors"
+    >
       <div className={cn('p-3 rounded-lg bg-primary/10 border border-primary/20 h-fit')}>
         <Trophy className="w-5 h-5 text-primary" />
       </div>
@@ -44,6 +49,6 @@ export const AchievementCard = ({ title, description, earned, rarity }: Achievem
           {earned}
         </Text>
       </div>
-    </div>
+    </Link>
   )
 }

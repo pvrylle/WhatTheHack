@@ -325,7 +325,7 @@ export default function Home() {
           {/* Bottom Bar */}
           <div className="border-t border-border/50 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
             <p className="text-sm text-muted-foreground font-mono">
-              © 2024 WhatTheHack. All rights reserved.
+              © 2025 WhatTheHack. All rights reserved.
             </p>
             <div className="flex gap-6 mt-4 md:mt-0">
               <a

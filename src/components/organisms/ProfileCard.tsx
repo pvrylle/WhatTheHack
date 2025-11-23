@@ -1,7 +1,9 @@
+import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Icon, Text } from '@/components/atoms'
-import { Shield, Star, Trophy, Zap } from 'lucide-react'
+import { Shield, Star, Trophy, Zap, ChevronRight } from 'lucide-react'
+import { ROUTES } from '@/constants/routes'
 
 export interface ProfileCardProps {
   username?: string
@@ -28,12 +30,18 @@ export const ProfileCard = ({
   return (
     <Card className="border-0 bg-card/50">
       <CardHeader className="pb-4">
-        <CardTitle className="font-orbitron text-lg text-foreground flex items-center gap-2">
-          <Icon icon={Shield} color="primary" />
-          <Text variant="span" size="lg" weight="semibold" orbitron>
-            Agent Profile
-          </Text>
-        </CardTitle>
+        <Link
+          href={ROUTES.DASHBOARD.SETTINGS}
+          className="flex items-center justify-between group"
+        >
+          <CardTitle className="font-orbitron text-lg text-foreground flex items-center gap-2 group-hover:text-primary transition-colors">
+            <Icon icon={Shield} color="primary" />
+            <Text variant="span" size="lg" weight="semibold" orbitron>
+              Agent Profile
+            </Text>
+          </CardTitle>
+          <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
+        </Link>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Avatar */}

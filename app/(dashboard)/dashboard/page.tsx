@@ -52,28 +52,31 @@ export default function DashboardPage() {
 
   const missions = [
     {
-      id: 1,
-      title: 'SQL Injection Hunter',
-      progress: 60,
-      reward: '250 XP',
+      id: 'web-security',
+      title: 'Web Application Security',
+      progress: 33, // 4 completed out of 12
+      reward: '1,200 XP',
       difficulty: 'Medium',
-      timeLeft: '2h 30m',
+      timeLeft: '6h 45m',
+      category: 'web-security',
     },
     {
-      id: 2,
-      title: 'Buffer Overflow Challenge',
-      progress: 30,
-      reward: '400 XP',
+      id: 'network-exploitation',
+      title: 'Network Exploitation',
+      progress: 60, // 9 completed out of 15
+      reward: '2,100 XP',
       difficulty: 'Hard',
-      timeLeft: '5h 15m',
+      timeLeft: '4h 20m',
+      category: 'network-exploitation',
     },
     {
-      id: 3,
-      title: 'XSS Detector',
-      progress: 85,
-      reward: '150 XP',
-      difficulty: 'Easy',
-      timeLeft: '45m',
+      id: 'database-security',
+      title: 'Database Security',
+      progress: 80, // 8 completed out of 10
+      reward: '3,200 XP',
+      difficulty: 'Medium',
+      timeLeft: '1h 15m',
+      category: 'database-security',
     },
   ]
 

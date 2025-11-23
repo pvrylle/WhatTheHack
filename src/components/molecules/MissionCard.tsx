@@ -1,9 +1,10 @@
+import Link from 'next/link'
 import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
 import { Text } from '@/components/atoms'
 import { Clock, Award, ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { ROUTES } from '@/constants/routes'
 
 export interface MissionCardProps {
   id: number | string
@@ -12,6 +13,7 @@ export interface MissionCardProps {
   reward: string
   difficulty: string
   timeLeft: string
+  category?: string
   onContinue?: () => void
 }
 
@@ -22,19 +24,38 @@ const difficultyColors = {
 }
 
 export const MissionCard = ({
+  id,
   title,
   progress,
   reward,
   difficulty,
   timeLeft,
+  category,
   onContinue,
 }: MissionCardProps) => {
   const difficultyColor =
     difficultyColors[difficulty.toLowerCase() as keyof typeof difficultyColors] ||
     'text-muted-foreground border-muted/20'
 
+  // Active missions link to their specific mission path page if category is provided,
+  // otherwise link to learning paths page
+  const missionLink = category
+    ? `/challenges/${category}`
+    : ROUTES.DASHBOARD.LEARNING_PATHS
+
+  const handleClick = (e: React.MouseEvent) => {
+    if (onContinue) {
+      e.preventDefault()
+      onContinue()
+    }
+  }
+
   return (
-    <div className="border border-border rounded-lg p-6 hover:border-primary/30 transition-colors">
+    <Link
+      href={missionLink}
+      className="block border border-border rounded-lg p-6 hover:border-primary/30 transition-colors"
+      onClick={handleClick}
+    >
       <div className="flex items-start justify-between mb-4">
         <div className="flex-1">
           <Text variant="h4" size="lg" weight="medium" orbitron className="mb-3">
@@ -66,11 +87,11 @@ export const MissionCard = ({
           </Text>
         </div>
         <Progress value={progress} className="h-2" />
-        <Button size="sm" className="w-full font-mono" variant="default" onClick={onContinue}>
+        <div className="w-full font-mono text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-4 py-2 flex items-center justify-center transition-colors">
           Continue Mission
           <ChevronRight className="w-4 h-4 ml-1" />
-        </Button>
+        </div>
       </div>
-    </div>
+    </Link>
   )
 }

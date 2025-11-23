@@ -1,6 +1,8 @@
+import Link from 'next/link'
 import { Zap, Trophy, Users, BarChart3, Settings, Play } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { ROUTES } from '@/constants/routes'
 
 export const QuickActions = () => {
   const actions = [
@@ -8,26 +10,31 @@ export const QuickActions = () => {
       icon: Play,
       label: 'Start Challenge',
       color: 'text-primary',
+      href: ROUTES.DASHBOARD.LEARNING_PATHS,
     },
     {
       icon: Trophy,
       label: 'Leaderboard',
       color: 'text-secondary',
+      href: ROUTES.DASHBOARD.ACHIEVEMENTS,
     },
     {
       icon: Users,
       label: 'Community',
       color: 'text-accent',
+      href: '#', // Placeholder for future community page
     },
     {
       icon: BarChart3,
       label: 'Analytics',
       color: 'text-success',
+      href: ROUTES.DASHBOARD.HOME, // Placeholder - could link to analytics dashboard
     },
     {
       icon: Settings,
       label: 'Settings',
       color: 'text-muted-foreground',
+      href: ROUTES.DASHBOARD.SETTINGS,
     },
   ]
 
@@ -45,9 +52,12 @@ export const QuickActions = () => {
             key={index}
             variant="ghost"
             className="w-full justify-start py-4 px-4 hover:bg-muted/50"
+            asChild
           >
-            <action.icon className={`w-4 h-4 ${action.color} mr-3`} />
-            <span className="font-orbitron font-medium text-foreground">{action.label}</span>
+            <Link href={action.href}>
+              <action.icon className={`w-4 h-4 ${action.color} mr-3`} />
+              <span className="font-orbitron font-medium text-foreground">{action.label}</span>
+            </Link>
           </Button>
         ))}
       </CardContent>
