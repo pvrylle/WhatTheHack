@@ -1,9 +1,9 @@
-import { Progress } from "@/components/ui/progress"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Text } from "@/components/atoms"
-import { Clock, Award, ChevronRight } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { Progress } from '@/components/ui/progress'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Text } from '@/components/atoms'
+import { Clock, Award, ChevronRight } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 export interface MissionCardProps {
   id: number | string
@@ -16,9 +16,9 @@ export interface MissionCardProps {
 }
 
 const difficultyColors = {
-  easy: "text-success border-success/20",
-  medium: "text-secondary border-secondary/20",
-  hard: "text-destructive border-destructive/20",
+  easy: 'text-success border-success/20',
+  medium: 'text-secondary border-secondary/20',
+  hard: 'text-destructive border-destructive/20',
 }
 
 export const MissionCard = ({
@@ -29,7 +29,9 @@ export const MissionCard = ({
   timeLeft,
   onContinue,
 }: MissionCardProps) => {
-  const difficultyColor = difficultyColors[difficulty.toLowerCase() as keyof typeof difficultyColors] || "text-muted-foreground border-muted/20"
+  const difficultyColor =
+    difficultyColors[difficulty.toLowerCase() as keyof typeof difficultyColors] ||
+    'text-muted-foreground border-muted/20'
 
   return (
     <div className="border border-border rounded-lg p-6 hover:border-primary/30 transition-colors">
@@ -39,7 +41,7 @@ export const MissionCard = ({
             {title}
           </Text>
           <div className="flex flex-wrap gap-2 mb-4">
-            <Badge variant="outline" className={cn("font-mono", difficultyColor)}>
+            <Badge variant="outline" className={cn('font-mono', difficultyColor)}>
               {difficulty}
             </Badge>
             <Badge variant="outline" className="text-muted-foreground font-mono">
@@ -64,12 +66,7 @@ export const MissionCard = ({
           </Text>
         </div>
         <Progress value={progress} className="h-2" />
-        <Button
-          size="sm"
-          className="w-full font-mono"
-          variant="default"
-          onClick={onContinue}
-        >
+        <Button size="sm" className="w-full font-mono" variant="default" onClick={onContinue}>
           Continue Mission
           <ChevronRight className="w-4 h-4 ml-1" />
         </Button>

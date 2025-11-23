@@ -5,7 +5,7 @@
  */
 
 import { API_URL, REQUEST_TIMEOUT } from '@/constants/api'
-import type { ApiResponse, ApiError } from '@/interfaces/api'
+import type { ApiResponse, ApiError } from '@/types'
 
 /**
  * Request Configuration
@@ -113,10 +113,7 @@ const handleApiError = async (response: Response): Promise<ApiError> => {
 /**
  * Create request with timeout
  */
-const createRequestWithTimeout = (
-  url: string,
-  config: RequestConfig
-): Promise<Response> => {
+const createRequestWithTimeout = (url: string, config: RequestConfig): Promise<Response> => {
   const timeout = config.timeout || REQUEST_TIMEOUT
   const controller = new AbortController()
   const timeoutId = setTimeout(() => controller.abort(), timeout)
@@ -166,7 +163,7 @@ const request = async <T = any>(
     const contentType = response.headers.get('content-type')
     if (!contentType?.includes('application/json')) {
       if (response.ok) {
-        return { data: await response.text() as any }
+        return { data: (await response.text()) as any }
       }
       throw new Error(response.statusText)
     }
@@ -246,11 +243,7 @@ export const httpService = {
   /**
    * PUT request
    */
-  put: <T = any>(
-    endpoint: string,
-    data?: any,
-    config?: RequestConfig
-  ): Promise<ApiResponse<T>> => {
+  put: <T = any>(endpoint: string, data?: any, config?: RequestConfig): Promise<ApiResponse<T>> => {
     return request<T>(endpoint, {
       ...config,
       method: 'PUT',
@@ -285,4 +278,3 @@ export const httpService = {
 }
 
 export default httpService
-

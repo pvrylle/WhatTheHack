@@ -1,7 +1,7 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { MissionCard, MissionCardProps } from "@/components/molecules"
-import { Icon, Text } from "@/components/atoms"
-import { Target } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { MissionCard, MissionCardProps } from '@/components/molecules'
+import { Icon, Text } from '@/components/atoms'
+import { Target } from 'lucide-react'
 
 export interface MissionListProps {
   missions: MissionCardProps[]

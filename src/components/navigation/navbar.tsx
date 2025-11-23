@@ -1,12 +1,31 @@
-"use client"
+'use client'
 
-import { useState, useCallback } from "react";
-import Link from "next/link";
-import Image from "next/image";
-import { usePathname } from "next/navigation";
-import { Home, Target, Trophy, BookOpen, Settings, Menu, LogIn, LogOut, User, ChevronDown, Shield } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import { useState, useCallback } from 'react'
+import Link from 'next/link'
+import Image from 'next/image'
+import { usePathname } from 'next/navigation'
+import {
+  Home,
+  Target,
+  Trophy,
+  BookOpen,
+  Settings,
+  Menu,
+  LogIn,
+  LogOut,
+  User,
+  ChevronDown,
+  Shield,
+} from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from '@/components/ui/sheet'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,32 +33,30 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Badge } from "@/components/ui/badge";
-import { ThemeToggle } from "@/components/theme-toggle";
-import { useAuth } from "@/components/providers/auth-provider";
+} from '@/components/ui/dropdown-menu'
+import { Badge } from '@/components/ui/badge'
+import { ThemeToggle } from '@/components/ui/theme-toggle'
+import { useAuth } from '@/components/providers/auth-provider'
 
 export const Navigation = () => {
-  const pathname = usePathname();
-  const [isOpen, setIsOpen] = useState(false);
-  const { isLoggedIn, logout, user } = useAuth();
+  const pathname = usePathname()
+  const [isOpen, setIsOpen] = useState(false)
+  const { isLoggedIn, logout, user } = useAuth()
 
   const handleLogout = useCallback(() => {
-    logout();
-  }, [logout]);
+    logout()
+  }, [logout])
 
-  const publicNavigation = [
-    { name: "Home", href: "/", icon: Home },
-  ];
+  const publicNavigation = [{ name: 'Home', href: '/', icon: Home }]
 
   const privateNavigation = [
-    { name: "Dashboard", href: "/dashboard", icon: Target },
-    { name: "Missions", href: "/learning-paths", icon: BookOpen },
-    { name: "Achievements", href: "/achievements", icon: Trophy },
-    { name: "Settings", href: "/settings", icon: Settings },
-  ];
+    { name: 'Dashboard', href: '/dashboard', icon: Target },
+    { name: 'Missions', href: '/learning-paths', icon: BookOpen },
+    { name: 'Achievements', href: '/achievements', icon: Trophy },
+    { name: 'Settings', href: '/settings', icon: Settings },
+  ]
 
-  const isActive = (href: string) => pathname === href;
+  const isActive = (href: string) => pathname === href
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/30 bg-background/98 backdrop-blur-xl">
@@ -80,7 +97,9 @@ export const Navigation = () => {
                       </div>
                       <div className="flex flex-col items-start">
                         <span className="text-sm font-medium leading-none">{user?.username}</span>
-                        <span className="text-[10px] text-muted-foreground leading-none mt-0.5">{user?.rank}</span>
+                        <span className="text-[10px] text-muted-foreground leading-none mt-0.5">
+                          {user?.rank}
+                        </span>
                       </div>
                       <ChevronDown className="w-3.5 h-3.5 text-muted-foreground ml-1" />
                     </Button>
@@ -93,8 +112,13 @@ export const Navigation = () => {
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="font-semibold text-sm truncate">{user?.username}</div>
-                          <div className="text-xs text-muted-foreground truncate mt-0.5">{user?.email}</div>
-                          <Badge variant="outline" className="mt-2 text-xs border-primary/30 text-primary">
+                          <div className="text-xs text-muted-foreground truncate mt-0.5">
+                            {user?.email}
+                          </div>
+                          <Badge
+                            variant="outline"
+                            className="mt-2 text-xs border-primary/30 text-primary"
+                          >
                             {user?.rank}
                           </Badge>
                         </div>
@@ -107,13 +131,13 @@ export const Navigation = () => {
                       </div>
                     </div>
                     {privateNavigation.map((item) => {
-                      const Icon = item.icon;
+                      const Icon = item.icon
                       return (
                         <DropdownMenuItem
                           key={item.name}
                           asChild
                           className={`font-mono cursor-pointer ${
-                            isActive(item.href) ? "bg-muted" : ""
+                            isActive(item.href) ? 'bg-muted' : ''
                           }`}
                         >
                           <Link href={item.href} className="flex items-center gap-2.5 w-full py-2">
@@ -121,7 +145,7 @@ export const Navigation = () => {
                             {item.name}
                           </Link>
                         </DropdownMenuItem>
-                      );
+                      )
                     })}
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
@@ -165,18 +189,13 @@ export const Navigation = () => {
               <SheetContent side="right" className="w-72">
                 <SheetHeader className="mb-6 pb-4 border-b">
                   <div className="flex items-center gap-2.5">
-                    <Image
-                      src="/logo-wth 1.svg"
-                      alt="WhatTheHack Logo"
-                      width={28}
-                      height={28}
-                    />
+                    <Image src="/logo-wth 1.svg" alt="WhatTheHack Logo" width={28} height={28} />
                     <SheetTitle className="font-orbitron font-bold text-lg bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
                       WhatTheHack
                     </SheetTitle>
                   </div>
                 </SheetHeader>
-                
+
                 {isLoggedIn ? (
                   <>
                     {/* User Profile */}
@@ -186,9 +205,16 @@ export const Navigation = () => {
                           <User className="w-6 h-6 text-primary" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="font-mono font-semibold text-sm truncate">{user?.username}</div>
-                          <div className="font-mono text-xs text-muted-foreground truncate mt-0.5">{user?.email}</div>
-                          <Badge variant="outline" className="mt-2 text-xs border-primary/30 text-primary">
+                          <div className="font-mono font-semibold text-sm truncate">
+                            {user?.username}
+                          </div>
+                          <div className="font-mono text-xs text-muted-foreground truncate mt-0.5">
+                            {user?.email}
+                          </div>
+                          <Badge
+                            variant="outline"
+                            className="mt-2 text-xs border-primary/30 text-primary"
+                          >
                             {user?.rank}
                           </Badge>
                         </div>
@@ -198,7 +224,7 @@ export const Navigation = () => {
                     {/* Navigation Links */}
                     <nav className="flex flex-col gap-1 mb-4">
                       {privateNavigation.map((item) => {
-                        const Icon = item.icon;
+                        const Icon = item.icon
                         return (
                           <Link
                             key={item.name}
@@ -206,22 +232,22 @@ export const Navigation = () => {
                             onClick={() => setIsOpen(false)}
                             className={`flex items-center gap-3 px-4 py-3 rounded-lg font-mono text-sm transition-all ${
                               isActive(item.href)
-                                ? "bg-background text-foreground shadow-sm border border-border/50"
-                                : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                                ? 'bg-background text-foreground shadow-sm border border-border/50'
+                                : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
                             }`}
                           >
                             <Icon className="w-5 h-5" />
                             <span>{item.name}</span>
                           </Link>
-                        );
+                        )
                       })}
                     </nav>
 
                     <Button
                       variant="outline"
                       onClick={() => {
-                        handleLogout();
-                        setIsOpen(false);
+                        handleLogout()
+                        setIsOpen(false)
                       }}
                       className="w-full justify-start font-mono text-destructive border-destructive/30 hover:bg-destructive/10"
                     >
@@ -240,7 +266,11 @@ export const Navigation = () => {
                         variant="default"
                         className="w-full justify-center font-mono bg-primary hover:bg-primary/90 text-primary-foreground shadow-md hover:shadow-lg transition-all py-6 text-base"
                       >
-                        <Link href="/auth" onClick={() => setIsOpen(false)} className="flex items-center gap-2">
+                        <Link
+                          href="/auth"
+                          onClick={() => setIsOpen(false)}
+                          className="flex items-center gap-2"
+                        >
                           <LogIn className="w-5 h-5" />
                           <span>Get Started</span>
                         </Link>
@@ -254,5 +284,5 @@ export const Navigation = () => {
         </div>
       </div>
     </header>
-  );
-};
+  )
+}

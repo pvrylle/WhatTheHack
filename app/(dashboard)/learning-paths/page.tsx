@@ -1,41 +1,35 @@
-"use client"
+'use client'
 
-import Link from "next/link"
-import { ChevronRight, Zap } from "lucide-react"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Progress } from "@/components/ui/progress"
-import { missionPaths } from "@/data/challenges"
+import Link from 'next/link'
+import { ChevronRight, Zap } from 'lucide-react'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Progress } from '@/components/ui/progress'
+import { missionPaths } from '@/data/challenges'
 
 const difficultyStyles: Record<string, string> = {
-  Beginner: "bg-success/20 text-success",
-  Intermediate: "bg-secondary/20 text-secondary",
-  Advanced: "bg-destructive/20 text-destructive",
+  Beginner: 'bg-success/20 text-success',
+  Intermediate: 'bg-secondary/20 text-secondary',
+  Advanced: 'bg-destructive/20 text-destructive',
 }
 
 const colorStyles = {
   primary: {
-    wrapper: "bg-primary/20 border border-primary/30",
-    icon: "text-primary",
+    wrapper: 'bg-primary/20 border border-primary/30',
+    icon: 'text-primary',
   },
   secondary: {
-    wrapper: "bg-secondary/20 border border-secondary/30",
-    icon: "text-secondary",
+    wrapper: 'bg-secondary/20 border border-secondary/30',
+    icon: 'text-secondary',
   },
   accent: {
-    wrapper: "bg-accent/20 border border-accent/30",
-    icon: "text-accent",
+    wrapper: 'bg-accent/20 border border-accent/30',
+    icon: 'text-accent',
   },
   success: {
-    wrapper: "bg-success/20 border border-success/30",
-    icon: "text-success",
+    wrapper: 'bg-success/20 border border-success/30',
+    icon: 'text-success',
   },
 } as const
 
@@ -46,12 +40,8 @@ export default function LearningPathsPage() {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="text-center py-12">
-          <h1 className="text-4xl font-orbitron font-bold glow-text mb-2">
-            Hacking Missions
-          </h1>
-          <p className="text-muted-foreground font-mono">
-            No missions available at the moment
-          </p>
+          <h1 className="text-4xl font-orbitron font-bold glow-text mb-2">Hacking Missions</h1>
+          <p className="text-muted-foreground font-mono">No missions available at the moment</p>
         </div>
       </div>
     )
@@ -60,9 +50,7 @@ export default function LearningPathsPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-4xl font-orbitron font-bold glow-text mb-2">
-          Hacking Missions
-        </h1>
+        <h1 className="text-4xl font-orbitron font-bold glow-text mb-2">Hacking Missions</h1>
         <p className="text-muted-foreground font-mono">
           Choose your path to become the ultimate cybersecurity expert
         </p>
@@ -71,9 +59,7 @@ export default function LearningPathsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {learningPaths.map((path) => {
           const IconComponent = path.icon
-          const progress = Math.round(
-            (path.completedChallenges / path.totalChallenges) * 100,
-          )
+          const progress = Math.round((path.completedChallenges / path.totalChallenges) * 100)
           const palette = colorStyles[path.color]
 
           return (
@@ -92,11 +78,13 @@ export default function LearningPathsPage() {
                         {path.title}
                       </CardTitle>
                       <div className="flex items-center gap-2 mt-1">
-                        <Badge className={
-                          difficultyStyles[path.challenges[0]?.difficulty || "Beginner"] ||
-                          difficultyStyles.Beginner
-                        }>
-                          {path.challenges[0]?.difficulty || "Beginner"}
+                        <Badge
+                          className={
+                            difficultyStyles[path.challenges[0]?.difficulty || 'Beginner'] ||
+                            difficultyStyles.Beginner
+                          }
+                        >
+                          {path.challenges[0]?.difficulty || 'Beginner'}
                         </Badge>
                         <span className="text-sm text-muted-foreground font-mono">
                           {path.completedChallenges}/{path.totalChallenges} complete
@@ -105,9 +93,7 @@ export default function LearningPathsPage() {
                     </div>
                   </div>
                 </div>
-                <CardDescription className="mt-3 font-mono">
-                  {path.description}
-                </CardDescription>
+                <CardDescription className="mt-3 font-mono">{path.description}</CardDescription>
               </CardHeader>
 
               <CardContent className="space-y-4">
@@ -124,17 +110,20 @@ export default function LearningPathsPage() {
                           variant="outline"
                           className={`text-xs font-mono ${
                             challenge.isCompleted
-                              ? "bg-success/10 text-success border-success/30"
+                              ? 'bg-success/10 text-success border-success/30'
                               : challenge.isUnlocked
-                              ? "bg-primary/10 text-primary border-primary/30"
-                              : "bg-muted/50 text-muted-foreground border-border/50"
+                                ? 'bg-primary/10 text-primary border-primary/30'
+                                : 'bg-muted/50 text-muted-foreground border-border/50'
                           }`}
                         >
                           {challenge.title}
                         </Badge>
                       ))}
                       {path.challenges.length > 4 && (
-                        <Badge variant="outline" className="text-xs font-mono bg-muted/50 text-muted-foreground">
+                        <Badge
+                          variant="outline"
+                          className="text-xs font-mono bg-muted/50 text-muted-foreground"
+                        >
                           +{path.challenges.length - 4} more
                         </Badge>
                       )}
@@ -168,12 +157,12 @@ export default function LearningPathsPage() {
                   </div>
 
                   <Button
-                    variant={progress > 0 ? "default" : "outline"}
+                    variant={progress > 0 ? 'default' : 'outline'}
                     className="group-hover:bg-muted group-hover:text-muted-foreground transition-colors"
                     asChild
                   >
                     <Link href={`/challenges/${path.id}`}>
-                      {progress > 0 ? "Continue" : "Start Mission"}
+                      {progress > 0 ? 'Continue' : 'Start Mission'}
                       <ChevronRight className="w-4 h-4 ml-2" />
                     </Link>
                   </Button>
@@ -215,4 +204,3 @@ export default function LearningPathsPage() {
     </div>
   )
 }
-

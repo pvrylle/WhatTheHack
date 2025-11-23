@@ -1,14 +1,14 @@
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Text } from "@/components/atoms"
-import { CheckCircle, Lock, Play } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Text } from '@/components/atoms'
+import { CheckCircle, Lock, Play } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 export interface ChallengeCardProps {
   id: string | number
   title: string
   description: string
-  difficulty: "Beginner" | "Intermediate" | "Advanced"
+  difficulty: 'Beginner' | 'Intermediate' | 'Advanced'
   xpReward: number
   timeEstimate: string
   isCompleted: boolean
@@ -18,9 +18,9 @@ export interface ChallengeCardProps {
 }
 
 const difficultyColors = {
-  Beginner: "bg-success/15 text-success border-success/30",
-  Intermediate: "bg-secondary/15 text-secondary border-secondary/30",
-  Advanced: "bg-destructive/15 text-destructive border-destructive/30",
+  Beginner: 'bg-success/15 text-success border-success/30',
+  Intermediate: 'bg-secondary/15 text-secondary border-secondary/30',
+  Advanced: 'bg-destructive/15 text-destructive border-destructive/30',
 }
 
 export const ChallengeCard = ({
@@ -37,12 +37,12 @@ export const ChallengeCard = ({
   return (
     <div
       className={cn(
-        "border rounded-lg p-6 transition-all",
+        'border rounded-lg p-6 transition-all',
         isCompleted
-          ? "border-success/30 bg-success/5"
+          ? 'border-success/30 bg-success/5'
           : isUnlocked
-          ? "border-border hover:border-primary/30"
-          : "border-border/50 bg-muted/20 opacity-60"
+            ? 'border-border hover:border-primary/30'
+            : 'border-border/50 bg-muted/20 opacity-60'
       )}
     >
       <div className="flex items-start justify-between mb-4">
@@ -74,11 +74,7 @@ export const ChallengeCard = ({
         </div>
       </div>
 
-      <Button
-        className="w-full font-mono"
-        disabled={!isUnlocked || isCompleted}
-        onClick={onStart}
-      >
+      <Button className="w-full font-mono" disabled={!isUnlocked || isCompleted} onClick={onStart}>
         {isCompleted ? (
           <>
             <CheckCircle className="w-4 h-4 mr-2" />

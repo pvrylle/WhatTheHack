@@ -1,12 +1,12 @@
-import { Container, Text } from "@/components/atoms"
-import { StatsGrid } from "@/components/organisms"
-import { MissionList } from "@/components/organisms"
-import { AchievementList } from "@/components/organisms"
-import { ProfileCard } from "@/components/organisms"
-import { StatCardProps } from "@/components/molecules"
-import { MissionCardProps } from "@/components/molecules"
-import { AchievementCardProps } from "@/components/molecules"
-import { QuickActions } from "@/components/dashboard/QuickActions"
+import { Container, Text } from '@/components/atoms'
+import { StatsGrid } from '@/components/organisms'
+import { MissionList } from '@/components/organisms'
+import { AchievementList } from '@/components/organisms'
+import { ProfileCard } from '@/components/organisms'
+import { StatCardProps } from '@/components/molecules'
+import { MissionCardProps } from '@/components/molecules'
+import { AchievementCardProps } from '@/components/molecules'
+import { QuickActions } from '@/components/dashboard'
 
 export interface DashboardTemplateProps {
   stats: StatCardProps[]

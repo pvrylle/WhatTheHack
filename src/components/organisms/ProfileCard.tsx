@@ -1,7 +1,7 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
-import { Icon, Text } from "@/components/atoms"
-import { Shield, Star, Trophy, Zap } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Progress } from '@/components/ui/progress'
+import { Icon, Text } from '@/components/atoms'
+import { Shield, Star, Trophy, Zap } from 'lucide-react'
 
 export interface ProfileCardProps {
   username?: string

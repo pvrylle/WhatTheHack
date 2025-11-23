@@ -1,10 +1,11 @@
-"use client"
+'use client'
 
-import { use } from "react"
-import { notFound } from "next/navigation"
-import { ChallengeListTemplate } from "@/components/templates"
-import { missionPaths } from "@/data/challenges"
-import type { ChallengeCardProps } from "@/components/molecules"
+import { use } from 'react'
+import { notFound } from 'next/navigation'
+import { ChallengeListTemplate } from '@/components/templates'
+import { missionPaths } from '@/data/challenges'
+import { ROUTES } from '@/constants/routes'
+import type { ChallengeCardProps } from '@/components/molecules'
 
 export default function MissionChallengesPage({
   params,
@@ -31,7 +32,7 @@ export default function MissionChallengesPage({
   }))
 
   const handleChallengeStart = (id: string | number) => {
-    window.location.href = `/challenges/${category}/${id}`
+    window.location.href = ROUTES.DASHBOARD.CHALLENGE_DETAIL(category, id)
   }
 
   return (

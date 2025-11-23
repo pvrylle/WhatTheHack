@@ -1,2 +1,2 @@
-export { DashboardTemplate } from "./DashboardTemplate"
-export { ChallengeListTemplate } from "./ChallengeListTemplate"
+export { DashboardTemplate } from './DashboardTemplate'
+export { ChallengeListTemplate } from './ChallengeListTemplate'

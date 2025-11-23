@@ -1,35 +1,35 @@
-import { Zap, Trophy, Users, BarChart3, Settings, Play } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Zap, Trophy, Users, BarChart3, Settings, Play } from 'lucide-react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
 
 export const QuickActions = () => {
   const actions = [
     {
       icon: Play,
-      label: "Start Challenge",
-      color: "text-primary",
+      label: 'Start Challenge',
+      color: 'text-primary',
     },
     {
       icon: Trophy,
-      label: "Leaderboard",
-      color: "text-secondary",
+      label: 'Leaderboard',
+      color: 'text-secondary',
     },
     {
       icon: Users,
-      label: "Community",
-      color: "text-accent",
+      label: 'Community',
+      color: 'text-accent',
     },
     {
       icon: BarChart3,
-      label: "Analytics",
-      color: "text-success",
+      label: 'Analytics',
+      color: 'text-success',
     },
     {
       icon: Settings,
-      label: "Settings",
-      color: "text-muted-foreground",
+      label: 'Settings',
+      color: 'text-muted-foreground',
     },
-  ];
+  ]
 
   return (
     <Card className="border-0 bg-card/50">
@@ -47,12 +47,10 @@ export const QuickActions = () => {
             className="w-full justify-start py-4 px-4 hover:bg-muted/50"
           >
             <action.icon className={`w-4 h-4 ${action.color} mr-3`} />
-            <span className="font-orbitron font-medium text-foreground">
-              {action.label}
-            </span>
+            <span className="font-orbitron font-medium text-foreground">{action.label}</span>
           </Button>
         ))}
       </CardContent>
     </Card>
-  );
-};
+  )
+}

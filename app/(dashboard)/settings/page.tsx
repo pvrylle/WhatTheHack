@@ -1,6 +1,6 @@
-"use client"
+'use client'
 
-import { useState } from "react"
+import { useState } from 'react'
 import {
   Settings as SettingsIcon,
   User,
@@ -10,39 +10,33 @@ import {
   Globe,
   Lock,
   Camera,
-} from "lucide-react"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
+} from 'lucide-react'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Switch } from '@/components/ui/switch'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Separator } from "@/components/ui/separator"
-import { Textarea } from "@/components/ui/textarea"
-import { ThemeToggle } from "@/components/theme-toggle"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+} from '@/components/ui/select'
+import { Separator } from '@/components/ui/separator'
+import { Textarea } from '@/components/ui/textarea'
+import { ThemeToggle } from '@/components/ui/theme-toggle'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
 export default function SettingsPage() {
-  const [activeSection, setActiveSection] = useState("profile")
+  const [activeSection, setActiveSection] = useState('profile')
 
   const sections = [
-    { id: "profile", label: "Agent Profile", icon: User },
-    { id: "notifications", label: "Notifications", icon: Bell },
-    { id: "privacy", label: "Privacy & Security", icon: Shield },
-    { id: "appearance", label: "Appearance", icon: Palette },
-    { id: "missions", label: "Mission Preferences", icon: Globe },
+    { id: 'profile', label: 'Agent Profile', icon: User },
+    { id: 'notifications', label: 'Notifications', icon: Bell },
+    { id: 'privacy', label: 'Privacy & Security', icon: Shield },
+    { id: 'appearance', label: 'Appearance', icon: Palette },
+    { id: 'missions', label: 'Mission Preferences', icon: Globe },
   ]
 
   return (
@@ -51,9 +45,7 @@ export default function SettingsPage() {
       <div className="mb-12">
         <div className="flex items-center gap-3 mb-2">
           <SettingsIcon className="w-6 h-6 text-primary" />
-          <h1 className="text-3xl font-orbitron font-bold glow-text">
-            Settings
-          </h1>
+          <h1 className="text-3xl font-orbitron font-bold glow-text">Settings</h1>
         </div>
         <p className="text-muted-foreground font-mono">
           Configure your agent profile and mission preferences
@@ -73,8 +65,8 @@ export default function SettingsPage() {
                     onClick={() => setActiveSection(section.id)}
                     className={`w-full flex items-center gap-3 px-3 py-2 text-left rounded-md transition-colors font-mono ${
                       activeSection === section.id
-                        ? "bg-primary/10 text-primary"
-                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                        ? 'bg-primary/10 text-primary'
+                        : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
                     }`}
                   >
                     <Icon className="w-4 h-4" />
@@ -88,7 +80,7 @@ export default function SettingsPage() {
 
         {/* Settings Content */}
         <div className="lg:col-span-3 space-y-6">
-          {activeSection === "profile" && (
+          {activeSection === 'profile' && (
             <Card className="border-border/50 bg-card/80 backdrop-blur">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 font-orbitron">
@@ -206,7 +198,7 @@ export default function SettingsPage() {
             </Card>
           )}
 
-          {activeSection === "notifications" && (
+          {activeSection === 'notifications' && (
             <Card className="border-border/50 bg-card/80 backdrop-blur">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 font-orbitron">
@@ -269,7 +261,7 @@ export default function SettingsPage() {
             </Card>
           )}
 
-          {activeSection === "privacy" && (
+          {activeSection === 'privacy' && (
             <Card className="border-border/50 bg-card/80 backdrop-blur">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 font-orbitron">
@@ -338,7 +330,7 @@ export default function SettingsPage() {
             </Card>
           )}
 
-          {activeSection === "appearance" && (
+          {activeSection === 'appearance' && (
             <Card className="border-border/50 bg-card/80 backdrop-blur">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 font-orbitron">
@@ -363,7 +355,9 @@ export default function SettingsPage() {
                 <Separator />
 
                 <div className="space-y-2">
-                  <Label htmlFor="density" className="font-mono">Interface Density</Label>
+                  <Label htmlFor="density" className="font-mono">
+                    Interface Density
+                  </Label>
                   <Select defaultValue="comfortable" aria-label="Interface Density">
                     <SelectTrigger className="font-mono" id="density">
                       <SelectValue />
@@ -383,7 +377,9 @@ export default function SettingsPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="animation" className="font-mono">Animation Speed</Label>
+                  <Label htmlFor="animation" className="font-mono">
+                    Animation Speed
+                  </Label>
                   <Select defaultValue="normal" aria-label="Animation Speed">
                     <SelectTrigger className="font-mono" id="animation">
                       <SelectValue />
@@ -408,7 +404,7 @@ export default function SettingsPage() {
             </Card>
           )}
 
-          {activeSection === "missions" && (
+          {activeSection === 'missions' && (
             <Card className="border-border/50 bg-card/80 backdrop-blur">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 font-orbitron">
@@ -421,7 +417,9 @@ export default function SettingsPage() {
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="space-y-2">
-                  <Label htmlFor="difficulty" className="font-mono">Preferred Difficulty</Label>
+                  <Label htmlFor="difficulty" className="font-mono">
+                    Preferred Difficulty
+                  </Label>
                   <Select defaultValue="mixed" aria-label="Preferred Difficulty">
                     <SelectTrigger className="font-mono" id="difficulty">
                       <SelectValue />
@@ -445,14 +443,18 @@ export default function SettingsPage() {
 
                 <div className="space-y-2">
                   <Label className="font-mono">Mission Categories</Label>
-                  <div className="grid grid-cols-2 gap-3 mt-2" role="group" aria-label="Mission Categories">
+                  <div
+                    className="grid grid-cols-2 gap-3 mt-2"
+                    role="group"
+                    aria-label="Mission Categories"
+                  >
                     {[
-                      "Web Security",
-                      "Network Security",
-                      "Cryptography",
-                      "Forensics",
-                      "Reverse Engineering",
-                      "Social Engineering",
+                      'Web Security',
+                      'Network Security',
+                      'Cryptography',
+                      'Forensics',
+                      'Reverse Engineering',
+                      'Social Engineering',
                     ].map((category) => (
                       <div key={category} className="flex items-center space-x-2">
                         <input
@@ -499,4 +501,3 @@ export default function SettingsPage() {
     </div>
   )
 }
-

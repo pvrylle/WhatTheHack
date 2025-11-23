@@ -1,4 +1,4 @@
-import { ChallengeCard, ChallengeCardProps } from "@/components/molecules"
+import { ChallengeCard, ChallengeCardProps } from '@/components/molecules'
 
 export interface ChallengeGridProps {
   challenges: ChallengeCardProps[]

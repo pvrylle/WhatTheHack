@@ -1,29 +1,20 @@
-import { cn } from "@/lib/utils"
-import { ReactNode } from "react"
+import { cn } from '@/lib/utils'
+import { ReactNode } from 'react'
 
-export type TextVariant = 
-  | "h1" 
-  | "h2" 
-  | "h3" 
-  | "h4" 
-  | "h5" 
-  | "h6" 
-  | "p" 
-  | "span" 
-  | "label"
+export type TextVariant = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p' | 'span' | 'label'
 
-export type TextSize = "xs" | "sm" | "base" | "lg" | "xl" | "2xl" | "3xl" | "4xl"
+export type TextSize = 'xs' | 'sm' | 'base' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl'
 
-export type TextWeight = "normal" | "medium" | "semibold" | "bold"
+export type TextWeight = 'normal' | 'medium' | 'semibold' | 'bold'
 
-export type TextColor = 
-  | "primary" 
-  | "secondary" 
-  | "accent" 
-  | "success" 
-  | "destructive" 
-  | "muted" 
-  | "foreground"
+export type TextColor =
+  | 'primary'
+  | 'secondary'
+  | 'accent'
+  | 'success'
+  | 'destructive'
+  | 'muted'
+  | 'foreground'
 
 interface TextProps {
   variant?: TextVariant
@@ -38,38 +29,38 @@ interface TextProps {
 }
 
 const sizeClasses: Record<TextSize, string> = {
-  xs: "text-xs",
-  sm: "text-sm",
-  base: "text-base",
-  lg: "text-lg",
-  xl: "text-xl",
-  "2xl": "text-2xl",
-  "3xl": "text-3xl",
-  "4xl": "text-4xl",
+  xs: 'text-xs',
+  sm: 'text-sm',
+  base: 'text-base',
+  lg: 'text-lg',
+  xl: 'text-xl',
+  '2xl': 'text-2xl',
+  '3xl': 'text-3xl',
+  '4xl': 'text-4xl',
 }
 
 const weightClasses: Record<TextWeight, string> = {
-  normal: "font-normal",
-  medium: "font-medium",
-  semibold: "font-semibold",
-  bold: "font-bold",
+  normal: 'font-normal',
+  medium: 'font-medium',
+  semibold: 'font-semibold',
+  bold: 'font-bold',
 }
 
 const colorClasses: Record<TextColor, string> = {
-  primary: "text-primary",
-  secondary: "text-secondary",
-  accent: "text-accent",
-  success: "text-success",
-  destructive: "text-destructive",
-  muted: "text-muted-foreground",
-  foreground: "text-foreground",
+  primary: 'text-primary',
+  secondary: 'text-secondary',
+  accent: 'text-accent',
+  success: 'text-success',
+  destructive: 'text-destructive',
+  muted: 'text-muted-foreground',
+  foreground: 'text-foreground',
 }
 
 export const Text = ({
-  variant = "p",
-  size = "base",
-  weight = "normal",
-  color = "foreground",
+  variant = 'p',
+  size = 'base',
+  weight = 'normal',
+  color = 'foreground',
   className,
   children,
   glow = false,
@@ -82,9 +73,9 @@ export const Text = ({
     sizeClasses[size],
     weightClasses[weight],
     colorClasses[color],
-    glow && "glow-text",
-    mono && "font-mono",
-    orbitron && "font-orbitron",
+    glow && 'glow-text',
+    mono && 'font-mono',
+    orbitron && 'font-orbitron',
     className
   )
 

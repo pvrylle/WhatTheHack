@@ -1,11 +1,11 @@
-import { Container, Text } from "@/components/atoms"
-import { ChallengeGrid } from "@/components/organisms"
-import { ChallengeCardProps } from "@/components/molecules"
-import { Button } from "@/components/ui/button"
-import { Progress } from "@/components/ui/progress"
-import { Card, CardContent } from "@/components/ui/card"
-import { LucideIcon, ArrowLeft } from "lucide-react"
-import Link from "next/link"
+import { Container, Text } from '@/components/atoms'
+import { ChallengeGrid } from '@/components/organisms'
+import { ChallengeCardProps } from '@/components/molecules'
+import { Button } from '@/components/ui/button'
+import { Progress } from '@/components/ui/progress'
+import { Card, CardContent } from '@/components/ui/card'
+import { LucideIcon, ArrowLeft } from 'lucide-react'
+import Link from 'next/link'
 
 export interface ChallengeListTemplateProps {
   missionTitle: string
@@ -26,19 +26,12 @@ export const ChallengeListTemplate = ({
   challenges,
   onChallengeStart,
 }: ChallengeListTemplateProps) => {
-  const completionPercentage = Math.round(
-    (completedChallenges / totalChallenges) * 100
-  )
+  const completionPercentage = Math.round((completedChallenges / totalChallenges) * 100)
 
   return (
     <Container>
       <div className="flex items-center gap-4 mb-6">
-        <Button
-          variant="outline"
-          size="sm"
-          asChild
-          className="border-primary/30 font-mono"
-        >
+        <Button variant="outline" size="sm" asChild className="border-primary/30 font-mono">
           <Link href="/learning-paths">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Missions

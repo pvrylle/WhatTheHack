@@ -13,7 +13,7 @@ import type {
   User,
   UserProfile,
   ApiResponse,
-} from '@/interfaces/api'
+} from '@/types'
 import { setAuthTokens, clearAuthTokens } from './request.service'
 
 /**
@@ -25,11 +25,9 @@ export const authService = {
    * POST /api/v1/auth/login/
    */
   login: async (credentials: LoginRequest): Promise<AuthResponse> => {
-    const response = await httpService.post<AuthResponse>(
-      API_ENDPOINTS.AUTH.LOGIN,
-      credentials,
-      { skipAuth: true }
-    )
+    const response = await httpService.post<AuthResponse>(API_ENDPOINTS.AUTH.LOGIN, credentials, {
+      skipAuth: true,
+    })
 
     if (response.data) {
       // Store tokens
@@ -45,11 +43,9 @@ export const authService = {
    * POST /api/v1/auth/register/
    */
   register: async (userData: RegisterRequest): Promise<AuthResponse> => {
-    const response = await httpService.post<AuthResponse>(
-      API_ENDPOINTS.AUTH.REGISTER,
-      userData,
-      { skipAuth: true }
-    )
+    const response = await httpService.post<AuthResponse>(API_ENDPOINTS.AUTH.REGISTER, userData, {
+      skipAuth: true,
+    })
 
     if (response.data) {
       // Store tokens
@@ -94,10 +90,7 @@ export const authService = {
    * PATCH /api/v1/auth/profile/
    */
   updateProfile: async (userData: Partial<UserProfile>): Promise<UserProfile> => {
-    const response = await httpService.patch<UserProfile>(
-      API_ENDPOINTS.AUTH.PROFILE,
-      userData
-    )
+    const response = await httpService.patch<UserProfile>(API_ENDPOINTS.AUTH.PROFILE, userData)
 
     if (response.data) {
       return response.data
@@ -122,13 +115,8 @@ export const authService = {
    * POST /api/v1/auth/password/reset/
    */
   requestPasswordReset: async (email: string): Promise<void> => {
-    await httpService.post(
-      API_ENDPOINTS.AUTH.PASSWORD_RESET,
-      { email },
-      { skipAuth: true }
-    )
+    await httpService.post(API_ENDPOINTS.AUTH.PASSWORD_RESET, { email }, { skipAuth: true })
   },
 }
 
 export default authService
-

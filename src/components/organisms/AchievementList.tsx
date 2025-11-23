@@ -1,7 +1,7 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { AchievementCard, AchievementCardProps } from "@/components/molecules"
-import { Icon, Text } from "@/components/atoms"
-import { Trophy } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { AchievementCard, AchievementCardProps } from '@/components/molecules'
+import { Icon, Text } from '@/components/atoms'
+import { Trophy } from 'lucide-react'
 
 export interface AchievementListProps {
   achievements: AchievementCardProps[]

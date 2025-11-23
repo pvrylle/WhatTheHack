@@ -1,31 +1,17 @@
-"use client"
+'use client'
 
-import { use, useEffect, useMemo, useState, useCallback } from "react"
-import Link from "next/link"
-import { notFound } from "next/navigation"
-import {
-  ArrowLeft,
-  CheckCircle,
-  Zap,
-  Shield,
-  AlertTriangle,
-  Eye,
-  EyeOff,
-} from "lucide-react"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
-import { toast } from "sonner"
-import { getChallengeDetail, missionPaths } from "@/data/challenges"
+import { use, useEffect, useMemo, useState, useCallback } from 'react'
+import Link from 'next/link'
+import { notFound } from 'next/navigation'
+import { ArrowLeft, CheckCircle, Zap, Shield, AlertTriangle, Eye, EyeOff } from 'lucide-react'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { Badge } from '@/components/ui/badge'
+import { Progress } from '@/components/ui/progress'
+import { toast } from 'sonner'
+import { getChallengeDetail, missionPaths } from '@/data/challenges'
 
 const normalizeAnswer = (value: string | number) => {
   if (typeof value === 'number') {
@@ -41,10 +27,7 @@ export default function ChallengePage({
 }) {
   const { category, id } = use(params)
   const mission = missionPaths[category]
-  const challenge = useMemo(
-    () => getChallengeDetail(category, id),
-    [category, id],
-  )
+  const challenge = useMemo(() => getChallengeDetail(category, id), [category, id])
 
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [userAnswers, setUserAnswers] = useState<string[]>([])
@@ -58,7 +41,7 @@ export default function ChallengePage({
       setCurrentQuestion(0)
       setIsCompleted(false)
       setScore(0)
-      setUserAnswers(Array(challenge.questions.length).fill(""))
+      setUserAnswers(Array(challenge.questions.length).fill(''))
       setShowHints(Array(challenge.questions.length).fill(false))
       setExplanations(Array(challenge.questions.length).fill(false))
     }
@@ -77,7 +60,7 @@ export default function ChallengePage({
   }
 
   const isCorrectAnswer = (value: string, expected: string | number) => {
-    if (typeof expected === "number") {
+    if (typeof expected === 'number') {
       return Number(value) === expected
     }
 
@@ -86,39 +69,39 @@ export default function ChallengePage({
     const normalizedExpected = normalizeAnswer(expected)
     const normalizedValue = normalizeAnswer(stringValue)
 
-    return (
-      normalizedValue === normalizedExpected ||
-      normalizedValue.includes(normalizedExpected)
-    )
+    return normalizedValue === normalizedExpected || normalizedValue.includes(normalizedExpected)
   }
 
-  const handleSubmit = useCallback((selected?: string) => {
-    const userValue = selected ?? userAnswers[currentQuestion]
+  const handleSubmit = useCallback(
+    (selected?: string) => {
+      const userValue = selected ?? userAnswers[currentQuestion]
 
-    if (!userValue) {
-      toast("Enter an answer before submitting")
-      return
-    }
+      if (!userValue) {
+        toast('Enter an answer before submitting')
+        return
+      }
 
-    // Ensure userValue is a string
-    const stringValue = typeof userValue === 'string' ? userValue : String(userValue)
-    const correct = isCorrectAnswer(stringValue, question.answer)
+      // Ensure userValue is a string
+      const stringValue = typeof userValue === 'string' ? userValue : String(userValue)
+      const correct = isCorrectAnswer(stringValue, question.answer)
 
-    toast(correct ? "Access Granted" : "Access Denied", {
-      description: correct
-        ? "Your exploit executed successfully."
-        : "The payload failed. Adjust your approach and try again.",
-      duration: 2000,
-    })
+      toast(correct ? 'Access Granted' : 'Access Denied', {
+        description: correct
+          ? 'Your exploit executed successfully.'
+          : 'The payload failed. Adjust your approach and try again.',
+        duration: 2000,
+      })
 
-    const explanationsState = [...explanations]
-    explanationsState[currentQuestion] = true
-    setExplanations(explanationsState)
+      const explanationsState = [...explanations]
+      explanationsState[currentQuestion] = true
+      setExplanations(explanationsState)
 
-    if (correct) {
-      setScore((prev) => prev + 1)
-    }
-  }, [currentQuestion, userAnswers, question, explanations])
+      if (correct) {
+        setScore((prev) => prev + 1)
+      }
+    },
+    [currentQuestion, userAnswers, question, explanations]
+  )
 
   const handleNextQuestion = useCallback(() => {
     const nextIndex = currentQuestion + 1
@@ -126,7 +109,7 @@ export default function ChallengePage({
       setCurrentQuestion(nextIndex)
     } else {
       setIsCompleted(true)
-      toast.success("Mission Completed", {
+      toast.success('Mission Completed', {
         description: `You earned ${challenge.xpReward} XP`,
       })
     }
@@ -142,17 +125,20 @@ export default function ChallengePage({
     setCurrentQuestion(0)
     setIsCompleted(false)
     setScore(0)
-    setUserAnswers(Array(challenge.questions.length).fill(""))
+    setUserAnswers(Array(challenge.questions.length).fill(''))
     setShowHints(Array(challenge.questions.length).fill(false))
     setExplanations(Array(challenge.questions.length).fill(false))
   }, [challenge.questions.length])
 
-  const handleOptionSelect = useCallback((index: number) => {
-    const answers = [...userAnswers]
-    answers[currentQuestion] = String(index)
-    setUserAnswers(answers)
-    handleSubmit(String(index))
-  }, [currentQuestion, userAnswers, handleSubmit])
+  const handleOptionSelect = useCallback(
+    (index: number) => {
+      const answers = [...userAnswers]
+      answers[currentQuestion] = String(index)
+      setUserAnswers(answers)
+      handleSubmit(String(index))
+    },
+    [currentQuestion, userAnswers, handleSubmit]
+  )
 
   const renderAnswerInput = () => {
     if (question.options) {
@@ -161,7 +147,7 @@ export default function ChallengePage({
           {question.options.map((option, index) => (
             <Button
               key={option}
-              variant={userAnswers[currentQuestion] === String(index) ? "default" : "outline"}
+              variant={userAnswers[currentQuestion] === String(index) ? 'default' : 'outline'}
               className="justify-start text-left h-auto py-3"
               onClick={() => handleOptionSelect(index)}
             >
@@ -174,10 +160,10 @@ export default function ChallengePage({
 
     const longAnswer = Boolean(question.code && question.code.length > 120)
 
-    if (question.type === "payload-craft" || longAnswer) {
+    if (question.type === 'payload-craft' || longAnswer) {
       return (
         <Textarea
-          value={userAnswers[currentQuestion] || ""}
+          value={userAnswers[currentQuestion] || ''}
           onChange={(event) => handleAnswerChange(event.target.value)}
           placeholder="Enter your answer or payload"
           className="min-h-[120px]"
@@ -187,7 +173,7 @@ export default function ChallengePage({
 
     return (
       <Input
-        value={userAnswers[currentQuestion] || ""}
+        value={userAnswers[currentQuestion] || ''}
         onChange={(event) => handleAnswerChange(event.target.value)}
         placeholder="Enter your answer"
       />
@@ -205,9 +191,7 @@ export default function ChallengePage({
           </Button>
           <div>
             <h1 className="text-2xl font-orbitron font-semibold">{challenge.title}</h1>
-            <p className="text-sm text-muted-foreground font-mono">
-              {challenge.description}
-            </p>
+            <p className="text-sm text-muted-foreground font-mono">{challenge.description}</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
@@ -217,9 +201,7 @@ export default function ChallengePage({
           <Badge variant="secondary" className="font-mono">
             Difficulty: {challenge.difficulty}
           </Badge>
-          <Badge className="font-mono bg-success/10 text-success">
-            +{challenge.xpReward} XP
-          </Badge>
+          <Badge className="font-mono bg-success/10 text-success">+{challenge.xpReward} XP</Badge>
         </div>
       </div>
 
@@ -230,7 +212,7 @@ export default function ChallengePage({
             Question {currentQuestion + 1} of {challenge.questions.length}
           </CardTitle>
           <CardDescription className="flex items-center gap-2 font-mono">
-            {question.type.replace(/-/g, " ").toUpperCase()}
+            {question.type.replace(/-/g, ' ').toUpperCase()}
             <span className="inline-flex items-center gap-1 text-success">
               <Zap className="w-4 h-4" />
               {Math.round((score / challenge.questions.length) * 100)}% accuracy
@@ -272,7 +254,7 @@ export default function ChallengePage({
                 ) : (
                   <Eye className="w-4 h-4" />
                 )}
-                {showHints[currentQuestion] ? "Hide Hint" : "Show Hint"}
+                {showHints[currentQuestion] ? 'Hide Hint' : 'Show Hint'}
               </Button>
             )}
             <Button
@@ -316,17 +298,15 @@ export default function ChallengePage({
               <CheckCircle className="w-5 h-5" /> Mission Complete
             </CardTitle>
             <CardDescription className="font-mono">
-              You solved {score} out of {challenge.questions.length} challenges and earned {challenge.xpReward} XP.
+              You solved {score} out of {challenge.questions.length} challenges and earned{' '}
+              {challenge.xpReward} XP.
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-wrap gap-3">
             <Button asChild>
               <Link href={`/challenges/${mission.id}`}>Return to Mission</Link>
             </Button>
-            <Button
-              variant="outline"
-              onClick={handleRetry}
-            >
+            <Button variant="outline" onClick={handleRetry}>
               Retry Challenge
             </Button>
           </CardContent>
@@ -340,4 +320,3 @@ export default function ChallengePage({
     </div>
   )
 }
-
