@@ -1,3 +1,4 @@
+import { memo, useMemo, useCallback } from 'react'
 import Link from 'next/link'
 import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
@@ -23,7 +24,7 @@ const difficultyColors = {
   hard: 'text-destructive border-destructive/20',
 }
 
-export const MissionCard = ({
+export const MissionCard = memo(({
   id,
   title,
   progress,
@@ -33,22 +34,29 @@ export const MissionCard = ({
   category,
   onContinue,
 }: MissionCardProps) => {
-  const difficultyColor =
-    difficultyColors[difficulty.toLowerCase() as keyof typeof difficultyColors] ||
-    'text-muted-foreground border-muted/20'
+  const difficultyColor = useMemo(
+    () =>
+      difficultyColors[difficulty.toLowerCase() as keyof typeof difficultyColors] ||
+      'text-muted-foreground border-muted/20',
+    [difficulty]
+  )
 
   // Active missions link to their specific mission path page if category is provided,
   // otherwise link to learning paths page
-  const missionLink = category
-    ? `/challenges/${category}`
-    : ROUTES.DASHBOARD.LEARNING_PATHS
+  const missionLink = useMemo(
+    () => (category ? `/challenges/${category}` : ROUTES.DASHBOARD.LEARNING_PATHS),
+    [category]
+  )
 
-  const handleClick = (e: React.MouseEvent) => {
-    if (onContinue) {
-      e.preventDefault()
-      onContinue()
-    }
-  }
+  const handleClick = useCallback(
+    (e: React.MouseEvent) => {
+      if (onContinue) {
+        e.preventDefault()
+        onContinue()
+      }
+    },
+    [onContinue]
+  )
 
   return (
     <Link
@@ -94,4 +102,6 @@ export const MissionCard = ({
       </div>
     </Link>
   )
-}
+})
+
+MissionCard.displayName = 'MissionCard'

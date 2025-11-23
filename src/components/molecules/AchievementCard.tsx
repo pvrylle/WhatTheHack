@@ -1,3 +1,4 @@
+import { memo, useMemo } from 'react'
 import Link from 'next/link'
 import { Badge } from '@/components/ui/badge'
 import { Text } from '@/components/atoms'
@@ -21,9 +22,11 @@ const rarityColors = {
   legendary: 'text-accent border-accent/20',
 }
 
-export const AchievementCard = ({ id, title, description, earned, rarity }: AchievementCardProps) => {
-  const rarityColor =
-    rarityColors[rarity.toLowerCase() as keyof typeof rarityColors] || rarityColors.common
+export const AchievementCard = memo(({ id, title, description, earned, rarity }: AchievementCardProps) => {
+  const rarityColor = useMemo(
+    () => rarityColors[rarity.toLowerCase() as keyof typeof rarityColors] || rarityColors.common,
+    [rarity]
+  )
 
   return (
     <Link
@@ -51,4 +54,6 @@ export const AchievementCard = ({ id, title, description, earned, rarity }: Achi
       </div>
     </Link>
   )
-}
+})
+
+AchievementCard.displayName = 'AchievementCard'

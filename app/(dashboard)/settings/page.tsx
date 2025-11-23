@@ -27,6 +27,7 @@ import { Separator } from '@/components/ui/separator'
 import { Textarea } from '@/components/ui/textarea'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Container, Text } from '@/components/atoms'
 
 export default function SettingsPage() {
   const [activeSection, setActiveSection] = useState('profile')
@@ -40,16 +41,20 @@ export default function SettingsPage() {
   ]
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-12">
+    <Container>
       {/* Header */}
-      <div className="mb-12">
-        <div className="flex items-center gap-3 mb-2">
-          <SettingsIcon className="w-6 h-6 text-primary" />
-          <h1 className="text-3xl font-orbitron font-bold glow-text">Settings</h1>
+      <div className="mb-8">
+        <div className="flex items-center gap-3 mb-3">
+          <div className="p-2 rounded-lg bg-primary/15 border border-primary/25">
+            <SettingsIcon className="w-6 h-6 text-primary" />
+          </div>
+          <Text variant="h1" size="3xl" weight="bold" orbitron glow>
+            Settings
+          </Text>
         </div>
-        <p className="text-muted-foreground font-mono">
+        <Text color="muted" mono size="lg">
           Configure your agent profile and mission preferences
-        </p>
+        </Text>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
@@ -83,10 +88,12 @@ export default function SettingsPage() {
           {activeSection === 'profile' && (
             <Card className="border-border/50 bg-card/80 backdrop-blur">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 font-orbitron">
-                  <User className="w-5 h-5" />
-                  Agent Profile
-                </CardTitle>
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="p-2 rounded-lg bg-primary/20 border border-primary/30">
+                    <User className="w-5 h-5 text-primary" />
+                  </div>
+                  <CardTitle className="font-orbitron text-xl">Agent Profile</CardTitle>
+                </div>
                 <CardDescription className="font-mono">
                   Manage your agent identity and public information
                 </CardDescription>
@@ -201,10 +208,12 @@ export default function SettingsPage() {
           {activeSection === 'notifications' && (
             <Card className="border-border/50 bg-card/80 backdrop-blur">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 font-orbitron">
-                  <Bell className="w-5 h-5" />
-                  Notification Preferences
-                </CardTitle>
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="p-2 rounded-lg bg-accent/20 border border-accent/30">
+                    <Bell className="w-5 h-5 text-accent" />
+                  </div>
+                  <CardTitle className="font-orbitron text-xl">Notification Preferences</CardTitle>
+                </div>
                 <CardDescription className="font-mono">
                   Control when and how you receive mission updates
                 </CardDescription>
@@ -264,10 +273,12 @@ export default function SettingsPage() {
           {activeSection === 'privacy' && (
             <Card className="border-border/50 bg-card/80 backdrop-blur">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 font-orbitron">
-                  <Shield className="w-5 h-5" />
-                  Privacy & Security
-                </CardTitle>
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="p-2 rounded-lg bg-success/20 border border-success/30">
+                    <Shield className="w-5 h-5 text-success" />
+                  </div>
+                  <CardTitle className="font-orbitron text-xl">Privacy & Security</CardTitle>
+                </div>
                 <CardDescription className="font-mono">
                   Protect your agent identity and mission data
                 </CardDescription>
@@ -333,10 +344,12 @@ export default function SettingsPage() {
           {activeSection === 'appearance' && (
             <Card className="border-border/50 bg-card/80 backdrop-blur">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 font-orbitron">
-                  <Palette className="w-5 h-5" />
-                  Appearance
-                </CardTitle>
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="p-2 rounded-lg bg-secondary/20 border border-secondary/30">
+                    <Palette className="w-5 h-5 text-secondary" />
+                  </div>
+                  <CardTitle className="font-orbitron text-xl">Appearance</CardTitle>
+                </div>
                 <CardDescription className="font-mono">
                   Customize your agent interface
                 </CardDescription>
@@ -407,10 +420,12 @@ export default function SettingsPage() {
           {activeSection === 'missions' && (
             <Card className="border-border/50 bg-card/80 backdrop-blur">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 font-orbitron">
-                  <Globe className="w-5 h-5" />
-                  Mission Preferences
-                </CardTitle>
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="p-2 rounded-lg bg-primary/20 border border-primary/30">
+                    <Globe className="w-5 h-5 text-primary" />
+                  </div>
+                  <CardTitle className="font-orbitron text-xl">Mission Preferences</CardTitle>
+                </div>
                 <CardDescription className="font-mono">
                   Configure your mission recommendations and difficulty settings
                 </CardDescription>
@@ -498,6 +513,6 @@ export default function SettingsPage() {
           )}
         </div>
       </div>
-    </div>
+    </Container>
   )
 }

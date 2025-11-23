@@ -1,3 +1,4 @@
+import { memo, useMemo } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
@@ -36,7 +37,7 @@ const difficultyConfig = {
   },
 }
 
-export const ChallengeCard = ({
+export const ChallengeCard = memo(({
   title,
   description,
   difficulty,
@@ -47,11 +48,11 @@ export const ChallengeCard = ({
   category,
   onStart,
 }: ChallengeCardProps) => {
-  const config = difficultyConfig[difficulty]
-
-  return (
-    <Card
-      className={cn(
+  const config = useMemo(() => difficultyConfig[difficulty], [difficulty])
+  
+  const cardClassName = useMemo(
+    () =>
+      cn(
         'group relative overflow-hidden border-2 transition-all duration-300',
         'hover:shadow-lg hover:shadow-primary/10 hover:-translate-y-1',
         isCompleted
@@ -59,7 +60,22 @@ export const ChallengeCard = ({
           : isUnlocked
             ? 'border-border/50 bg-card/50 hover:border-primary/50'
             : 'border-border/30 bg-muted/30 opacity-70 cursor-not-allowed'
-      )}
+      ),
+    [isCompleted, isUnlocked]
+  )
+  
+  const statusAriaLabel = useMemo(() => {
+    if (isCompleted) return 'Challenge completed'
+    if (!isUnlocked) return 'Challenge locked'
+    return 'Challenge available'
+  }, [isCompleted, isUnlocked])
+
+  return (
+    <Card
+      className={cardClassName}
+      role="article"
+      aria-label={`${title} - ${difficulty} challenge`}
+      aria-describedby={`challenge-${title}-description`}
     >
       {/* Status Indicator */}
       <div
@@ -93,11 +109,17 @@ export const ChallengeCard = ({
                 weight="semibold"
                 orbitron
                 className="truncate group-hover:text-primary transition-colors"
+                id={`challenge-${title}-title`}
               >
                 {title}
               </Text>
             </div>
-            <Text size="sm" color="muted" className="line-clamp-2 mb-4">
+            <Text
+              size="sm"
+              color="muted"
+              className="line-clamp-2 mb-4"
+              id={`challenge-${title}-description`}
+            >
               {description}
             </Text>
           </div>
@@ -157,6 +179,13 @@ export const ChallengeCard = ({
           )}
           disabled={!isUnlocked || isCompleted}
           onClick={onStart}
+          aria-label={
+            isCompleted
+              ? `${title} - Challenge completed`
+              : !isUnlocked
+                ? `${title} - Challenge locked`
+                : `Start ${title} challenge`
+          }
         >
           {isCompleted ? (
             <>
@@ -178,4 +207,6 @@ export const ChallengeCard = ({
       </CardFooter>
     </Card>
   )
-}
+})
+
+ChallengeCard.displayName = 'ChallengeCard'

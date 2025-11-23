@@ -134,7 +134,7 @@ const createRequestWithTimeout = (url: string, config: RequestConfig): Promise<R
 /**
  * Base request function
  */
-const request = async <T = any>(
+const request = async <T = unknown>(
   endpoint: string,
   config: RequestConfig = {}
 ): Promise<ApiResponse<T>> => {
@@ -168,7 +168,7 @@ const request = async <T = any>(
     const contentType = response.headers.get('content-type')
     if (!contentType?.includes('application/json')) {
       if (response.ok) {
-        return { data: (await response.text()) as any }
+        return { data: (await response.text()) as T }
       }
       throw new Error(response.statusText)
     }
@@ -189,14 +189,14 @@ const request = async <T = any>(
       next: data.next,
       previous: data.previous,
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     // Handle retry after token refresh
-    if (error.message === 'RETRY_REQUEST') {
+    if (error instanceof Error && error.message === 'RETRY_REQUEST') {
       return request<T>(endpoint, config)
     }
 
     // Handle network errors
-    if (error.name === 'AbortError') {
+    if (error instanceof Error && error.name === 'AbortError') {
       throw {
         detail: 'Request timeout. Please try again.',
         message: 'Request timeout',
@@ -204,13 +204,13 @@ const request = async <T = any>(
     }
 
     // Re-throw API errors
-    if (error.detail || error.message) {
+    if (error && typeof error === 'object' && ('detail' in error || 'message' in error)) {
       throw error
     }
 
     // Handle unknown errors
     throw {
-      detail: error.message || 'An unexpected error occurred',
+      detail: error instanceof Error ? error.message : 'An unexpected error occurred',
       message: 'Network error',
     } as ApiError
   }
@@ -223,7 +223,7 @@ export const httpService = {
   /**
    * GET request
    */
-  get: <T = any>(endpoint: string, config?: RequestConfig): Promise<ApiResponse<T>> => {
+  get: <T = unknown>(endpoint: string, config?: RequestConfig): Promise<ApiResponse<T>> => {
     return request<T>(endpoint, {
       ...config,
       method: 'GET',
@@ -233,9 +233,9 @@ export const httpService = {
   /**
    * POST request
    */
-  post: <T = any>(
+  post: <T = unknown>(
     endpoint: string,
-    data?: any,
+    data?: unknown,
     config?: RequestConfig
   ): Promise<ApiResponse<T>> => {
     return request<T>(endpoint, {
@@ -248,7 +248,7 @@ export const httpService = {
   /**
    * PUT request
    */
-  put: <T = any>(endpoint: string, data?: any, config?: RequestConfig): Promise<ApiResponse<T>> => {
+  put: <T = unknown>(endpoint: string, data?: unknown, config?: RequestConfig): Promise<ApiResponse<T>> => {
     return request<T>(endpoint, {
       ...config,
       method: 'PUT',
@@ -259,9 +259,9 @@ export const httpService = {
   /**
    * PATCH request
    */
-  patch: <T = any>(
+  patch: <T = unknown>(
     endpoint: string,
-    data?: any,
+    data?: unknown,
     config?: RequestConfig
   ): Promise<ApiResponse<T>> => {
     return request<T>(endpoint, {
@@ -274,7 +274,7 @@ export const httpService = {
   /**
    * DELETE request
    */
-  delete: <T = any>(endpoint: string, config?: RequestConfig): Promise<ApiResponse<T>> => {
+  delete: <T = unknown>(endpoint: string, config?: RequestConfig): Promise<ApiResponse<T>> => {
     return request<T>(endpoint, {
       ...config,
       method: 'DELETE',
