@@ -2,8 +2,8 @@
 
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
-import { ChevronRight, Zap, Search, Filter, X, Trophy, Target, TrendingUp } from 'lucide-react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { ChevronRight, Zap, Search, X, Trophy, Target, TrendingUp, Map } from 'lucide-react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
@@ -27,24 +27,20 @@ const difficultyStyles: Record<string, string> = {
 
 const colorStyles = {
   primary: {
-    wrapper: 'bg-primary/15 border-2 border-primary/25 shadow-lg shadow-primary/10',
+    wrapper: 'bg-primary/15 border border-primary/25',
     icon: 'text-primary',
-    gradient: 'from-primary/20 via-primary/10 to-transparent',
   },
   secondary: {
-    wrapper: 'bg-secondary/15 border-2 border-secondary/25 shadow-lg shadow-secondary/10',
+    wrapper: 'bg-secondary/15 border border-secondary/25',
     icon: 'text-secondary',
-    gradient: 'from-secondary/20 via-secondary/10 to-transparent',
   },
   accent: {
-    wrapper: 'bg-accent/15 border-2 border-accent/25 shadow-lg shadow-accent/10',
+    wrapper: 'bg-accent/15 border border-accent/25',
     icon: 'text-accent',
-    gradient: 'from-accent/20 via-accent/10 to-transparent',
   },
   success: {
-    wrapper: 'bg-success/15 border-2 border-success/25 shadow-lg shadow-success/10',
+    wrapper: 'bg-success/15 border border-success/25',
     icon: 'text-success',
-    gradient: 'from-success/20 via-success/10 to-transparent',
   },
 } as const
 
@@ -99,12 +95,12 @@ export default function LearningPathsContent() {
 
   if (learningPaths.length === 0) {
     return (
-      <Container>
+      <Container className="py-4 sm:py-6">
         <div className="text-center py-16">
-          <Text variant="h1" size="4xl" weight="bold" orbitron glow className="mb-4">
+          <Text variant="h1" size="xl" weight="bold" orbitron glow className="mb-2">
             Hacking Missions
           </Text>
-          <Text color="muted" mono>
+          <Text color="muted" mono size="sm">
             No missions available at the moment
           </Text>
         </div>
@@ -113,169 +109,107 @@ export default function LearningPathsContent() {
   }
 
   return (
-    <Container>
-      {/* Header Section */}
-      <header className="mb-8">
-        <Text variant="h1" size="4xl" weight="bold" orbitron glow className="mb-3">
-          Hacking Missions
-        </Text>
-        <Text color="muted" mono size="lg">
+    <Container className="py-4 sm:py-6">
+      {/* Compact Header */}
+      <header className="mb-4 sm:mb-6">
+        <div className="flex items-center gap-3 mb-1">
+          <Map className="w-5 h-5 text-primary" />
+          <Text variant="h1" size="xl" weight="bold" orbitron glow>
+            Learning Paths
+          </Text>
+        </div>
+        <Text color="muted" mono size="sm">
           Choose your path to become the ultimate cybersecurity expert
         </Text>
       </header>
 
-      {/* Stats Overview */}
-      <section aria-label="Progress Statistics" className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-        <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/10 to-transparent">
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <Text size="sm" color="muted" mono className="mb-1">
-                  Total Progress
-                </Text>
-                <Text variant="h3" size="2xl" weight="bold" color="primary" orbitron>
-                  {totalProgress}%
-                </Text>
-              </div>
-              <div className="p-3 rounded-lg bg-primary/20 border border-primary/30">
-                <TrendingUp className="w-6 h-6 text-primary" aria-hidden="true" />
-              </div>
-            </div>
-            <Progress value={totalProgress} className="h-2 mt-4" aria-label={`${totalProgress}% total progress`} />
-          </CardContent>
-        </Card>
+      {/* Compact Stats Row */}
+      <section aria-label="Progress Statistics" className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mb-4 sm:mb-6">
+        <div className="p-3 rounded-xl bg-primary/10 border border-primary/20">
+          <div className="flex items-center gap-2 mb-1">
+            <TrendingUp className="w-3.5 h-3.5 text-primary" />
+            <Text size="xs" color="muted" mono className="uppercase tracking-wider">Progress</Text>
+          </div>
+          <Text size="xl" weight="bold" color="primary" orbitron>{totalProgress}%</Text>
+        </div>
 
-        <Card className="border-2 border-success/20 bg-gradient-to-br from-success/10 to-transparent">
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <Text size="sm" color="muted" mono className="mb-1">
-                  Challenges
-                </Text>
-                <Text variant="h3" size="2xl" weight="bold" color="success" orbitron>
-                  {completedChallenges}/{totalChallenges}
-                </Text>
-              </div>
-              <div className="p-3 rounded-lg bg-success/20 border border-success/30">
-                <Target className="w-6 h-6 text-success" aria-hidden="true" />
-              </div>
-            </div>
-            <Text size="xs" color="muted" mono className="mt-4">
-              {totalChallenges - completedChallenges} remaining
-            </Text>
-          </CardContent>
-        </Card>
+        <div className="p-3 rounded-xl bg-success/10 border border-success/20">
+          <div className="flex items-center gap-2 mb-1">
+            <Target className="w-3.5 h-3.5 text-success" />
+            <Text size="xs" color="muted" mono className="uppercase tracking-wider">Done</Text>
+          </div>
+          <Text size="xl" weight="bold" color="success" orbitron>{completedChallenges}/{totalChallenges}</Text>
+        </div>
 
-        <Card className="border-2 border-accent/20 bg-gradient-to-br from-accent/10 to-transparent">
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <Text size="sm" color="muted" mono className="mb-1">
-                  XP Earned
-                </Text>
-                <Text variant="h3" size="2xl" weight="bold" color="accent" orbitron>
-                  {totalXP.toLocaleString()}
-                </Text>
-              </div>
-              <div className="p-3 rounded-lg bg-accent/20 border border-accent/30">
-                <Zap className="w-6 h-6 text-accent" aria-hidden="true" />
-              </div>
-            </div>
-            <Text size="xs" color="muted" mono className="mt-4">
-              Keep hacking!
-            </Text>
-          </CardContent>
-        </Card>
+        <div className="p-3 rounded-xl bg-accent/10 border border-accent/20">
+          <div className="flex items-center gap-2 mb-1">
+            <Zap className="w-3.5 h-3.5 text-accent" />
+            <Text size="xs" color="muted" mono className="uppercase tracking-wider">XP</Text>
+          </div>
+          <Text size="xl" weight="bold" color="accent" orbitron>{totalXP.toLocaleString()}</Text>
+        </div>
 
-        <Card className="border-2 border-secondary/20 bg-gradient-to-br from-secondary/10 to-transparent">
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <Text size="sm" color="muted" mono className="mb-1">
-                  Missions
-                </Text>
-                <Text variant="h3" size="2xl" weight="bold" color="secondary" orbitron>
-                  {learningPaths.length}
-                </Text>
-              </div>
-              <div className="p-3 rounded-lg bg-secondary/20 border border-secondary/30">
-                <Trophy className="w-6 h-6 text-secondary" aria-hidden="true" />
-              </div>
-            </div>
-            <Text size="xs" color="muted" mono className="mt-4">
-              Available paths
-            </Text>
-          </CardContent>
-        </Card>
+        <div className="p-3 rounded-xl bg-secondary/10 border border-secondary/20">
+          <div className="flex items-center gap-2 mb-1">
+            <Trophy className="w-3.5 h-3.5 text-secondary" />
+            <Text size="xs" color="muted" mono className="uppercase tracking-wider">Paths</Text>
+          </div>
+          <Text size="xl" weight="bold" color="secondary" orbitron>{learningPaths.length}</Text>
+        </div>
       </section>
 
-      {/* Filters Section */}
-      <section aria-label="Filter missions" className="mb-6 space-y-4">
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <Text variant="h2" size="2xl" weight="bold" orbitron className="mb-1">
-              Mission Paths
-            </Text>
-            <Text color="muted" mono>
-              {filteredPaths.length} of {learningPaths.length} missions
-            </Text>
-          </div>
-          {hasActiveFilters && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={clearFilters}
-              className="font-mono text-xs"
-            >
-              <X className="w-4 h-4 mr-2" aria-hidden="true" />
-              Clear Filters
-            </Button>
-          )}
-        </div>
-
-        <div className="flex flex-col sm:flex-row gap-3">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" aria-hidden="true" />
-            <Input
-              placeholder="Search missions..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 font-mono"
-              aria-label="Search missions"
-            />
-          </div>
-
-          <Select value={difficultyFilter} onValueChange={setDifficultyFilter}>
-            <SelectTrigger className="w-full sm:w-[180px] font-mono" aria-label="Filter by difficulty">
-              <Filter className="w-4 h-4 mr-2" aria-hidden="true" />
-              <SelectValue placeholder="Difficulty" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Difficulties</SelectItem>
-              <SelectItem value="Beginner">Beginner</SelectItem>
-              <SelectItem value="Intermediate">Intermediate</SelectItem>
-              <SelectItem value="Advanced">Advanced</SelectItem>
-            </SelectContent>
-          </Select>
-
-          <Select value={progressFilter} onValueChange={setProgressFilter}>
-            <SelectTrigger className="w-full sm:w-[180px] font-mono" aria-label="Filter by progress">
-              <SelectValue placeholder="Progress" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Progress</SelectItem>
-              <SelectItem value="not-started">Not Started</SelectItem>
-              <SelectItem value="in-progress">In Progress</SelectItem>
-              <SelectItem value="completed">Completed</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+      {/* Compact Filters */}
+      <section aria-label="Filter missions" className="mb-4">
+        <Card className="border-0 bg-card/50">
+          <CardContent className="p-3 sm:p-4">
+            <div className="flex flex-col sm:flex-row gap-2">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+                <Input
+                  placeholder="Search missions..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-9 h-9 font-mono text-sm"
+                />
+              </div>
+              <div className="flex gap-2">
+                <Select value={difficultyFilter} onValueChange={setDifficultyFilter}>
+                  <SelectTrigger className="w-[120px] h-9 font-mono text-xs">
+                    <SelectValue placeholder="Difficulty" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All</SelectItem>
+                    <SelectItem value="Beginner">Beginner</SelectItem>
+                    <SelectItem value="Intermediate">Intermediate</SelectItem>
+                    <SelectItem value="Advanced">Advanced</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Select value={progressFilter} onValueChange={setProgressFilter}>
+                  <SelectTrigger className="w-[120px] h-9 font-mono text-xs">
+                    <SelectValue placeholder="Progress" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All</SelectItem>
+                    <SelectItem value="not-started">Not Started</SelectItem>
+                    <SelectItem value="in-progress">In Progress</SelectItem>
+                    <SelectItem value="completed">Completed</SelectItem>
+                  </SelectContent>
+                </Select>
+                {hasActiveFilters && (
+                  <Button variant="ghost" size="sm" onClick={clearFilters} className="h-9 px-2">
+                    <X className="w-4 h-4" />
+                  </Button>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </section>
 
       {/* Mission Paths Grid */}
       <main>
         {filteredPaths.length > 0 ? (
-          <ul className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8" role="list">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
             {filteredPaths.map((path) => {
               const IconComponent = path.icon
               const progress = Math.round((path.completedChallenges / path.totalChallenges) * 100)
@@ -284,192 +218,83 @@ export default function LearningPathsContent() {
               const isCompleted = progress === 100
 
               return (
-                <li key={path.id}>
-                  <Card
-                    className={cn(
-                      'border-2 bg-card backdrop-blur transition-all duration-300 group overflow-hidden relative',
-                      'hover:shadow-2xl hover:scale-[1.02]',
-                      isCompleted
-                        ? 'border-success/50 hover:border-success'
-                        : progress > 0
-                          ? 'border-primary/50 hover:border-primary'
-                          : 'border-border/50 hover:border-primary/50'
-                    )}
-                  >
-                    <div
-                      className={cn(
-                        'absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-100 transition-opacity duration-300',
-                        palette.gradient
-                      )}
-                    />
+                <Link
+                  key={path.id}
+                  href={`/challenges/${path.id}`}
+                  className={cn(
+                    'block p-4 rounded-xl border transition-all hover:scale-[1.01] group',
+                    isCompleted
+                      ? 'bg-success/5 border-success/30 hover:border-success/50'
+                      : progress > 0
+                        ? 'bg-primary/5 border-primary/30 hover:border-primary/50'
+                        : 'bg-card/50 border-border/50 hover:border-primary/30'
+                  )}
+                >
+                  <div className="flex items-start gap-3">
+                    {/* Icon */}
+                    <div className={cn('p-2.5 rounded-xl shrink-0', palette.wrapper)}>
+                      <IconComponent className={cn('w-5 h-5', palette.icon)} />
+                    </div>
 
-                    <CardHeader className="relative z-10">
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="flex items-center gap-4">
-                          <div className={cn('p-4 rounded-xl transition-transform group-hover:scale-110', palette.wrapper)}>
-                            <IconComponent className={cn('w-7 h-7', palette.icon)} aria-hidden="true" />
-                          </div>
-                          <div className="flex-1">
-                            <CardTitle className="font-orbitron text-xl mb-2 group-hover:text-primary transition-colors">
-                              {path.title}
-                            </CardTitle>
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <Badge
-                                variant="outline"
-                                className={cn('font-mono text-xs', difficultyStyles[pathDifficulty])}
-                              >
-                                {pathDifficulty}
-                              </Badge>
-                              {isCompleted && (
-                                <Badge variant="outline" className="font-mono text-xs bg-success/10 text-success border-success/30">
-                                  <Trophy className="w-3 h-3 mr-1" aria-hidden="true" />
-                                  Completed
-                                </Badge>
-                              )}
-                            </div>
-                          </div>
-                        </div>
+                    {/* Content */}
+                    <div className="flex-1 min-w-0">
+                      {/* Title Row */}
+                      <div className="flex items-center gap-2 mb-1">
+                        <Text size="sm" weight="semibold" orbitron className="truncate group-hover:text-primary transition-colors">
+                          {path.title}
+                        </Text>
+                        <Badge variant="outline" className={cn('font-mono text-[9px] shrink-0', difficultyStyles[pathDifficulty])}>
+                          {pathDifficulty}
+                        </Badge>
+                        {isCompleted && (
+                          <Trophy className="w-3.5 h-3.5 text-success shrink-0" />
+                        )}
                       </div>
-                      <CardDescription className="font-mono text-sm leading-relaxed">
+
+                      {/* Description */}
+                      <Text size="xs" color="muted" mono className="line-clamp-1 mb-2">
                         {path.description}
-                      </CardDescription>
-                    </CardHeader>
+                      </Text>
 
-                    <CardContent className="space-y-5 relative z-10">
-                      {path.challenges && path.challenges.length > 0 && (
-                        <div className="space-y-3">
-                          <div className="flex items-center justify-between">
-                            <Text size="xs" weight="semibold" color="muted" mono className="uppercase tracking-wider">
-                              Challenges ({path.challenges.length})
-                            </Text>
-                            <Text size="xs" color="muted" mono>
-                              {path.completedChallenges}/{path.totalChallenges} complete
-                            </Text>
-                          </div>
-                          <div className="flex flex-wrap gap-2">
-                            {path.challenges.slice(0, 4).map((challenge) => (
-                              <Badge
-                                key={challenge.id}
-                                variant="outline"
-                                className={cn(
-                                  'text-xs font-mono transition-colors',
-                                  challenge.isCompleted
-                                    ? 'bg-success/10 text-success border-success/30'
-                                    : challenge.isUnlocked
-                                      ? 'bg-primary/10 text-primary border-primary/30'
-                                      : 'bg-muted/50 text-muted-foreground border-border/50'
-                                )}
-                              >
-                                {challenge.title}
-                              </Badge>
-                            ))}
-                            {path.challenges.length > 4 && (
-                              <Badge
-                                variant="outline"
-                                className="text-xs font-mono bg-muted/50 text-muted-foreground border-border/50"
-                              >
-                                +{path.challenges.length - 4} more
-                              </Badge>
-                            )}
-                          </div>
-                        </div>
-                      )}
-
-                      <div className="space-y-3">
-                        <div className="flex justify-between items-center">
-                          <Text size="sm" color="muted" mono>
-                            Progress
-                          </Text>
-                          <Text size="sm" weight="semibold" color="primary" orbitron>
-                            {progress}%
-                          </Text>
-                        </div>
-                        <Progress
-                          value={progress}
-                          className={cn(
-                            'h-3 transition-all',
-                            isCompleted && 'bg-success/20'
-                          )}
-                          aria-label={`${progress}% complete`}
-                        />
-                        <div className="flex justify-between text-xs">
-                          <Text size="xs" color="muted" mono>
-                            {path.completedChallenges} of {path.totalChallenges} challenges
-                          </Text>
-                          {!isCompleted && (
-                            <Text size="xs" color="muted" mono>
-                              {path.totalChallenges - path.completedChallenges} remaining
-                            </Text>
-                          )}
-                        </div>
+                      {/* Progress Bar */}
+                      <div className="flex items-center gap-2 mb-2">
+                        <Progress value={progress} className="h-1.5 flex-1" />
+                        <Text size="xs" weight="semibold" color={isCompleted ? 'success' : 'primary'} mono>
+                          {progress}%
+                        </Text>
                       </div>
 
-                      <div className="flex items-center justify-between pt-4 border-t border-border/50">
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-2">
-                            <Zap className="w-4 h-4 text-success" aria-hidden="true" />
-                            <Text size="sm" weight="medium" color="success" mono>
-                              {path.completedChallenges * 150} XP earned
-                            </Text>
-                          </div>
-                          {!isCompleted && (
-                            <Text size="xs" color="muted" mono>
-                              {(path.totalChallenges - path.completedChallenges) * 150} XP remaining
-                            </Text>
-                          )}
+                      {/* Stats Row */}
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3 text-[10px] text-muted-foreground font-mono">
+                          <span className="flex items-center gap-1">
+                            <Target className="w-3 h-3" />
+                            {path.completedChallenges}/{path.totalChallenges}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <Zap className="w-3 h-3 text-success" />
+                            {path.completedChallenges * 150} XP
+                          </span>
                         </div>
-
-                        <Button
-                          variant={isCompleted ? 'outline' : 'default'}
-                          className={cn(
-                            'font-mono transition-all group-hover:scale-105',
-                            isCompleted && 'border-success/30 text-success hover:bg-success/10'
-                          )}
-                          asChild
-                        >
-                          <Link href={`/challenges/${path.id}`}>
-                            {isCompleted
-                              ? 'Review'
-                              : progress > 0
-                                ? 'Continue'
-                                : 'Start Mission'}
-                            <ChevronRight className="w-4 h-4 ml-2" aria-hidden="true" />
-                          </Link>
-                        </Button>
+                        <div className="flex items-center gap-1 text-xs font-mono text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+                          {isCompleted ? 'Review' : progress > 0 ? 'Continue' : 'Start'}
+                          <ChevronRight className="w-3.5 h-3.5" />
+                        </div>
                       </div>
-                    </CardContent>
-                  </Card>
-                </li>
+                    </div>
+                  </div>
+                </Link>
               )
             })}
-          </ul>
+          </div>
         ) : (
           <Card className="border-2 border-dashed">
-            <CardContent className="py-16 text-center">
-              <div className="flex justify-center mb-4">
-                <div className="p-4 rounded-full bg-muted/20">
-                  <Search className="w-8 h-8 text-muted-foreground" aria-hidden="true" />
-                </div>
-              </div>
-              <Text variant="h3" size="lg" weight="semibold" className="mb-2">
-                No missions found
+            <CardContent className="py-8 text-center">
+              <Search className="w-6 h-6 text-muted-foreground mx-auto mb-2" />
+              <Text size="sm" weight="semibold" className="mb-1">No missions found</Text>
+              <Text size="xs" color="muted" mono>
+                {hasActiveFilters ? 'Try adjusting your filters' : 'No missions available'}
               </Text>
-              <Text size="sm" color="muted" mono>
-                {hasActiveFilters
-                  ? 'Try adjusting your filters to see more missions'
-                  : 'No missions available at the moment'}
-              </Text>
-              {hasActiveFilters && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={clearFilters}
-                  className="mt-4 font-mono"
-                >
-                  <X className="w-4 h-4 mr-2" aria-hidden="true" />
-                  Clear Filters
-                </Button>
-              )}
             </CardContent>
           </Card>
         )}
