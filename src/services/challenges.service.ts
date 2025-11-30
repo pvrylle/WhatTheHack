@@ -15,7 +15,7 @@ import type {
   MissionProgress,
   ApiResponse,
   PaginatedResponse,
-} from '@/interfaces/api'
+} from '@/types'
 
 /**
  * Challenges Service
@@ -111,9 +111,7 @@ export const challengesService = {
    * GET /api/v1/challenges/{id}/progress/
    */
   getChallengeProgress: async (id: string | number): Promise<any> => {
-    const response = await httpService.get(
-      API_ENDPOINTS.CHALLENGES.PROGRESS(String(id))
-    )
+    const response = await httpService.get(API_ENDPOINTS.CHALLENGES.PROGRESS(String(id)))
 
     return response.data
   },
@@ -141,9 +139,7 @@ export const challengesService = {
    * GET /api/v1/missions/{id}/
    */
   getMission: async (id: string): Promise<Mission> => {
-    const response = await httpService.get<Mission>(
-      API_ENDPOINTS.MISSIONS.DETAIL(id)
-    )
+    const response = await httpService.get<Mission>(API_ENDPOINTS.MISSIONS.DETAIL(id))
 
     if (response.data) {
       return response.data
@@ -175,9 +171,7 @@ export const challengesService = {
    * GET /api/v1/missions/{id}/progress/
    */
   getMissionProgress: async (id: string): Promise<MissionProgress> => {
-    const response = await httpService.get<MissionProgress>(
-      API_ENDPOINTS.MISSIONS.PROGRESS(id)
-    )
+    const response = await httpService.get<MissionProgress>(API_ENDPOINTS.MISSIONS.PROGRESS(id))
 
     if (response.data) {
       return response.data
@@ -188,4 +182,3 @@ export const challengesService = {
 }
 
 export default challengesService
-

@@ -1,15 +1,11 @@
-"use client"
+'use client'
 
-import { Navigation } from "@/components/navigation/navbar"
-import { useAuth } from "@/components/providers/auth-provider"
-import { useRouter, usePathname } from "next/navigation"
-import { useEffect } from "react"
+import { Navigation } from '@/components/navigation'
+import { useAuth } from '@/components/providers/auth-provider'
+import { useRouter, usePathname } from 'next/navigation'
+import { useEffect } from 'react'
 
-export default function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { isLoggedIn } = useAuth()
   const router = useRouter()
   const pathname = usePathname()
@@ -17,7 +13,7 @@ export default function DashboardLayout({
   useEffect(() => {
     if (!isLoggedIn) {
       // Redirect to auth page if not logged in
-      router.push("/auth")
+      router.push('/auth')
     }
   }, [isLoggedIn, router, pathname])
 
@@ -36,10 +32,7 @@ export default function DashboardLayout({
   return (
     <>
       <Navigation />
-      <main className="min-h-screen bg-background">
-        {children}
-      </main>
+      <main className="min-h-screen bg-background">{children}</main>
     </>
   )
 }
-

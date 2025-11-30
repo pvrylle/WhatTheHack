@@ -1,64 +1,118 @@
-"use client"
+'use client'
 
-import { useAuth } from "@/components/providers/auth-provider"
-import { StatsOverview } from "@/components/dashboard/StatsOverview"
-import { ActiveMissions } from "@/components/dashboard/ActiveMissions"
-import { AgentProfile } from "@/components/dashboard/AgentProfile"
-import { QuickActions } from "@/components/dashboard/QuickActions"
-import { RecentAchievements } from "@/components/dashboard/RecentAchievements"
+import { useAuth } from '@/components/providers/auth-provider'
+import { DashboardTemplate } from '@/components/templates'
+import { Trophy, Zap, Target, Calendar, TrendingUp } from 'lucide-react'
+
+// Export metadata from separate file for better code organization
+// Note: metadata.ts contains static metadata for SEO
 
 export default function DashboardPage() {
   const { user } = useAuth()
 
-  // Default stats if user is not loaded yet
   const userStats = {
     level: user?.level || 1,
     xp: user?.xp || 0,
     xpToNext: 3000,
     hacksCompleted: 47,
     streakDays: 15,
-    rank: user?.rank || "Rookie Hacker",
+    rank: user?.rank || 'Rookie Hacker',
     totalPoints: 15420,
   }
 
-  const activeQuests = [
-    { id: 1, title: "SQL Injection Hunter", progress: 60, reward: "250 XP", difficulty: "Medium", timeLeft: "2h 30m" },
-    { id: 2, title: "Buffer Overflow Challenge", progress: 30, reward: "400 XP", difficulty: "Hard", timeLeft: "5h 15m" },
-    { id: 3, title: "XSS Detector", progress: 85, reward: "150 XP", difficulty: "Easy", timeLeft: "45m" },
+  const stats = [
+    {
+      label: 'Level',
+      value: userStats.level,
+      icon: TrendingUp,
+      color: 'primary' as const,
+    },
+    {
+      label: 'Total XP',
+      value: userStats.xp.toLocaleString(),
+      icon: Zap,
+      color: 'secondary' as const,
+    },
+    {
+      label: 'Hacks Completed',
+      value: userStats.hacksCompleted,
+      icon: Target,
+      color: 'success' as const,
+    },
+    {
+      label: 'Streak Days',
+      value: userStats.streakDays,
+      icon: Calendar,
+      color: 'accent' as const,
+    },
+    {
+      label: 'Total Points',
+      value: (userStats.totalPoints / 1000).toFixed(1) + 'K',
+      icon: Trophy,
+      color: 'primary' as const,
+    },
   ]
 
-  const recentAchievements = [
-    { id: 1, title: "First Blood", description: "Complete first vulnerability", earned: "2 hours ago", rarity: "Common" },
-    { id: 2, title: "Script Kiddie", description: "Complete 10 easy challenges", earned: "1 day ago", rarity: "Uncommon" },
-    { id: 3, title: "Database Destroyer", description: "Master SQL injection", earned: "3 days ago", rarity: "Rare" },
+  const missions = [
+    {
+      id: 'web-security',
+      title: 'Web Application Security',
+      progress: 33, // 4 completed out of 12
+      reward: '1,200 XP',
+      difficulty: 'Medium',
+      timeLeft: '6h 45m',
+      category: 'web-security',
+    },
+    {
+      id: 'network-exploitation',
+      title: 'Network Exploitation',
+      progress: 60, // 9 completed out of 15
+      reward: '2,100 XP',
+      difficulty: 'Hard',
+      timeLeft: '4h 20m',
+      category: 'network-exploitation',
+    },
+    {
+      id: 'database-security',
+      title: 'Database Security',
+      progress: 80, // 8 completed out of 10
+      reward: '3,200 XP',
+      difficulty: 'Medium',
+      timeLeft: '1h 15m',
+      category: 'database-security',
+    },
+  ]
+
+  const achievements = [
+    {
+      id: 1,
+      title: 'First Blood',
+      description: 'Complete first vulnerability',
+      earned: '2 hours ago',
+      rarity: 'Common',
+    },
+    {
+      id: 2,
+      title: 'Script Kiddie',
+      description: 'Complete 10 easy challenges',
+      earned: '1 day ago',
+      rarity: 'Uncommon',
+    },
+    {
+      id: 3,
+      title: 'Database Destroyer',
+      description: 'Master SQL injection',
+      earned: '3 days ago',
+      rarity: 'Rare',
+    },
   ]
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-orbitron font-bold glow-text mb-2">
-          Mission Control
-        </h1>
-        <p className="text-muted-foreground font-mono">
-          Track your progress and continue your hacking journey
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Main Content - Left Side (2/3 width on desktop) */}
-        <div className="lg:col-span-2 space-y-6">
-          <StatsOverview userStats={userStats} />
-          <ActiveMissions missions={activeQuests} />
-          <RecentAchievements achievements={recentAchievements} />
-        </div>
-        
-        {/* Sidebar - Right Side (1/3 width on desktop) */}
-        <div className="space-y-6">
-          <AgentProfile userStats={userStats} />
-          <QuickActions />
-        </div>
-      </div>
-    </div>
+    <DashboardTemplate
+      stats={stats}
+      missions={missions}
+      achievements={achievements}
+      profileData={userStats}
+    />
   )
 }
-

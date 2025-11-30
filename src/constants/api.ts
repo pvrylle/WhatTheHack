@@ -1,24 +1,26 @@
 /**
- * API Constants
- * Centralized configuration for API endpoints
- * Easy to update when Django backend is ready
+ * API Configuration
+ * This project uses public APIs or mock data - NO custom backend required
+ * 
+ * Options:
+ * 1. Mock Data (default) - Uses mock.service.ts for all data
+ * 2. Public APIs - Set NEXT_PUBLIC_API_URL to a public API endpoint
+ * 
+ * Examples of public APIs you could use:
+ * - JSONPlaceholder: https://jsonplaceholder.typicode.com
+ * - ReqRes: https://reqres.in/api
+ * - Any public REST API
  */
 
-// API Base URL - Update this when Django backend is ready
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api'
+// For public APIs, set this in .env.local:
+// NEXT_PUBLIC_API_URL=https://jsonplaceholder.typicode.com
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://jsonplaceholder.typicode.com'
 
-// API Version
 export const API_VERSION = 'v1'
 
-// Full API URL
 export const API_URL = `${API_BASE_URL}/${API_VERSION}`
 
-/**
- * API Endpoints
- * Django REST Framework compatible endpoints
- */
 export const API_ENDPOINTS = {
-  // Authentication
   AUTH: {
     LOGIN: '/auth/login/',
     REGISTER: '/auth/register/',
@@ -30,7 +32,6 @@ export const API_ENDPOINTS = {
     PASSWORD_CHANGE: '/auth/password/change/',
   },
 
-  // User Management
   USERS: {
     LIST: '/users/',
     DETAIL: (id: string) => `/users/${id}/`,
@@ -38,7 +39,6 @@ export const API_ENDPOINTS = {
     UPDATE_PROFILE: '/users/me/',
   },
 
-  // Challenges & Missions
   CHALLENGES: {
     LIST: '/challenges/',
     DETAIL: (id: string) => `/challenges/${id}/`,
@@ -54,7 +54,6 @@ export const API_ENDPOINTS = {
     PROGRESS: (id: string) => `/missions/${id}/progress/`,
   },
 
-  // Achievements
   ACHIEVEMENTS: {
     LIST: '/achievements/',
     DETAIL: (id: string) => `/achievements/${id}/`,
@@ -62,28 +61,29 @@ export const API_ENDPOINTS = {
     UNLOCK: (id: string) => `/achievements/${id}/unlock/`,
   },
 
-  // Leaderboard
   LEADERBOARD: {
     GLOBAL: '/leaderboard/',
     CATEGORY: (category: string) => `/leaderboard/${category}/`,
     USER_RANK: '/leaderboard/rank/',
   },
 
-  // Statistics
   STATS: {
     USER_STATS: '/stats/user/',
     GLOBAL_STATS: '/stats/global/',
   },
 } as const
 
-/**
- * Request Timeout (in milliseconds)
- */
 export const REQUEST_TIMEOUT = 30000
 
 /**
- * Enable/Disable Mock Mode
- * Set to false when Django backend is ready
+ * Use Mock Data by default (no backend required)
+ * Set NEXT_PUBLIC_USE_MOCK=false in .env.local to use public APIs instead
  */
-export const USE_MOCK_DATA = process.env.NEXT_PUBLIC_USE_MOCK === 'true' || true
+export const USE_MOCK_DATA = process.env.NEXT_PUBLIC_USE_MOCK !== 'false'
 
+/**
+ * Helper to check if we should use mock data
+ */
+export const shouldUseMock = (): boolean => {
+  return USE_MOCK_DATA
+}

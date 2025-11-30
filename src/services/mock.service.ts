@@ -1,7 +1,11 @@
 /**
  * Mock Service
- * Provides mock data for development
- * Can be easily disabled when Django backend is ready
+ * Provides mock data for the application
+ * 
+ * This is the PRIMARY data source - no backend required!
+ * All data is simulated locally for demonstration purposes.
+ * 
+ * To use public APIs instead, set NEXT_PUBLIC_USE_MOCK=false
  */
 
 import { USE_MOCK_DATA } from '@/constants/api'
@@ -14,11 +18,11 @@ import type {
   Challenge,
   ChallengeDetail,
   Mission,
-} from '@/interfaces/api'
+} from '@/types'
 import { missionPaths } from '@/data/challenges'
 
 // Mock delay to simulate network request
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 /**
  * Mock Authentication Service
@@ -55,7 +59,7 @@ export const mockAuthService = {
     ]
 
     const account = DEMO_ACCOUNTS.find(
-      acc => acc.email === credentials.email && acc.password === credentials.password
+      (acc) => acc.email === credentials.email && acc.password === credentials.password
     )
 
     if (!account) {
@@ -119,14 +123,14 @@ export const mockAuthService = {
 export const mockChallengesService = {
   getMissions: async (): Promise<Mission[]> => {
     await delay(800)
-    return Object.values(missionPaths).map(path => ({
+    return Object.values(missionPaths).map((path) => ({
       id: path.id,
       title: path.title,
       description: path.description,
       category: path.id, // Use id as category for now
       total_challenges: path.totalChallenges,
       completed_challenges: path.completedChallenges,
-      challenges: path.challenges.map(ch => ({
+      challenges: path.challenges.map((ch) => ({
         id: ch.id,
         title: ch.title,
         description: ch.description,
@@ -155,7 +159,7 @@ export const mockChallengesService = {
       category: path.id,
       total_challenges: path.totalChallenges,
       completed_challenges: path.completedChallenges,
-      challenges: path.challenges.map(ch => ({
+      challenges: path.challenges.map((ch) => ({
         id: ch.id,
         title: ch.title,
         description: ch.description,
@@ -184,4 +188,3 @@ export const mockChallengesService = {
 export const shouldUseMock = (): boolean => {
   return USE_MOCK_DATA
 }
-

@@ -1,16 +1,10 @@
-"use client"
+'use client'
 
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { AlertTriangle, Home, Search, ArrowLeft } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { AlertTriangle, Home, Search, ArrowLeft } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 export default function NotFound() {
   const router = useRouter()
@@ -26,14 +20,10 @@ export default function NotFound() {
             <div className="mx-auto w-20 h-20 rounded-full bg-destructive/10 flex items-center justify-center">
               <AlertTriangle className="w-10 h-10 text-destructive" />
             </div>
-            
+
             <div>
-              <div className="text-8xl font-orbitron font-bold glow-text mb-4">
-                404
-              </div>
-              <CardTitle className="text-2xl font-orbitron">
-                Access Denied
-              </CardTitle>
+              <div className="text-8xl font-orbitron font-bold glow-text mb-4">404</div>
+              <CardTitle className="text-2xl font-orbitron">Access Denied</CardTitle>
               <CardDescription className="font-mono text-base mt-2">
                 system@whatthehack:~$ The requested resource could not be found
               </CardDescription>
@@ -44,8 +34,8 @@ export default function NotFound() {
             <div className="bg-muted/30 border border-border/50 rounded-lg p-4 font-mono text-sm">
               <div className="text-destructive mb-2">ERROR_CODE: 404</div>
               <div className="text-muted-foreground">
-                The page you're looking for doesn't exist or has been moved to a
-                secure location. This incident has been logged.
+                The page you're looking for doesn't exist or has been moved to a secure location.
+                This incident has been logged.
               </div>
             </div>
 
@@ -53,13 +43,9 @@ export default function NotFound() {
               <p className="text-sm text-muted-foreground font-mono text-center">
                 Choose your next action:
               </p>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                <Button
-                  variant="default"
-                  className="font-mono h-auto py-3"
-                  asChild
-                >
+                <Button variant="default" className="font-mono h-auto py-3" asChild>
                   <Link href="/dashboard">
                     <Home className="w-4 h-4 mr-2" />
                     <div className="text-left">
@@ -69,11 +55,7 @@ export default function NotFound() {
                   </Link>
                 </Button>
 
-                <Button
-                  variant="outline"
-                  className="font-mono h-auto py-3"
-                  asChild
-                >
+                <Button variant="outline" className="font-mono h-auto py-3" asChild>
                   <Link href="/learning-paths">
                     <Search className="w-4 h-4 mr-2" />
                     <div className="text-left">
@@ -83,11 +65,7 @@ export default function NotFound() {
                   </Link>
                 </Button>
 
-                <Button
-                  variant="outline"
-                  className="font-mono h-auto py-3"
-                  onClick={handleGoBack}
-                >
+                <Button variant="outline" className="font-mono h-auto py-3" onClick={handleGoBack}>
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   <div className="text-left">
                     <div className="font-semibold">Go Back</div>
@@ -110,7 +88,7 @@ export default function NotFound() {
 
         <div className="mt-6 text-center">
           <p className="text-sm text-muted-foreground font-mono">
-            Need help?{" "}
+            Need help?{' '}
             <Link href="/dashboard" className="text-primary hover:underline">
               Return to Mission Control
             </Link>
