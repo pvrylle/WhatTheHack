@@ -7,6 +7,9 @@ import { missionPaths } from '@/data/challenges'
 import { ROUTES } from '@/constants/routes'
 import type { ChallengeCardProps } from '@/components/molecules'
 
+// Note: Metadata is exported from metadata.ts for better code organization
+// The page uses client-side rendering for interactive features
+
 export default function MissionChallengesPage({
   params,
 }: {

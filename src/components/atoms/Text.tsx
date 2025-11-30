@@ -16,7 +16,7 @@ export type TextColor =
   | 'muted'
   | 'foreground'
 
-interface TextProps {
+export interface TextProps {
   variant?: TextVariant
   size?: TextSize
   weight?: TextWeight
@@ -26,6 +26,7 @@ interface TextProps {
   glow?: boolean
   mono?: boolean
   orbitron?: boolean
+  id?: string
 }
 
 const sizeClasses: Record<TextSize, string> = {
@@ -66,6 +67,7 @@ export const Text = ({
   glow = false,
   mono = false,
   orbitron = false,
+  id,
 }: TextProps) => {
   const Component = variant
 
@@ -79,5 +81,5 @@ export const Text = ({
     className
   )
 
-  return <Component className={classes}>{children}</Component>
+  return <Component className={classes} id={id}>{children}</Component>
 }

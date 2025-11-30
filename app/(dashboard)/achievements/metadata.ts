@@ -1,11 +1,10 @@
 import type { Metadata } from 'next'
+import { generatePageMetadata } from '@/lib/seo'
 
-export const metadata: Metadata = {
-  title: 'Achievements | WhatTheHack',
+export const metadata: Metadata = generatePageMetadata({
+  title: 'Achievements',
   description: 'Track your cybersecurity achievements and milestones. View earned badges, progress, and compete on the global leaderboard.',
-  openGraph: {
-    title: 'Achievements | WhatTheHack',
-    description: 'Track your cybersecurity achievements and milestones',
-  },
-}
+  path: '/achievements',
+  keywords: ['achievements', 'badges', 'leaderboard', 'cybersecurity milestones', 'hacking badges'],
+})
 

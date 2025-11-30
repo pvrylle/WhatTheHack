@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, ReactNode, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import { setAuthCookie, removeAuthCookie } from '@/lib/auth-cookie'
 
 interface User {
   id: string
@@ -15,6 +16,7 @@ interface User {
 interface AuthContextType {
   user: User | null
   isLoggedIn: boolean
+  isLoading: boolean
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>
   signup: (
     username: string,
@@ -56,6 +58,7 @@ const DEMO_ACCOUNTS = [
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
   const router = useRouter()
 
   // Load user from localStorage on mount
@@ -63,12 +66,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const storedUser = localStorage.getItem('whathehack_user')
     if (storedUser) {
       try {
-        setUser(JSON.parse(storedUser))
+        const parsedUser = JSON.parse(storedUser)
+        setUser(parsedUser)
+        // Sync with cookie for middleware
+        setAuthCookie(parsedUser.id)
       } catch (error) {
         console.error('Failed to parse stored user:', error)
         localStorage.removeItem('whathehack_user')
+        removeAuthCookie()
       }
     }
+    setIsLoading(false)
   }, [])
 
   const login = async (
@@ -91,6 +99,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
       setUser(userData)
       localStorage.setItem('whathehack_user', JSON.stringify(userData))
+      // Sync with cookie for middleware
+      setAuthCookie(userData.id)
       return { success: true }
     } else {
       return { success: false, error: 'Invalid credentials' }
@@ -122,6 +132,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
     setUser(userData)
     localStorage.setItem('whathehack_user', JSON.stringify(userData))
+    // Sync with cookie for middleware
+    setAuthCookie(userData.id)
 
     return { success: true }
   }
@@ -129,6 +141,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const logout = useCallback(() => {
     setUser(null)
     localStorage.removeItem('whathehack_user')
+    // Remove auth cookie for middleware
+    removeAuthCookie()
     router.push('/')
   }, [router])
 
@@ -137,6 +151,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       value={{
         user,
         isLoggedIn: !!user,
+        isLoading,
         login,
         signup,
         logout,

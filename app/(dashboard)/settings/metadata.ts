@@ -1,11 +1,9 @@
-import type { Metadata } from 'next'
+import { generatePageMetadata } from '@/lib/seo'
 
-export const metadata: Metadata = {
-  title: 'Settings | WhatTheHack',
-  description: 'Configure your agent profile, notification preferences, privacy settings, and mission preferences.',
-  openGraph: {
-    title: 'Settings | WhatTheHack',
-    description: 'Configure your agent profile and preferences',
-  },
-}
+export const metadata = generatePageMetadata({
+  title: 'Settings',
+  description: 'Configure your WhatTheHack agent profile, notification preferences, privacy settings, and mission preferences.',
+  keywords: ['settings', 'profile', 'preferences', 'notifications', 'privacy', 'security'],
+  path: '/settings',
+})
 

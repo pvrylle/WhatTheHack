@@ -4,6 +4,9 @@ import { useAuth } from '@/components/providers/auth-provider'
 import { DashboardTemplate } from '@/components/templates'
 import { Trophy, Zap, Target, Calendar, TrendingUp } from 'lucide-react'
 
+// Export metadata from separate file for better code organization
+// Note: metadata.ts contains static metadata for SEO
+
 export default function DashboardPage() {
   const { user } = useAuth()
 

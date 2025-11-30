@@ -1,5 +1,31 @@
 import { Skeleton } from '@/components/ui/skeleton'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { cn } from '@/lib/utils'
+
+interface LoadingSkeletonProps {
+  variant?: 'page' | 'card' | 'mission' | 'achievement' | 'inline'
+  className?: string
+}
+
+/**
+ * Universal loading skeleton component with multiple variants
+ * Used for lazy loading fallbacks and content loading states
+ */
+export const LoadingSkeleton = ({ variant = 'card', className }: LoadingSkeletonProps) => {
+  switch (variant) {
+    case 'page':
+      return <PageSkeleton />
+    case 'mission':
+      return <MissionCardSkeleton />
+    case 'achievement':
+      return <AchievementCardSkeleton />
+    case 'inline':
+      return <Skeleton className={cn('h-4 w-full', className)} />
+    case 'card':
+    default:
+      return <CardSkeleton className={className} />
+  }
+}
 
 export const PageSkeleton = () => {
   return (
@@ -25,9 +51,9 @@ export const PageSkeleton = () => {
   )
 }
 
-export const CardSkeleton = () => {
+export const CardSkeleton = ({ className }: { className?: string }) => {
   return (
-    <Card>
+    <Card className={className}>
       <CardHeader>
         <Skeleton className="h-6 w-3/4" />
         <Skeleton className="h-4 w-1/2 mt-2" />

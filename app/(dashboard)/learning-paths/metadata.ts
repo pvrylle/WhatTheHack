@@ -1,11 +1,9 @@
-import type { Metadata } from 'next'
+import { generatePageMetadata } from '@/lib/seo'
 
-export const metadata: Metadata = {
-  title: 'Learning Paths | WhatTheHack',
+export const metadata = generatePageMetadata({
+  title: 'Learning Paths',
   description: 'Explore cybersecurity learning paths and missions. Master web security, network exploitation, cryptography, and more through hands-on challenges.',
-  openGraph: {
-    title: 'Learning Paths | WhatTheHack',
-    description: 'Explore cybersecurity learning paths and missions',
-  },
-}
+  keywords: ['learning paths', 'cybersecurity missions', 'hacking tutorials', 'web security', 'network exploitation'],
+  path: '/learning-paths',
+})
 
