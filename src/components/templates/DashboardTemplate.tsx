@@ -30,26 +30,32 @@ export const DashboardTemplate = ({
   profileData,
 }: DashboardTemplateProps) => {
   return (
-    <Container>
-      <div className="mb-8">
-        <Text variant="h1" size="3xl" weight="bold" orbitron glow className="mb-2">
+    <Container className="py-4 sm:py-6">
+      {/* Header */}
+      <div className="mb-4 sm:mb-6">
+        <Text variant="h1" size="xl" weight="bold" orbitron glow className="mb-1">
           Mission Control
         </Text>
-        <Text color="muted" mono>
+        <Text color="muted" mono size="sm">
           Track your progress and continue your hacking journey
         </Text>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Main Content - Left Side (2/3 width on desktop) */}
-        <div className="lg:col-span-2 space-y-6">
-          <StatsGrid stats={stats} />
+      {/* Stats Row - Full Width */}
+      <div className="mb-4 sm:mb-6">
+        <StatsGrid stats={stats} />
+      </div>
+
+      {/* Main Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {/* Main Content */}
+        <div className="lg:col-span-2 space-y-4">
           <MissionList missions={missions} />
           <AchievementList achievements={achievements} />
         </div>
 
-        {/* Sidebar - Right Side (1/3 width on desktop) */}
-        <div className="space-y-6">
+        {/* Sidebar */}
+        <div className="space-y-4">
           <ProfileCard {...profileData} />
           <QuickActions />
         </div>
