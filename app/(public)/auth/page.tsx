@@ -10,22 +10,20 @@ import {
   ArrowLeft,
   AlertCircle,
   CheckCircle,
-  Info,
-  ChevronDown,
-  ChevronUp,
-  Copy,
-  Check,
+  Terminal,
+  Shield,
+  Zap,
+  Lock,
+  Mail,
+  User,
+  Fingerprint,
+  Sparkles,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Alert, AlertDescription } from '@/components/ui/alert'
 import { useAuth } from '@/components/providers/auth-provider'
-import { useLogin, useRegister } from '@/features/auth/hooks'
-import { Badge } from '@/components/ui/badge'
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
+import { cn } from '@/lib/utils'
 import { z } from 'zod'
 
 // Validation schemas
@@ -59,7 +57,6 @@ const signupSchema = z
 type LoginFormData = z.infer<typeof loginSchema>
 type SignupFormData = z.infer<typeof signupSchema>
 
-// Password strength calculator
 const getPasswordStrength = (
   password: string
 ): { strength: number; label: string; color: string } => {
@@ -75,7 +72,7 @@ const getPasswordStrength = (
 
   if (strength <= 2) return { strength, label: 'Weak', color: 'text-destructive' }
   if (strength <= 4) return { strength, label: 'Medium', color: 'text-warning' }
-  return { strength, label: 'Strong', color: 'text-success' }
+  return { strength, label: 'Strong', color: 'text-primary' }
 }
 
 export default function AuthPage() {
@@ -84,17 +81,14 @@ export default function AuthPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
-  const [showDemoAccounts, setShowDemoAccounts] = useState(false)
-  const [copiedAccount, setCopiedAccount] = useState<string | null>(null)
-  const [activeTab, setActiveTab] = useState('login')
+  const [activeTab, setActiveTab] = useState<'login' | 'signup'>('login')
+  const [mounted, setMounted] = useState(false)
 
-  // Form validation states
   const [loginErrors, setLoginErrors] = useState<Record<string, string>>({})
   const [signupErrors, setSignupErrors] = useState<Record<string, string>>({})
   const [signupTouched, setSignupTouched] = useState<Record<string, boolean>>({})
   const [passwordStrength, setPasswordStrength] = useState({ strength: 0, label: '', color: '' })
   const [passwordValue, setPasswordValue] = useState('')
-  const [mounted, setMounted] = useState(false)
 
   const { login, signup } = useAuth()
   const router = useRouter()
@@ -115,7 +109,6 @@ export default function AuthPage() {
       password: formData.get('password') as string,
     }
 
-    // Validate
     const result = loginSchema.safeParse(data)
     if (!result.success) {
       const errors: Record<string, string> = {}
@@ -132,10 +125,8 @@ export default function AuthPage() {
     const authResult = await login(data.email, data.password)
 
     if (authResult.success) {
-      setSuccess('Access granted! Redirecting to dashboard...')
-      setTimeout(() => {
-        router.push('/dashboard')
-      }, 1000)
+      setSuccess('Access granted! Redirecting...')
+      setTimeout(() => router.push('/dashboard'), 1000)
     } else {
       setError(authResult.error || 'Authentication failed')
     }
@@ -157,7 +148,6 @@ export default function AuthPage() {
       confirmPassword: formData.get('confirmPassword') as string,
     }
 
-    // Validate
     const result = signupSchema.safeParse(data)
     if (!result.success) {
       const errors: Record<string, string> = {}
@@ -174,10 +164,8 @@ export default function AuthPage() {
     const authResult = await signup(data.username, data.email, data.password)
 
     if (authResult.success) {
-      setSuccess('Account created! Redirecting to dashboard...')
-      setTimeout(() => {
-        router.push('/dashboard')
-      }, 1000)
+      setSuccess('Account created! Redirecting...')
+      setTimeout(() => router.push('/dashboard'), 1000)
     } else {
       setError(authResult.error || 'Registration failed')
     }
@@ -190,638 +178,459 @@ export default function AuthPage() {
     setPasswordStrength(getPasswordStrength(password))
   }
 
-  const validateField = (field: string, value: string, formType: 'login' | 'signup') => {
-    if (formType === 'login') {
-      const result = loginSchema.safeParse({ [field]: value })
-      if (!result.success) {
-        const error = result.error.errors.find((e) => e.path[0] === field)
-        if (error) {
-          setLoginErrors((prev) => ({ ...prev, [field]: error.message }))
-        } else {
-          setLoginErrors((prev) => {
-            const newErrors = { ...prev }
-            delete newErrors[field]
-            return newErrors
-          })
-        }
-      } else {
-        setLoginErrors((prev) => {
-          const newErrors = { ...prev }
-          delete newErrors[field]
-          return newErrors
-        })
-      }
-    } else {
-      setSignupTouched((prev) => ({ ...prev, [field]: true }))
-      // For signup, we validate the whole form due to password confirmation
-      const form = document.querySelector(`form[data-form="signup"]`) as HTMLFormElement
-      if (form) {
-        const formData = new FormData(form)
-        const data: Partial<SignupFormData> = {
-          username: formData.get('username') as string,
-          email: formData.get('email') as string,
-          password: formData.get('password') as string,
-          confirmPassword: formData.get('confirmPassword') as string,
-        }
-
-        const result = signupSchema.safeParse(data)
-        if (!result.success) {
-          const errors: Record<string, string> = {}
-          result.error.errors.forEach((err) => {
-            if (err.path[0]) {
-              errors[err.path[0] as string] = err.message
-            }
-          })
-          setSignupErrors(errors)
-        } else {
-          setSignupErrors({})
-        }
-      }
-    }
-  }
-
   const demoAccounts = [
-    { email: 'demo@hack.com', password: 'demo123', rank: 'Elite Hacker', color: 'text-primary' },
-    { email: 'admin@hack.com', password: 'admin123', rank: 'Master Hacker', color: 'text-accent' },
-    { email: 'test@hack.com', password: 'test123', rank: 'Rookie Hacker', color: 'text-secondary' },
+    { email: 'demo@hack.com', password: 'demo123', rank: 'Elite', color: 'bg-primary/20 text-primary border-primary/30' },
+    { email: 'admin@hack.com', password: 'admin123', rank: 'Master', color: 'bg-accent/20 text-accent border-accent/30' },
   ]
 
   const fillDemoAccount = useCallback((email: string, password: string) => {
     const emailInput = document.getElementById('email') as HTMLInputElement
     const passwordInput = document.getElementById('password') as HTMLInputElement
-    if (emailInput) {
-      emailInput.value = email
-      emailInput.dispatchEvent(new Event('input', { bubbles: true }))
-    }
-    if (passwordInput) {
-      passwordInput.value = password
-      passwordInput.dispatchEvent(new Event('input', { bubbles: true }))
-    }
-  }, [])
-
-  const copyToClipboard = useCallback(async (text: string, accountEmail: string) => {
-    try {
-      await navigator.clipboard.writeText(text)
-      setCopiedAccount(accountEmail)
-      setTimeout(() => setCopiedAccount(null), 2000)
-    } catch (err) {
-      console.error('Failed to copy:', err)
-    }
+    if (emailInput) emailInput.value = email
+    if (passwordInput) passwordInput.value = password
   }, [])
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Animated Background Effects */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-accent/10" />
-      <div className="absolute inset-0 diagonal-stripes opacity-20" />
+    <div className="min-h-screen h-screen bg-background flex relative overflow-hidden">
+      {/* Animated Grid Background */}
+      <div className="absolute inset-0 diagonal-stripes opacity-30" />
+      
+      {/* Gradient Orbs */}
+      <div className="absolute top-0 left-1/4 w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-primary/10 rounded-full blur-[100px] md:blur-[120px] animate-pulse" />
+      <div className="absolute bottom-0 right-1/4 w-[250px] md:w-[400px] h-[250px] md:h-[400px] bg-accent/10 rounded-full blur-[80px] md:blur-[100px] animate-pulse" style={{ animationDelay: '1s' }} />
+      
+      {/* Scan Lines Effect */}
+      <div className="absolute inset-0 bg-[repeating-linear-gradient(0deg,transparent,transparent_2px,rgba(0,0,0,0.1)_2px,rgba(0,0,0,0.1)_4px)] pointer-events-none" />
 
-      {/* Floating particles effect - Client only to avoid hydration mismatch */}
-      {mounted && (
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          {[...Array(20)].map((_, i) => {
-            // Use index-based pseudo-random to avoid hydration mismatch
-            const seed = i * 0.618033988749895 // Golden ratio for better distribution
-            const left = (seed * 100) % 100
-            const top = (seed * 1.618 * 100) % 100
-            const delay = (seed * 2) % 2
-            const duration = 2 + ((seed * 2) % 2)
-
-            return (
-              <div
-                key={i}
-                className="absolute w-1 h-1 bg-primary/30 rounded-full animate-pulse"
-                style={{
-                  left: `${left}%`,
-                  top: `${top}%`,
-                  animationDelay: `${delay}s`,
-                  animationDuration: `${duration}s`,
-                }}
-              />
-            )
-          })}
-        </div>
-      )}
-
-      <div className="relative w-full max-w-lg z-10">
-        {/* Back Button */}
-        <Button
-          asChild
-          variant="ghost"
-          className="mb-6 text-muted-foreground hover:text-foreground transition-all group"
-        >
-          <Link href="/">
-            <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
-            Back to Home
-          </Link>
-        </Button>
-
-        <Card className="border-2 border-primary/20 bg-card/95 backdrop-blur-xl shadow-2xl relative overflow-hidden group">
-          {/* Glowing border effect */}
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/20 to-primary/0 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 blur-xl" />
-
-          <CardHeader className="text-center space-y-4 pb-6 relative z-10">
-            <div className="flex justify-center mb-2">
-              <div className="relative w-20 h-20">
-                <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl animate-pulse" />
+      {/* Left Panel - Branding (Hidden on mobile/tablet) */}
+      <div className="hidden xl:flex xl:w-1/2 relative items-center justify-center p-8 2xl:p-12">
+        <div className="relative z-10 max-w-md">
+          {/* Logo + Title */}
+          <div className="mb-8 2xl:mb-10">
+            <div className="flex items-center gap-3 mb-4 2xl:mb-5">
+              <div className="relative w-12 h-12 2xl:w-14 2xl:h-14 flex-shrink-0">
+                <div className="absolute inset-0 bg-primary/30 rounded-xl blur-lg animate-pulse" />
                 <Image
                   src="/logo-wth 1.svg"
-                  alt="WhatTheHack Logo"
-                  width={80}
-                  height={80}
-                  className="relative animate-pulse"
+                  alt="WhatTheHack"
+                  width={48}
+                  height={48}
+                  className="relative drop-shadow-[0_0_20px_hsl(var(--primary)/0.6)] 2xl:w-14 2xl:h-14"
                   priority
                 />
               </div>
+              <h1 className="text-3xl 2xl:text-4xl font-orbitron font-black tracking-tight text-foreground glow-text">
+                WHAT<span className="text-primary dark:text-accent">THE</span>HACK
+              </h1>
             </div>
-            <div>
-              <CardTitle className="text-4xl font-orbitron font-black glow-text mb-2">
-                ACCESS TERMINAL
-              </CardTitle>
-              <CardDescription className="font-mono text-sm text-muted-foreground">
-                Enter your credentials to continue hacking
-              </CardDescription>
-            </div>
-          </CardHeader>
+            <p className="text-base 2xl:text-lg text-muted-foreground font-mono">
+              Master the Art of Ethical Hacking
+            </p>
+          </div>
 
-          <CardContent className="space-y-6 relative z-10">
-            {/* Demo Accounts Info */}
-            <Collapsible open={showDemoAccounts} onOpenChange={setShowDemoAccounts}>
-              <Alert className="border-primary/40 bg-primary/5 hover:bg-primary/10 transition-all cursor-pointer">
-                <div className="flex items-center justify-between w-full">
-                  <div className="flex items-center gap-2">
-                    <Info className="h-4 w-4 text-primary" />
-                    <AlertDescription className="font-mono text-sm font-semibold text-primary">
-                      Demo Accounts Available
-                    </AlertDescription>
-                  </div>
-                  <CollapsibleTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-auto p-1 hover:bg-primary/20"
-                      aria-label={showDemoAccounts ? 'Hide demo accounts' : 'Show demo accounts'}
-                    >
-                      {showDemoAccounts ? (
-                        <ChevronUp className="h-4 w-4 text-primary" />
-                      ) : (
-                        <ChevronDown className="h-4 w-4 text-primary" />
-                      )}
-                    </Button>
-                  </CollapsibleTrigger>
+          {/* Feature Cards */}
+          <div className="space-y-3 2xl:space-y-4">
+            {[
+              { icon: Shield, title: 'Learn Security', desc: 'Real-world vulnerability training' },
+              { icon: Zap, title: 'Earn XP', desc: 'Level up with every challenge' },
+              { icon: Terminal, title: 'Hands-On Labs', desc: 'Interactive hacking environments' },
+            ].map((feature, i) => (
+              <div
+                key={i}
+                className="group flex items-center gap-3 2xl:gap-4 p-3 2xl:p-4 rounded-xl bg-card/50 border border-border/50 hover:border-primary/30 hover:bg-primary/[0.02] transition-all duration-300"
+              >
+                <div className="p-2.5 2xl:p-3 rounded-lg bg-primary/10 border border-primary/20 group-hover:border-primary/40 transition-colors">
+                  <feature.icon className="w-4 h-4 2xl:w-5 2xl:h-5 text-primary" />
                 </div>
-                <CollapsibleContent>
-                  <div className="mt-4 space-y-3 pt-4 border-t border-primary/20">
-                    {demoAccounts.map((account, index) => (
-                      <div
-                        key={index}
-                        className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 p-3 rounded-lg bg-card/50 border border-border/50 hover:border-primary/30 transition-all group"
+                <div>
+                  <h3 className="font-semibold text-foreground text-sm 2xl:text-base">{feature.title}</h3>
+                  <p className="text-xs 2xl:text-sm text-muted-foreground">{feature.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Decorative Elements */}
+        <div className="absolute bottom-6 2xl:bottom-8 left-8 right-8 flex items-center gap-2 text-muted-foreground font-mono text-[10px] 2xl:text-xs">
+          <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+          <span>system status: operational</span>
+          <span className="mx-2">|</span>
+          <span>latency: 12ms</span>
+          <span className="mx-2">|</span>
+          <span>encryption: AES-256</span>
+        </div>
+      </div>
+
+      {/* Right Panel - Auth Form */}
+      <div className="w-full xl:w-1/2 flex items-center justify-center p-4 sm:p-6 lg:p-8 xl:p-12">
+        <div className="w-full max-w-sm sm:max-w-md relative z-10">
+          {/* Back Button */}
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors mb-3 sm:mb-4 lg:mb-6 font-mono text-xs sm:text-sm group"
+          >
+            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+            Back to Home
+          </Link>
+
+          {/* Auth Card */}
+          <div className="relative">
+            {/* Glow Effect */}
+            <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 via-transparent to-accent/20 rounded-2xl blur-xl opacity-50" />
+            
+            <div className="relative bg-card/80 backdrop-blur-xl rounded-2xl border border-border/50 p-4 sm:p-5 lg:p-6 shadow-2xl">
+              {/* Header */}
+              <div className="mb-3 sm:mb-4 lg:mb-5">
+                <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+                  <div className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/20">
+                    <Terminal className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                      <span className="text-[10px] sm:text-xs text-primary font-mono uppercase tracking-wider">
+                        {activeTab === 'login' ? 'Secure Terminal' : 'New Agent Registration'}
+                      </span>
+                    </div>
+                    <h2 className="text-base sm:text-lg lg:text-xl font-orbitron font-bold text-foreground">
+                      {activeTab === 'login' ? 'Access Portal' : 'Join the Network'}
+                    </h2>
+                  </div>
+                </div>
+                <p className="text-muted-foreground font-mono text-[10px] sm:text-xs pl-10 sm:pl-[52px]">
+                  {activeTab === 'login' 
+                    ? 'Authenticate to access your dashboard' 
+                    : 'Create your agent profile to begin'}
+                </p>
+              </div>
+
+              {/* Tab Switcher */}
+              <div className="flex p-0.5 sm:p-1 bg-muted/30 rounded-lg sm:rounded-xl mb-3 sm:mb-4 border border-border/50">
+                {(['login', 'signup'] as const).map((tab) => (
+                  <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={cn(
+                      'flex-1 py-1.5 sm:py-2 text-xs sm:text-sm font-mono font-medium rounded-md sm:rounded-lg transition-all duration-300',
+                      activeTab === tab
+                        ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/25'
+                        : 'text-muted-foreground hover:text-foreground'
+                    )}
+                  >
+                    {tab === 'login' ? 'Sign In' : 'Sign Up'}
+                  </button>
+                ))}
+              </div>
+
+              {/* Demo Accounts - Only show on login */}
+              {activeTab === 'login' && (
+                <div className="mb-3 sm:mb-4 p-2.5 sm:p-3 rounded-lg sm:rounded-xl bg-primary/[0.05] border border-primary/20">
+                  <div className="flex items-center gap-1.5 sm:gap-2 mb-1.5 sm:mb-2">
+                    <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-primary" />
+                    <span className="text-[10px] sm:text-xs font-medium text-primary">Quick Access</span>
+                  </div>
+                  <div className="flex gap-2">
+                    {demoAccounts.map((account, i) => (
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={() => fillDemoAccount(account.email, account.password)}
+                        className={cn(
+                          'flex-1 py-1.5 px-2 rounded-md sm:rounded-lg border text-[10px] sm:text-xs font-mono transition-all hover:scale-[1.02]',
+                          account.color
+                        )}
                       >
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <Badge
-                            variant="outline"
-                            className={`text-xs font-semibold ${account.color} border-current`}
-                          >
-                            {account.rank}
-                          </Badge>
-                          <div className="flex items-center gap-2 font-mono text-xs">
-                            <code className="text-muted-foreground">{account.email}</code>
-                            <span className="text-muted-foreground">•</span>
-                            <code className="text-muted-foreground">{account.password}</code>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <button
-                            type="button"
-                            onClick={() => fillDemoAccount(account.email, account.password)}
-                            className="h-7 px-3 text-xs font-mono border border-primary/30 rounded-md bg-background hover:bg-primary/10 text-foreground transition-all hover:scale-105"
-                          >
-                            Use
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() =>
-                              copyToClipboard(`${account.email}:${account.password}`, account.email)
-                            }
-                            className="h-7 w-7 p-0 flex items-center justify-center rounded-md hover:bg-muted transition-all hover:scale-105"
-                          >
-                            {copiedAccount === account.email ? (
-                              <Check className="h-3 w-3 text-success" />
-                            ) : (
-                              <Copy className="h-3 w-3 text-muted-foreground" />
-                            )}
-                          </button>
-                        </div>
-                      </div>
+                        {account.rank}
+                      </button>
                     ))}
                   </div>
-                </CollapsibleContent>
-              </Alert>
-            </Collapsible>
+                </div>
+              )}
 
-            {/* Error/Success Messages */}
-            {error && (
-              <Alert variant="destructive" className="animate-in slide-in-from-top-2">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription className="font-mono">{error}</AlertDescription>
-              </Alert>
-            )}
+              {/* Error/Success Messages */}
+              {error && (
+                <div className="mb-3 sm:mb-4 flex items-center gap-2 p-2.5 sm:p-3 rounded-lg border border-destructive/30 bg-destructive/10">
+                  <AlertCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-destructive flex-shrink-0" />
+                  <span className="font-mono text-[10px] sm:text-xs text-destructive">{error}</span>
+                </div>
+              )}
 
-            {success && (
-              <Alert className="border-success/30 bg-success/10 animate-in slide-in-from-top-2">
-                <CheckCircle className="h-4 w-4 text-success" />
-                <AlertDescription className="font-mono text-success">{success}</AlertDescription>
-              </Alert>
-            )}
+              {success && (
+                <div className="mb-3 sm:mb-4 flex items-center gap-2 p-2.5 sm:p-3 rounded-lg border border-primary/30 bg-primary/10">
+                  <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary flex-shrink-0" />
+                  <span className="font-mono text-[10px] sm:text-xs text-primary">{success}</span>
+                </div>
+              )}
 
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-6 bg-muted/50 border border-border/50">
-                <TabsTrigger
-                  value="login"
-                  className="font-mono data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg transition-all"
-                >
-                  Login
-                </TabsTrigger>
-                <TabsTrigger
-                  value="signup"
-                  className="font-mono data-[state=active]:bg-accent data-[state=active]:text-accent-foreground data-[state=active]:shadow-lg transition-all"
-                >
-                  Sign Up
-                </TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="login" className="space-y-4">
-                <form onSubmit={handleLogin} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="email" className="font-mono text-sm font-semibold">
-                      Email Address
+              {/* Login Form */}
+              {activeTab === 'login' && (
+                <form onSubmit={handleLogin} className="space-y-2.5 sm:space-y-3 lg:space-y-4">
+                  <div className="space-y-1 sm:space-y-1.5">
+                    <Label htmlFor="email" className="text-[10px] sm:text-xs font-medium text-muted-foreground">
+                      Email
                     </Label>
                     <div className="relative">
+                      <Mail className="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground/50" />
                       <Input
                         id="email"
                         name="email"
                         type="email"
-                        placeholder="Enter your email"
-                        className={`font-mono h-11 border-border/50 focus:border-primary/50 focus:ring-primary/20 transition-all ${
-                          loginErrors.email ? 'border-destructive focus:border-destructive' : ''
-                        }`}
-                        required
+                        placeholder="agent@whatthehack.dev"
                         defaultValue="demo@hack.com"
-                        onBlur={(e) => validateField('email', e.target.value, 'login')}
-                        onChange={() => {
-                          if (loginErrors.email) {
-                            validateField(
-                              'email',
-                              (document.getElementById('email') as HTMLInputElement).value,
-                              'login'
-                            )
-                          }
-                        }}
+                        className={cn(
+                          'pl-8 sm:pl-10 h-9 sm:h-10 bg-input/50 border-border rounded-lg sm:rounded-xl font-mono text-xs sm:text-sm text-foreground placeholder:text-muted-foreground/50',
+                          'focus:border-primary/50 focus:ring-primary/20 focus:bg-input',
+                          'transition-all duration-300',
+                          loginErrors.email && 'border-destructive/50'
+                        )}
                       />
                     </div>
                     {loginErrors.email && (
-                      <p className="text-xs text-destructive font-mono flex items-center gap-1">
-                        <AlertCircle className="w-3 h-3" />
+                      <p className="text-[10px] text-red-400 font-mono flex items-center gap-1">
+                        <AlertCircle className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                         {loginErrors.email}
                       </p>
                     )}
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="password" className="font-mono text-sm font-semibold">
+                  <div className="space-y-1 sm:space-y-1.5">
+                    <Label htmlFor="password" className="text-[10px] sm:text-xs font-medium text-muted-foreground">
                       Password
                     </Label>
                     <div className="relative">
+                      <Lock className="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground/50" />
                       <Input
                         id="password"
                         name="password"
                         type={showPassword ? 'text' : 'password'}
-                        placeholder="Enter your password"
-                        className={`pr-10 font-mono h-11 border-border/50 focus:border-primary/50 focus:ring-primary/20 transition-all ${
-                          loginErrors.password ? 'border-destructive focus:border-destructive' : ''
-                        }`}
-                        required
+                        placeholder="••••••••"
                         defaultValue="demo123"
-                        onBlur={(e) => validateField('password', e.target.value, 'login')}
-                        onChange={() => {
-                          if (loginErrors.password) {
-                            validateField(
-                              'password',
-                              (document.getElementById('password') as HTMLInputElement).value,
-                              'login'
-                            )
-                          }
-                        }}
-                      />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="absolute right-0 top-0 h-full px-3 hover:bg-transparent z-10"
-                        onClick={() => setShowPassword(!showPassword)}
-                        aria-label={showPassword ? 'Hide password' : 'Show password'}
-                      >
-                        {showPassword ? (
-                          <EyeOff className="w-4 h-4 text-muted-foreground hover:text-foreground transition-colors" />
-                        ) : (
-                          <Eye className="w-4 h-4 text-muted-foreground hover:text-foreground transition-colors" />
+                        className={cn(
+                          'pl-8 sm:pl-10 pr-8 sm:pr-10 h-9 sm:h-10 bg-input/50 border-border rounded-lg sm:rounded-xl font-mono text-xs sm:text-sm text-foreground placeholder:text-muted-foreground/50',
+                          'focus:border-primary/50 focus:ring-primary/20 focus:bg-input',
+                          'transition-all duration-300',
+                          loginErrors.password && 'border-destructive/50'
                         )}
-                      </Button>
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-2.5 sm:right-3 top-1/2 -translate-y-1/2 text-muted-foreground/50 hover:text-muted-foreground transition-colors"
+                      >
+                        {showPassword ? <EyeOff className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
+                      </button>
                     </div>
-                    {loginErrors.password && (
-                      <p className="text-xs text-destructive font-mono flex items-center gap-1">
-                        <AlertCircle className="w-3 h-3" />
-                        {loginErrors.password}
-                      </p>
-                    )}
+                  </div>
+
+                  <div className="flex items-center justify-end">
+                    <button type="button" className="text-[10px] sm:text-xs text-muted-foreground hover:text-primary font-mono transition-colors">
+                      Forgot password?
+                    </button>
                   </div>
 
                   <Button
                     type="submit"
-                    className="w-full font-mono bg-primary hover:bg-primary/90 text-primary-foreground h-11 text-base font-semibold shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all hover:scale-[1.02]"
                     disabled={isLoading}
+                    className="w-full h-9 sm:h-10 bg-primary hover:bg-primary/90 text-primary-foreground font-mono text-xs sm:text-sm font-semibold rounded-lg sm:rounded-xl shadow-lg shadow-primary/25 transition-all duration-300 hover:shadow-primary/40 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isLoading ? (
                       <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                        Authenticating...
+                        <div className="w-3.5 h-3.5 sm:w-4 sm:h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+                        <span className="text-xs">Authenticating...</span>
                       </div>
                     ) : (
-                      'Sign In'
+                      <span className="flex items-center gap-2">
+                        <Fingerprint className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                        Access Terminal
+                      </span>
                     )}
                   </Button>
-
-                  <div className="text-center">
-                    <Button
-                      variant="link"
-                      className="text-muted-foreground font-mono text-sm hover:text-primary transition-colors"
-                    >
-                      Forgot password?
-                    </Button>
-                  </div>
                 </form>
-              </TabsContent>
+              )}
 
-              <TabsContent value="signup" className="space-y-4">
-                <form onSubmit={handleSignup} data-form="signup" className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="username" className="font-mono text-sm font-semibold">
+              {/* Signup Form */}
+              {activeTab === 'signup' && (
+                <form onSubmit={handleSignup} data-form="signup" className="space-y-2 sm:space-y-2.5 lg:space-y-3">
+                  <div className="space-y-1">
+                    <Label htmlFor="username" className="text-[10px] sm:text-xs font-medium text-muted-foreground">
                       Agent Codename
                     </Label>
                     <div className="relative">
+                      <User className="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground/50" />
                       <Input
                         id="username"
                         name="username"
                         type="text"
-                        placeholder="Choose your hacker alias"
-                        className={`font-mono h-11 border-border/50 focus:border-accent/50 focus:ring-accent/20 transition-all ${
-                          signupErrors.username ? 'border-destructive focus:border-destructive' : ''
-                        }`}
-                        required
-                        onBlur={(e) => validateField('username', e.target.value, 'signup')}
-                        onChange={(e) => {
-                          if (signupTouched.username || signupErrors.username) {
-                            validateField('username', e.target.value, 'signup')
-                          }
-                        }}
+                        placeholder="CyberNinja42"
+                        className={cn(
+                          'pl-8 sm:pl-10 h-9 sm:h-10 bg-input/50 border-border rounded-lg sm:rounded-xl font-mono text-xs sm:text-sm text-foreground placeholder:text-muted-foreground/50',
+                          'focus:border-primary/50 focus:ring-primary/20 focus:bg-input',
+                          'transition-all duration-300',
+                          signupErrors.username && 'border-destructive/50'
+                        )}
                       />
                     </div>
                     {signupErrors.username && (
-                      <p className="text-xs text-destructive font-mono flex items-center gap-1">
-                        <AlertCircle className="w-3 h-3" />
-                        {signupErrors.username}
-                      </p>
-                    )}
-                    {!signupErrors.username && signupTouched.username && (
-                      <p className="text-xs text-success font-mono flex items-center gap-1">
-                        <CheckCircle className="w-3 h-3" />
-                        Valid username
-                      </p>
+                      <p className="text-[10px] text-red-400 font-mono">{signupErrors.username}</p>
                     )}
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-email" className="font-mono text-sm font-semibold">
-                      Email Address
+                  <div className="space-y-1">
+                    <Label htmlFor="signup-email" className="text-[10px] sm:text-xs font-medium text-muted-foreground">
+                      Email
                     </Label>
                     <div className="relative">
+                      <Mail className="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground/50" />
                       <Input
                         id="signup-email"
                         name="email"
                         type="email"
-                        placeholder="Enter your secure email"
-                        className={`font-mono h-11 border-border/50 focus:border-accent/50 focus:ring-accent/20 transition-all ${
-                          signupErrors.email ? 'border-destructive focus:border-destructive' : ''
-                        }`}
-                        required
-                        onBlur={(e) => validateField('email', e.target.value, 'signup')}
-                        onChange={(e) => {
-                          if (signupTouched.email || signupErrors.email) {
-                            validateField('email', e.target.value, 'signup')
-                          }
-                        }}
+                        placeholder="agent@whatthehack.dev"
+                        className={cn(
+                          'pl-8 sm:pl-10 h-9 sm:h-10 bg-input/50 border-border rounded-lg sm:rounded-xl font-mono text-xs sm:text-sm text-foreground placeholder:text-muted-foreground/50',
+                          'focus:border-primary/50 focus:ring-primary/20 focus:bg-input',
+                          'transition-all duration-300',
+                          signupErrors.email && 'border-destructive/50'
+                        )}
                       />
                     </div>
                     {signupErrors.email && (
-                      <p className="text-xs text-destructive font-mono flex items-center gap-1">
-                        <AlertCircle className="w-3 h-3" />
-                        {signupErrors.email}
-                      </p>
-                    )}
-                    {!signupErrors.email && signupTouched.email && (
-                      <p className="text-xs text-success font-mono flex items-center gap-1">
-                        <CheckCircle className="w-3 h-3" />
-                        Valid email
-                      </p>
+                      <p className="text-[10px] text-red-400 font-mono">{signupErrors.email}</p>
                     )}
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-password" className="font-mono text-sm font-semibold">
-                      Secure Password
+                  <div className="space-y-1">
+                    <Label htmlFor="signup-password" className="text-[10px] sm:text-xs font-medium text-muted-foreground">
+                      Password
                     </Label>
                     <div className="relative">
+                      <Lock className="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground/50" />
                       <Input
                         id="signup-password"
                         name="password"
                         type={showPassword ? 'text' : 'password'}
-                        placeholder="Create a strong password"
-                        className={`pr-10 font-mono h-11 border-border/50 focus:border-accent/50 focus:ring-accent/20 transition-all ${
-                          signupErrors.password ? 'border-destructive focus:border-destructive' : ''
-                        }`}
-                        required
-                        onChange={(e) => {
-                          const value = e.target.value
-                          handlePasswordChange(value)
-                          if (signupTouched.password || signupErrors.password) {
-                            validateField('password', value, 'signup')
-                          }
-                        }}
-                        onBlur={(e) => validateField('password', e.target.value, 'signup')}
-                      />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="absolute right-0 top-0 h-full px-3 hover:bg-transparent z-10"
-                        onClick={() => setShowPassword(!showPassword)}
-                        aria-label={showPassword ? 'Hide password' : 'Show password'}
-                      >
-                        {showPassword ? (
-                          <EyeOff className="w-4 h-4 text-muted-foreground hover:text-foreground transition-colors" />
-                        ) : (
-                          <Eye className="w-4 h-4 text-muted-foreground hover:text-foreground transition-colors" />
+                        placeholder="••••••••"
+                        onChange={(e) => handlePasswordChange(e.target.value)}
+                        className={cn(
+                          'pl-8 sm:pl-10 pr-8 sm:pr-10 h-9 sm:h-10 bg-input/50 border-border rounded-lg sm:rounded-xl font-mono text-xs sm:text-sm text-foreground placeholder:text-muted-foreground/50',
+                          'focus:border-primary/50 focus:ring-primary/20 focus:bg-input',
+                          'transition-all duration-300',
+                          signupErrors.password && 'border-destructive/50'
                         )}
-                      </Button>
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-2.5 sm:right-3 top-1/2 -translate-y-1/2 text-muted-foreground/50 hover:text-muted-foreground transition-colors"
+                      >
+                        {showPassword ? <EyeOff className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
+                      </button>
                     </div>
-                    {signupErrors.password && (
-                      <p className="text-xs text-destructive font-mono flex items-center gap-1">
-                        <AlertCircle className="w-3 h-3" />
-                        {signupErrors.password}
-                      </p>
-                    )}
                     {passwordStrength.label && (
-                      <div className="space-y-1">
-                        <div className="flex items-center justify-between text-xs">
-                          <span className={`font-mono ${passwordStrength.color}`}>
-                            Password Strength: {passwordStrength.label}
-                          </span>
-                          <div className="flex gap-1">
-                            {[...Array(6)].map((_, i) => (
-                              <div
-                                key={i}
-                                className={`h-1 w-4 rounded transition-all ${
-                                  i < passwordStrength.strength
-                                    ? passwordStrength.strength <= 2
-                                      ? 'bg-destructive'
-                                      : passwordStrength.strength <= 4
-                                        ? 'bg-warning'
-                                        : 'bg-success'
-                                    : 'bg-muted'
-                                }`}
-                              />
-                            ))}
-                          </div>
-                        </div>
-                        <div className="text-xs text-muted-foreground font-mono space-y-0.5">
-                          <p className={/[A-Z]/.test(passwordValue) ? 'text-success' : ''}>
-                            • Uppercase letter
-                          </p>
-                          <p className={/[a-z]/.test(passwordValue) ? 'text-success' : ''}>
-                            • Lowercase letter
-                          </p>
-                          <p className={/[0-9]/.test(passwordValue) ? 'text-success' : ''}>
-                            • Number
-                          </p>
-                          <p className={/[^A-Za-z0-9]/.test(passwordValue) ? 'text-success' : ''}>
-                            • Special character
-                          </p>
-                          <p className={passwordValue.length >= 8 ? 'text-success' : ''}>
-                            • At least 8 characters
-                          </p>
+                      <div className="flex items-center justify-between">
+                        <span className={cn('text-[10px] font-mono', passwordStrength.color)}>
+                          {passwordStrength.label}
+                        </span>
+                        <div className="flex gap-0.5">
+                          {[...Array(6)].map((_, i) => (
+                            <div
+                              key={i}
+                              className={cn(
+                                'h-0.5 sm:h-1 w-3 sm:w-4 rounded-full transition-all',
+                                i < passwordStrength.strength
+                                  ? passwordStrength.strength <= 2
+                                    ? 'bg-destructive'
+                                    : passwordStrength.strength <= 4
+                                      ? 'bg-warning'
+                                      : 'bg-primary'
+                                  : 'bg-muted'
+                              )}
+                            />
+                          ))}
                         </div>
                       </div>
                     )}
+                    {signupErrors.password && (
+                      <p className="text-[10px] text-red-400 font-mono">{signupErrors.password}</p>
+                    )}
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="confirmPassword" className="font-mono text-sm font-semibold">
+                  <div className="space-y-1">
+                    <Label htmlFor="confirmPassword" className="text-[10px] sm:text-xs font-medium text-muted-foreground">
                       Confirm Password
                     </Label>
                     <div className="relative">
+                      <Lock className="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground/50" />
                       <Input
                         id="confirmPassword"
                         name="confirmPassword"
                         type={showConfirmPassword ? 'text' : 'password'}
-                        placeholder="Confirm your password"
-                        className={`pr-10 font-mono h-11 border-border/50 focus:border-accent/50 focus:ring-accent/20 transition-all ${
-                          signupErrors.confirmPassword
-                            ? 'border-destructive focus:border-destructive'
-                            : ''
-                        }`}
-                        required
-                        onBlur={(e) => validateField('confirmPassword', e.target.value, 'signup')}
-                        onChange={(e) => {
-                          if (signupTouched.confirmPassword || signupErrors.confirmPassword) {
-                            validateField('confirmPassword', e.target.value, 'signup')
-                          }
-                        }}
-                      />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="absolute right-0 top-0 h-full px-3 hover:bg-transparent z-10"
-                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                        aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
-                      >
-                        {showConfirmPassword ? (
-                          <EyeOff className="w-4 h-4 text-muted-foreground hover:text-foreground transition-colors" />
-                        ) : (
-                          <Eye className="w-4 h-4 text-muted-foreground hover:text-foreground transition-colors" />
+                        placeholder="••••••••"
+                        className={cn(
+                          'pl-8 sm:pl-10 pr-8 sm:pr-10 h-9 sm:h-10 bg-input/50 border-border rounded-lg sm:rounded-xl font-mono text-xs sm:text-sm text-foreground placeholder:text-muted-foreground/50',
+                          'focus:border-primary/50 focus:ring-primary/20 focus:bg-input',
+                          'transition-all duration-300',
+                          signupErrors.confirmPassword && 'border-destructive/50'
                         )}
-                      </Button>
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        className="absolute right-2.5 sm:right-3 top-1/2 -translate-y-1/2 text-muted-foreground/50 hover:text-muted-foreground transition-colors"
+                      >
+                        {showConfirmPassword ? <EyeOff className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
+                      </button>
                     </div>
                     {signupErrors.confirmPassword && (
-                      <p className="text-xs text-destructive font-mono flex items-center gap-1">
-                        <AlertCircle className="w-3 h-3" />
-                        {signupErrors.confirmPassword}
-                      </p>
-                    )}
-                    {!signupErrors.confirmPassword && signupTouched.confirmPassword && (
-                      <p className="text-xs text-success font-mono flex items-center gap-1">
-                        <CheckCircle className="w-3 h-3" />
-                        Passwords match
-                      </p>
+                      <p className="text-[10px] text-red-400 font-mono">{signupErrors.confirmPassword}</p>
                     )}
                   </div>
 
                   <Button
                     type="submit"
-                    className="w-full font-mono bg-accent hover:bg-accent/90 text-accent-foreground h-11 text-base font-semibold shadow-lg shadow-accent/20 hover:shadow-accent/30 transition-all hover:scale-[1.02]"
                     disabled={isLoading}
+                    className="w-full h-9 sm:h-10 bg-accent hover:bg-accent/90 text-accent-foreground font-mono text-xs sm:text-sm font-semibold rounded-lg sm:rounded-xl shadow-lg shadow-accent/25 transition-all duration-300 hover:shadow-accent/40 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed mt-1"
                   >
                     {isLoading ? (
                       <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                        Creating Account...
+                        <div className="w-3.5 h-3.5 sm:w-4 sm:h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        <span className="text-xs">Creating Account...</span>
                       </div>
                     ) : (
-                      'Create Account'
+                      <span className="flex items-center gap-2">
+                        <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                        Initialize Agent
+                      </span>
                     )}
                   </Button>
 
-                  <div className="text-center text-xs text-muted-foreground font-mono">
+                  <p className="text-center text-[9px] sm:text-[10px] text-muted-foreground font-mono">
                     By signing up, you agree to our{' '}
-                    <Button
-                      variant="link"
-                      className="h-auto p-0 text-xs text-primary hover:underline"
-                    >
-                      Terms of Service
-                    </Button>
-                  </div>
+                    <Link href="#" className="text-primary hover:underline">Terms</Link>
+                    {' '}and{' '}
+                    <Link href="#" className="text-primary hover:underline">Privacy Policy</Link>
+                  </p>
                 </form>
-              </TabsContent>
-            </Tabs>
-          </CardContent>
-        </Card>
+              )}
+            </div>
+          </div>
 
-        <div className="mt-6 text-center">
-          <div className="bg-card/60 backdrop-blur border border-border/50 rounded-lg p-4 shadow-lg relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/10 to-primary/0 opacity-50 animate-pulse" />
-            <div className="font-mono text-sm relative z-10">
-              <span className="text-success font-semibold">system@whthehack:~$</span>{' '}
-              <span className="text-muted-foreground">
-                {isLoading ? (
-                  <span className="inline-flex items-center gap-1">
-                    <span className="animate-pulse">Processing authentication...</span>
-                  </span>
-                ) : success ? (
-                  <span className="text-success">Access granted. Redirecting...</span>
-                ) : (
-                  'Secure connection established'
-                )}
+          {/* Terminal Status Bar */}
+          <div className="mt-3 sm:mt-4 flex items-center justify-center gap-2 sm:gap-3 text-muted-foreground font-mono text-[9px] sm:text-[10px]">
+            <div className="flex items-center gap-1 sm:gap-1.5">
+              <div className={cn(
+                'w-1.5 h-1.5 rounded-full',
+                isLoading ? 'bg-warning animate-pulse' : success ? 'bg-primary' : 'bg-primary/50'
+              )} />
+              <span>
+                {isLoading ? 'processing...' : success ? 'authenticated' : 'ready'}
               </span>
             </div>
+            <span className="text-gray-700">|</span>
+            <span>TLS 1.3</span>
+            <span className="text-gray-700 hidden sm:inline">|</span>
+            <span className="hidden sm:inline">v2.0.1</span>
           </div>
         </div>
       </div>
