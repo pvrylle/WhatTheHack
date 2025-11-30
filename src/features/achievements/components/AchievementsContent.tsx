@@ -146,12 +146,12 @@ const defaultLeaderboard: LeaderboardPlayer[] = [
 ]
 
 const defaultCategories: Category[] = [
-  { name: 'Web Security', earned: 1, total: 2, color: 'bg-blue-500' },
-  { name: 'Cryptography', earned: 1, total: 1, color: 'bg-green-500' },
-  { name: 'Network', earned: 0, total: 1, color: 'bg-purple-500' },
-  { name: 'Stealth', earned: 0, total: 1, color: 'bg-orange-500' },
-  { name: 'Discovery', earned: 0, total: 1, color: 'bg-red-500' },
-  { name: 'Milestone', earned: 1, total: 1, color: 'bg-cyan-500' },
+  { name: 'Web Security', earned: 1, total: 2, color: 'bg-secondary' },
+  { name: 'Cryptography', earned: 1, total: 1, color: 'bg-success' },
+  { name: 'Network', earned: 0, total: 1, color: 'bg-accent' },
+  { name: 'Stealth', earned: 0, total: 1, color: 'bg-warning' },
+  { name: 'Discovery', earned: 0, total: 1, color: 'bg-destructive' },
+  { name: 'Milestone', earned: 1, total: 1, color: 'bg-primary' },
 ]
 
 const getRarityStyles = (rarity: string) => {
@@ -161,40 +161,35 @@ const getRarityStyles = (rarity: string) => {
         color: 'text-muted-foreground',
         bg: 'bg-muted/10 border-muted/30',
         badge: 'bg-muted/20 text-muted-foreground border-muted/30',
-        glow: 'shadow-muted/20',
-        gradient: 'from-muted/20 to-muted/5',
+        icon: 'bg-muted/20 border-muted/30',
       }
     case 'Rare':
       return {
-        color: 'text-blue-500',
-        bg: 'bg-blue-500/10 border-blue-500/30',
-        badge: 'bg-blue-500/20 text-blue-600 border-blue-500/30',
-        glow: 'shadow-blue-500/20',
-        gradient: 'from-blue-500/20 to-blue-500/5',
+        color: 'text-secondary',
+        bg: 'bg-secondary/10 border-secondary/30',
+        badge: 'bg-secondary/20 text-secondary border-secondary/30',
+        icon: 'bg-secondary/20 border-secondary/30',
       }
     case 'Epic':
       return {
-        color: 'text-purple-500',
-        bg: 'bg-purple-500/10 border-purple-500/30',
-        badge: 'bg-purple-500/20 text-purple-600 border-purple-500/30',
-        glow: 'shadow-purple-500/20',
-        gradient: 'from-purple-500/20 to-purple-500/5',
+        color: 'text-accent',
+        bg: 'bg-accent/10 border-accent/30',
+        badge: 'bg-accent/20 text-accent border-accent/30',
+        icon: 'bg-accent/20 border-accent/30',
       }
     case 'Legendary':
       return {
-        color: 'text-amber-500',
-        bg: 'bg-amber-500/10 border-amber-500/30',
-        badge: 'bg-amber-500/20 text-amber-600 border-amber-500/30',
-        glow: 'shadow-amber-500/30',
-        gradient: 'from-amber-500/30 to-amber-500/10',
+        color: 'text-warning',
+        bg: 'bg-warning/10 border-warning/30',
+        badge: 'bg-warning/20 text-warning border-warning/30',
+        icon: 'bg-warning/20 border-warning/30',
       }
     default:
       return {
         color: 'text-muted-foreground',
         bg: 'bg-muted/10 border-muted/30',
         badge: 'bg-muted/20 text-muted-foreground border-muted/30',
-        glow: 'shadow-muted/20',
-        gradient: 'from-muted/20 to-muted/5',
+        icon: 'bg-muted/20 border-muted/30',
       }
   }
 }
@@ -253,532 +248,333 @@ export default function AchievementsContent({
   const inProgressAchievements = filteredAchievements.filter((a) => !a.earned)
 
   return (
-    <Container>
-      {/* Header Section */}
-      <header className="mb-8">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="p-3 rounded-xl bg-primary/15 border-2 border-primary/25 shadow-lg shadow-primary/10">
-            <Trophy className="w-7 h-7 text-primary" aria-hidden="true" />
-          </div>
-          <Badge variant="outline" className="text-primary border-primary/30 font-mono">
+    <Container className="py-4 sm:py-6">
+      {/* Compact Header */}
+      <header className="mb-4 sm:mb-6">
+        <div className="flex items-center gap-3 mb-1">
+          <Trophy className="w-5 h-5 text-primary" aria-hidden="true" />
+          <Text variant="h1" size="xl" weight="bold" orbitron glow>
+            Achievements
+          </Text>
+          <Badge variant="outline" className="text-primary border-primary/30 font-mono text-[10px]">
             Hall of Fame
           </Badge>
         </div>
-        <Text variant="h1" size="4xl" weight="bold" orbitron glow className="mb-3">
-          Your Achievements
-        </Text>
-        <Text color="muted" mono size="lg">
-          Celebrate your cybersecurity milestones and track your progress on the global leaderboard
+        <Text color="muted" mono size="sm">
+          Track your milestones and climb the leaderboard
         </Text>
       </header>
 
-      {/* Stats Grid */}
-      <section aria-label="Achievement Statistics" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/10 to-transparent">
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <Text size="sm" color="muted" mono className="mb-1">
-                  Total Points
-                </Text>
-                <Text variant="h3" size="2xl" weight="bold" color="primary" orbitron>
-                  {totalPoints.toLocaleString()}
-                </Text>
-              </div>
-              <div className="p-3 rounded-lg bg-primary/20 border border-primary/30">
-                <Star className="w-6 h-6 text-primary" aria-hidden="true" />
-              </div>
-            </div>
-            <Progress value={completionRate} className="h-2 bg-muted/50" aria-label={`${completionRate}% complete`} />
-          </CardContent>
-        </Card>
+      {/* Compact Stats Row */}
+      <section aria-label="Achievement Statistics" className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mb-4 sm:mb-6">
+        <div className="p-3 rounded-xl bg-primary/10 border border-primary/20">
+          <div className="flex items-center gap-2 mb-1">
+            <Star className="w-3.5 h-3.5 text-primary" />
+            <Text size="xs" color="muted" mono className="uppercase tracking-wider">Points</Text>
+          </div>
+          <Text size="xl" weight="bold" color="primary" orbitron>{totalPoints.toLocaleString()}</Text>
+        </div>
 
-        <Card className="border-2 border-success/20 bg-gradient-to-br from-success/10 to-transparent">
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <Text size="sm" color="muted" mono className="mb-1">
-                  Achievements
-                </Text>
-                <Text variant="h3" size="2xl" weight="bold" color="success" orbitron>
-                  {earnedCount}/{achievements.length}
-                </Text>
-              </div>
-              <div className="p-3 rounded-lg bg-success/20 border border-success/30">
-                <Award className="w-6 h-6 text-success" aria-hidden="true" />
-              </div>
-            </div>
-            <Text size="xs" color="muted" mono>
-              {completionRate}% complete
-            </Text>
-          </CardContent>
-        </Card>
+        <div className="p-3 rounded-xl bg-success/10 border border-success/20">
+          <div className="flex items-center gap-2 mb-1">
+            <Award className="w-3.5 h-3.5 text-success" />
+            <Text size="xs" color="muted" mono className="uppercase tracking-wider">Earned</Text>
+          </div>
+          <Text size="xl" weight="bold" color="success" orbitron>{earnedCount}/{achievements.length}</Text>
+        </div>
 
-        <Card className="border-2 border-accent/20 bg-gradient-to-br from-accent/10 to-transparent">
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <Text size="sm" color="muted" mono className="mb-1">
-                  Day Streak
-                </Text>
-                <Text variant="h3" size="2xl" weight="bold" color="accent" orbitron>
-                  {currentStreak}
-                </Text>
-              </div>
-              <div className="p-3 rounded-lg bg-accent/20 border border-accent/30">
-                <Flame className="w-6 h-6 text-accent" aria-hidden="true" />
-              </div>
-            </div>
-            <Text size="xs" color="muted" mono>
-              Keep it going!
-            </Text>
-          </CardContent>
-        </Card>
+        <div className="p-3 rounded-xl bg-accent/10 border border-accent/20">
+          <div className="flex items-center gap-2 mb-1">
+            <Flame className="w-3.5 h-3.5 text-accent" />
+            <Text size="xs" color="muted" mono className="uppercase tracking-wider">Streak</Text>
+          </div>
+          <Text size="xl" weight="bold" color="accent" orbitron>{currentStreak}</Text>
+        </div>
 
-        <Card className="border-2 border-secondary/20 bg-gradient-to-br from-secondary/10 to-transparent">
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <Text size="sm" color="muted" mono className="mb-1">
-                  Global Rank
-                </Text>
-                <Text variant="h3" size="2xl" weight="bold" color="secondary" orbitron>
-                  #{globalRank}
-                </Text>
-              </div>
-              <div className="p-3 rounded-lg bg-secondary/20 border border-secondary/30">
-                <TrendingUp className="w-6 h-6 text-secondary" aria-hidden="true" />
-              </div>
-            </div>
-            <Text size="xs" color="muted" mono>
-              Top performer
-            </Text>
-          </CardContent>
-        </Card>
+        <div className="p-3 rounded-xl bg-secondary/10 border border-secondary/20">
+          <div className="flex items-center gap-2 mb-1">
+            <TrendingUp className="w-3.5 h-3.5 text-secondary" />
+            <Text size="xs" color="muted" mono className="uppercase tracking-wider">Rank</Text>
+          </div>
+          <Text size="xl" weight="bold" color="secondary" orbitron>#{globalRank}</Text>
+        </div>
       </section>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Main Content */}
-        <main className="lg:col-span-2 space-y-8">
-          {/* Filters Section */}
+        <main className="lg:col-span-2 space-y-4">
+          {/* Compact Filters */}
           <section aria-label="Filter achievements">
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <Text variant="h2" size="2xl" weight="bold" orbitron className="mb-1">
-                    All Achievements
-                  </Text>
-                  <Text color="muted" mono>
-                    {filteredAchievements.length} of {achievements.length} achievements
-                  </Text>
+            <Card className="border-0 bg-card/50">
+              <CardContent className="p-3 sm:p-4">
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+                    <Input
+                      placeholder="Search..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-9 h-9 font-mono text-sm"
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <Select value={rarityFilter} onValueChange={setRarityFilter}>
+                      <SelectTrigger className="w-[110px] h-9 font-mono text-xs">
+                        <SelectValue placeholder="Rarity" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All</SelectItem>
+                        <SelectItem value="Common">Common</SelectItem>
+                        <SelectItem value="Rare">Rare</SelectItem>
+                        <SelectItem value="Epic">Epic</SelectItem>
+                        <SelectItem value="Legendary">Legendary</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Select value={statusFilter} onValueChange={setStatusFilter}>
+                      <SelectTrigger className="w-[110px] h-9 font-mono text-xs">
+                        <SelectValue placeholder="Status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All</SelectItem>
+                        <SelectItem value="earned">Earned</SelectItem>
+                        <SelectItem value="in-progress">In Progress</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {hasActiveFilters && (
+                      <Button variant="ghost" size="sm" onClick={clearFilters} className="h-9 px-2">
+                        <X className="w-4 h-4" />
+                      </Button>
+                    )}
+                  </div>
                 </div>
-                {hasActiveFilters && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={clearFilters}
-                    className="font-mono text-xs"
-                  >
-                    <X className="w-4 h-4 mr-2" aria-hidden="true" />
-                    Clear Filters
-                  </Button>
-                )}
-              </div>
-
-              <div className="flex flex-col sm:flex-row gap-3">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" aria-hidden="true" />
-                  <Input
-                    placeholder="Search achievements..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 font-mono"
-                    aria-label="Search achievements"
-                  />
-                </div>
-
-                <Select value={rarityFilter} onValueChange={setRarityFilter}>
-                  <SelectTrigger className="w-full sm:w-[150px] font-mono" aria-label="Filter by rarity">
-                    <Filter className="w-4 h-4 mr-2" aria-hidden="true" />
-                    <SelectValue placeholder="Rarity" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Rarities</SelectItem>
-                    <SelectItem value="Common">Common</SelectItem>
-                    <SelectItem value="Rare">Rare</SelectItem>
-                    <SelectItem value="Epic">Epic</SelectItem>
-                    <SelectItem value="Legendary">Legendary</SelectItem>
-                  </SelectContent>
-                </Select>
-
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="w-full sm:w-[150px] font-mono" aria-label="Filter by status">
-                    <SelectValue placeholder="Status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Status</SelectItem>
-                    <SelectItem value="earned">Earned</SelectItem>
-                    <SelectItem value="in-progress">In Progress</SelectItem>
-                  </SelectContent>
-                </Select>
-
-                <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                  <SelectTrigger className="w-full sm:w-[150px] font-mono" aria-label="Filter by category">
-                    <SelectValue placeholder="Category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Categories</SelectItem>
-                    {Array.from(new Set(achievements.map((a) => a.category))).map((cat) => (
-                      <SelectItem key={cat} value={cat}>
-                        {cat}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
           </section>
 
           {/* Earned Achievements */}
           {earnedAchievements.length > 0 && (
             <section aria-labelledby="earned-achievements-heading">
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-success/20 border border-success/30">
-                    <CheckCircle className="w-5 h-5 text-success" aria-hidden="true" />
+              <Card className="border-0 bg-card/50">
+                <CardHeader className="pb-3 pt-4 px-4">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="font-orbitron text-base flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-success" />
+                      Earned
+                    </CardTitle>
+                    <Badge variant="secondary" className="font-mono text-[10px]">
+                      {earnedAchievements.length}
+                    </Badge>
                   </div>
-                  <Text variant="h2" size="xl" weight="semibold" orbitron>
-                    Earned Achievements
-                  </Text>
-                </div>
-                <Badge variant="secondary" className="font-mono">
-                  {earnedAchievements.length} earned
-                </Badge>
-              </div>
-
-              <ul className="grid gap-4" role="list">
-                {earnedAchievements
-                  .sort(
-                    (a, b) =>
-                      new Date(b.earnedDate || '').getTime() -
-                      new Date(a.earnedDate || '').getTime()
-                  )
-                  .map((achievement) => {
-                    const styles = getRarityStyles(achievement.rarity)
-                    return (
-                      <li key={achievement.id}>
-                        <Card
+                </CardHeader>
+                <CardContent className="space-y-2 px-4 pb-4">
+                  {earnedAchievements
+                    .sort((a, b) => new Date(b.earnedDate || '').getTime() - new Date(a.earnedDate || '').getTime())
+                    .map((achievement) => {
+                      const styles = getRarityStyles(achievement.rarity)
+                      return (
+                        <div
+                          key={achievement.id}
                           className={cn(
-                            'border-2 bg-card backdrop-blur transition-all duration-300 group overflow-hidden relative',
-                            'hover:shadow-2xl hover:scale-[1.02]',
-                            styles.bg,
-                            styles.glow
+                            'flex items-center gap-3 p-3 rounded-lg border transition-all hover:scale-[1.01]',
+                            styles.bg
                           )}
                         >
-                          <div
-                            className={cn(
-                              'absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-100 transition-opacity duration-300',
-                              styles.gradient
-                            )}
-                          />
-                          <CardContent className="p-6 relative z-10">
-                            <article className="flex items-start gap-4">
-                              <div className="text-4xl group-hover:scale-110 transition-transform" aria-hidden="true">
-                                {achievement.icon}
-                              </div>
-                              <div className="flex-1">
-                                <div className="flex items-start justify-between mb-3">
-                                  <div>
-                                    <Text variant="h3" size="lg" weight="semibold" orbitron className="mb-1">
-                                      {achievement.title}
-                                    </Text>
-                                    <Text size="sm" color="muted" mono className="mb-3">
-                                      {achievement.description}
-                                    </Text>
-                                  </div>
-                                  <div className="flex items-center gap-2">
-                                    <Badge
-                                      variant="outline"
-                                      className={cn('font-mono text-xs', styles.badge)}
-                                    >
-                                      {achievement.rarity}
-                                    </Badge>
-                                    <Crown className="w-4 h-4 text-amber-500" aria-hidden="true" />
-                                  </div>
-                                </div>
-                                <div className="flex items-center justify-between pt-3 border-t border-border/50">
-                                  <Badge variant="outline" className="font-mono text-xs">
-                                    {achievement.category}
-                                  </Badge>
-                                  <div className="flex items-center gap-2">
-                                    <Star className="w-4 h-4 text-primary" aria-hidden="true" />
-                                    <Text size="sm" weight="semibold" color="primary" mono>
-                                      {achievement.points} pts
-                                    </Text>
-                                  </div>
-                                </div>
-                              </div>
-                            </article>
-                          </CardContent>
-                        </Card>
-                      </li>
-                    )
-                  })}
-              </ul>
+                          <div className="text-2xl shrink-0">{achievement.icon}</div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-0.5">
+                              <Text size="sm" weight="semibold" orbitron className="truncate">
+                                {achievement.title}
+                              </Text>
+                              <Badge variant="outline" className={cn('font-mono text-[9px] shrink-0', styles.badge)}>
+                                {achievement.rarity}
+                              </Badge>
+                            </div>
+                            <Text size="xs" color="muted" mono className="truncate">
+                              {achievement.description}
+                            </Text>
+                          </div>
+                          <div className="flex items-center gap-1 shrink-0">
+                            <Star className="w-3 h-3 text-primary" />
+                            <Text size="xs" weight="semibold" color="primary" mono>
+                              {achievement.points}
+                            </Text>
+                          </div>
+                        </div>
+                      )
+                    })}
+                </CardContent>
+              </Card>
             </section>
           )}
 
           {/* In Progress Achievements */}
           {inProgressAchievements.length > 0 && (
             <section aria-labelledby="in-progress-heading">
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-accent/20 border border-accent/30">
-                    <Clock className="w-5 h-5 text-accent" aria-hidden="true" />
+              <Card className="border-0 bg-card/50">
+                <CardHeader className="pb-3 pt-4 px-4">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="font-orbitron text-base flex items-center gap-2">
+                      <Clock className="w-4 h-4 text-accent" />
+                      In Progress
+                    </CardTitle>
+                    <Badge variant="outline" className="font-mono text-[10px]">
+                      {inProgressAchievements.length}
+                    </Badge>
                   </div>
-                  <Text variant="h2" size="xl" weight="semibold" orbitron>
-                    In Progress
-                  </Text>
-                </div>
-                <Badge variant="outline" className="font-mono">
-                  {inProgressAchievements.length} remaining
-                </Badge>
-              </div>
-
-              <ul className="grid gap-4" role="list">
-                {inProgressAchievements
-                  .sort((a, b) => (b.progress || 0) - (a.progress || 0))
-                  .map((achievement) => {
-                    const styles = getRarityStyles(achievement.rarity)
-                    return (
-                      <li key={achievement.id}>
-                        <Card
+                </CardHeader>
+                <CardContent className="space-y-2 px-4 pb-4">
+                  {inProgressAchievements
+                    .sort((a, b) => (b.progress || 0) - (a.progress || 0))
+                    .map((achievement) => {
+                      const styles = getRarityStyles(achievement.rarity)
+                      return (
+                        <div
+                          key={achievement.id}
                           className={cn(
-                            'border-2 border-dashed bg-card/50 backdrop-blur transition-all duration-300 group overflow-hidden relative',
-                            'hover:border-solid hover:shadow-lg hover:scale-[1.01]',
+                            'p-3 rounded-lg border border-dashed transition-all hover:border-solid',
                             styles.bg
                           )}
                         >
-                          <div
-                            className={cn(
-                              'absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-100 transition-opacity duration-300',
-                              styles.gradient
-                            )}
-                          />
-                          <CardContent className="p-6 relative z-10">
-                            <article className="flex items-start gap-4">
-                              <div className="text-4xl opacity-50 group-hover:opacity-75 transition-opacity" aria-hidden="true">
-                                {achievement.icon}
+                          <div className="flex items-center gap-3 mb-2">
+                            <div className="text-2xl opacity-60 shrink-0">{achievement.icon}</div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-0.5">
+                                <Text size="sm" weight="semibold" orbitron className="truncate">
+                                  {achievement.title}
+                                </Text>
+                                <Badge variant="outline" className={cn('font-mono text-[9px] shrink-0', styles.badge)}>
+                                  {achievement.rarity}
+                                </Badge>
                               </div>
-                              <div className="flex-1">
-                                <div className="flex items-start justify-between mb-3">
-                                  <div>
-                                    <Text
-                                     
-                                      variant="h3"
-                                      size="lg"
-                                      weight="semibold"
-                                      orbitron
-                                      className="mb-1"
-                                    >
-                                      {achievement.title}
-                                    </Text>
-                                    <Text size="sm" color="muted" mono className="mb-3">
-                                      {achievement.description}
-                                    </Text>
-                                  </div>
-                                  <Badge
-                                    variant="outline"
-                                    className={cn('font-mono text-xs', styles.badge)}
-                                  >
-                                    {achievement.rarity}
-                                  </Badge>
-                                </div>
-
-                                {achievement.progress && (
-                                  <div className="space-y-2 mb-4">
-                                    <div className="flex justify-between items-center">
-                                      <Text size="sm" color="muted" mono>
-                                        Progress
-                                      </Text>
-                                      <Text size="sm" weight="semibold" color="primary" orbitron>
-                                        {achievement.progress}%
-                                      </Text>
-                                    </div>
-                                    <Progress
-                                      value={achievement.progress}
-                                      className="h-3 bg-muted/50"
-                                      aria-label={`${achievement.progress}% progress`}
-                                    />
-                                  </div>
-                                )}
-
-                                <div className="flex items-center justify-between pt-3 border-t border-border/50">
-                                  <Badge variant="outline" className="font-mono text-xs">
-                                    {achievement.category}
-                                  </Badge>
-                                  <div className="flex items-center gap-2">
-                                    <Star className="w-4 h-4 text-muted-foreground" aria-hidden="true" />
-                                    <Text size="sm" color="muted" mono>
-                                      {achievement.points} pts
-                                    </Text>
-                                  </div>
-                                </div>
-                              </div>
-                            </article>
-                          </CardContent>
-                        </Card>
-                      </li>
-                    )
-                  })}
-              </ul>
+                              <Text size="xs" color="muted" mono className="truncate">
+                                {achievement.description}
+                              </Text>
+                            </div>
+                            <div className="flex items-center gap-1 shrink-0">
+                              <Star className="w-3 h-3 text-muted-foreground" />
+                              <Text size="xs" color="muted" mono>
+                                {achievement.points}
+                              </Text>
+                            </div>
+                          </div>
+                          {achievement.progress && (
+                            <div className="flex items-center gap-2 pl-11">
+                              <Progress value={achievement.progress} className="h-1.5 flex-1" />
+                              <Text size="xs" weight="semibold" color="primary" mono>
+                                {achievement.progress}%
+                              </Text>
+                            </div>
+                          )}
+                        </div>
+                      )
+                    })}
+                </CardContent>
+              </Card>
             </section>
           )}
 
           {/* Empty State */}
           {filteredAchievements.length === 0 && (
             <Card className="border-2 border-dashed">
-              <CardContent className="py-16 text-center">
-                <div className="flex justify-center mb-4">
-                  <div className="p-4 rounded-full bg-muted/20">
-                    <Search className="w-8 h-8 text-muted-foreground" aria-hidden="true" />
-                  </div>
-                </div>
-                <Text variant="h3" size="lg" weight="semibold" className="mb-2">
-                  No achievements found
+              <CardContent className="py-8 text-center">
+                <Search className="w-6 h-6 text-muted-foreground mx-auto mb-2" />
+                <Text size="sm" weight="semibold" className="mb-1">No achievements found</Text>
+                <Text size="xs" color="muted" mono>
+                  {hasActiveFilters ? 'Try adjusting your filters' : 'No achievements available'}
                 </Text>
-                <Text size="sm" color="muted" mono>
-                  {hasActiveFilters
-                    ? 'Try adjusting your filters to see more achievements'
-                    : 'No achievements available'}
-                </Text>
-                {hasActiveFilters && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={clearFilters}
-                    className="mt-4 font-mono"
-                  >
-                    <X className="w-4 h-4 mr-2" aria-hidden="true" />
-                    Clear Filters
-                  </Button>
-                )}
               </CardContent>
             </Card>
           )}
         </main>
 
         {/* Sidebar */}
-        <aside className="space-y-6">
+        <aside className="space-y-4">
           {/* Leaderboard */}
-          <Card className="border-2 border-secondary/20 bg-gradient-to-br from-secondary/5 to-transparent">
-            <CardHeader>
-              <div className="flex items-center gap-3 mb-2">
-                <div className="p-2 rounded-lg bg-secondary/20 border border-secondary/30">
-                  <Medal className="w-5 h-5 text-secondary" aria-hidden="true" />
-                </div>
-                <CardTitle className="font-orbitron text-xl">Global Leaderboard</CardTitle>
-              </div>
-              <CardDescription className="font-mono">Top performers this week</CardDescription>
+          <Card className="border-0 bg-card/50">
+            <CardHeader className="pb-3 pt-4 px-4">
+              <CardTitle className="font-orbitron text-base flex items-center gap-2">
+                <Medal className="w-4 h-4 text-secondary" />
+                Leaderboard
+              </CardTitle>
             </CardHeader>
-            <CardContent>
-              <ol className="space-y-2" role="list" aria-label="Global leaderboard">
+            <CardContent className="px-4 pb-4">
+              <div className="space-y-1.5">
                 {leaderboard.map((player) => (
-                  <li
+                  <div
                     key={player.rank}
                     className={cn(
-                      'flex items-center gap-3 p-3 rounded-lg transition-all hover:bg-muted/50',
-                      player.username === 'YOU' &&
-                        'bg-primary/10 border-2 border-primary/30 shadow-lg shadow-primary/10'
+                      'flex items-center gap-2 p-2 rounded-lg transition-all',
+                      player.username === 'YOU'
+                        ? 'bg-primary/10 border border-primary/30'
+                        : 'hover:bg-muted/50'
                     )}
                   >
-                    <div className="flex items-center justify-center w-10 h-10 rounded-full bg-muted/50 text-sm font-bold font-mono">
+                    <div className="w-6 h-6 rounded-full bg-muted/50 flex items-center justify-center shrink-0">
                       {player.rank <= 3 ? (
                         <Trophy
                           className={cn(
-                            'w-5 h-5',
-                            player.rank === 1
-                              ? 'text-yellow-500'
-                              : player.rank === 2
-                                ? 'text-gray-400'
-                                : 'text-amber-600'
+                            'w-3 h-3',
+                            player.rank === 1 ? 'text-warning' : player.rank === 2 ? 'text-muted-foreground' : 'text-warning/70'
                           )}
-                          aria-label={`Rank ${player.rank}`}
                         />
                       ) : (
-                        <span aria-label={`Rank ${player.rank}`}>{player.rank}</span>
+                        <span className="text-[10px] font-mono font-bold">{player.rank}</span>
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
                       <Text
-                        size="sm"
+                        size="xs"
                         weight="medium"
                         mono
-                        className={cn(player.username === 'YOU' && 'text-primary')}
+                        className={cn('truncate', player.username === 'YOU' && 'text-primary')}
                       >
                         {player.username}
                       </Text>
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground font-mono">
+                      <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground font-mono">
                         <span>{player.points.toLocaleString()}</span>
-                        <span>•</span>
-                        <div className="flex items-center gap-1">
-                          <Flame className="w-3 h-3 text-orange-500" aria-hidden="true" />
-                          <span>{player.streak}</span>
-                        </div>
+                        <Flame className="w-2.5 h-2.5 text-accent" />
+                        <span>{player.streak}</span>
                       </div>
                     </div>
                     <div
                       className={cn(
-                        'text-xs px-2 py-1 rounded font-mono',
+                        'text-[9px] px-1.5 py-0.5 rounded font-mono',
                         player.change.startsWith('+')
-                          ? 'text-green-600 bg-green-100 dark:bg-green-900/20 dark:text-green-400'
+                          ? 'text-success bg-success/20'
                           : player.change.startsWith('-')
-                            ? 'text-red-600 bg-red-100 dark:bg-red-900/20 dark:text-red-400'
+                            ? 'text-destructive bg-destructive/20'
                             : 'text-muted-foreground bg-muted/50'
                       )}
-                      aria-label={`Change: ${player.change}`}
                     >
                       {player.change !== '0' ? player.change : '—'}
                     </div>
-                  </li>
+                  </div>
                 ))}
-              </ol>
+              </div>
             </CardContent>
           </Card>
 
-          {/* Achievement Categories */}
-          <Card className="border-2 border-accent/20 bg-gradient-to-br from-accent/5 to-transparent">
-            <CardHeader>
-              <div className="flex items-center gap-3 mb-2">
-                <div className="p-2 rounded-lg bg-accent/20 border border-accent/30">
-                  <Target className="w-5 h-5 text-accent" aria-hidden="true" />
-                </div>
-                <CardTitle className="font-orbitron text-xl">Categories</CardTitle>
-              </div>
-              <CardDescription className="font-mono">Progress by category</CardDescription>
+          {/* Categories */}
+          <Card className="border-0 bg-card/50">
+            <CardHeader className="pb-3 pt-4 px-4">
+              <CardTitle className="font-orbitron text-base flex items-center gap-2">
+                <Target className="w-4 h-4 text-accent" />
+                Categories
+              </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-3 px-4 pb-4">
               {categories.map((category) => {
                 const progress = (category.earned / category.total) * 100
                 return (
-                  <div key={category.name} className="space-y-2">
+                  <div key={category.name} className="space-y-1">
                     <div className="flex items-center justify-between">
-                      <Text size="sm" weight="medium" mono>
-                        {category.name}
-                      </Text>
-                      <Text size="xs" color="muted" mono>
-                        {category.earned}/{category.total}
-                      </Text>
+                      <Text size="xs" weight="medium" mono>{category.name}</Text>
+                      <Text size="xs" color="muted" mono>{category.earned}/{category.total}</Text>
                     </div>
-                    <div className="w-full h-2.5 bg-muted/50 rounded-full overflow-hidden">
+                    <div className="w-full h-1.5 bg-muted/50 rounded-full overflow-hidden">
                       <div
-                        className={cn('h-full transition-all duration-500', category.color)}
+                        className={cn('h-full transition-all', category.color)}
                         style={{ width: `${progress}%` }}
-                        role="progressbar"
-                        aria-valuenow={progress}
-                        aria-valuemin={0}
-                        aria-valuemax={100}
-                        aria-label={`${category.name}: ${category.earned} of ${category.total} completed`}
                       />
                     </div>
                   </div>
@@ -788,40 +584,29 @@ export default function AchievementsContent({
           </Card>
 
           {/* Quick Actions */}
-          <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
-            <CardHeader>
-              <div className="flex items-center gap-3 mb-2">
-                <div className="p-2 rounded-lg bg-primary/20 border border-primary/30">
-                  <Zap className="w-5 h-5 text-primary" aria-hidden="true" />
-                </div>
-                <CardTitle className="font-orbitron text-xl">Quick Actions</CardTitle>
-              </div>
+          <Card className="border-0 bg-card/50">
+            <CardHeader className="pb-3 pt-4 px-4">
+              <CardTitle className="font-orbitron text-base flex items-center gap-2">
+                <Zap className="w-4 h-4 text-primary" />
+                Quick Actions
+              </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
-              <button className="w-full p-4 text-left rounded-lg border-2 border-dashed border-primary/30 hover:border-primary/50 hover:bg-primary/10 transition-all group">
-                <div className="flex items-center gap-3">
-                  <Target className="w-5 h-5 text-primary group-hover:scale-110 transition-transform" aria-hidden="true" />
+            <CardContent className="space-y-2 px-4 pb-4">
+              <button className="w-full p-3 text-left rounded-lg border border-dashed border-primary/30 hover:border-primary/50 hover:bg-primary/10 transition-all group">
+                <div className="flex items-center gap-2">
+                  <Target className="w-4 h-4 text-primary group-hover:scale-110 transition-transform" />
                   <div>
-                    <Text size="sm" weight="medium" mono className="group-hover:text-primary transition-colors">
-                      Start New Challenge
-                    </Text>
-                    <Text size="xs" color="muted" mono>
-                      Continue your streak
-                    </Text>
+                    <Text size="xs" weight="medium" mono className="group-hover:text-primary">Start Challenge</Text>
+                    <Text size="xs" color="muted" mono>Continue streak</Text>
                   </div>
                 </div>
               </button>
-
-              <button className="w-full p-4 text-left rounded-lg border-2 border-dashed border-secondary/30 hover:border-secondary/50 hover:bg-secondary/10 transition-all group">
-                <div className="flex items-center gap-3">
-                  <Users className="w-5 h-5 text-secondary group-hover:scale-110 transition-transform" aria-hidden="true" />
+              <button className="w-full p-3 text-left rounded-lg border border-dashed border-secondary/30 hover:border-secondary/50 hover:bg-secondary/10 transition-all group">
+                <div className="flex items-center gap-2">
+                  <Users className="w-4 h-4 text-secondary group-hover:scale-110 transition-transform" />
                   <div>
-                    <Text size="sm" weight="medium" mono className="group-hover:text-secondary transition-colors">
-                      View Friends
-                    </Text>
-                    <Text size="xs" color="muted" mono>
-                      Compare progress
-                    </Text>
+                    <Text size="xs" weight="medium" mono className="group-hover:text-secondary">View Friends</Text>
+                    <Text size="xs" color="muted" mono>Compare progress</Text>
                   </div>
                 </div>
               </button>
