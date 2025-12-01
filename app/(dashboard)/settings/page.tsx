@@ -1,7 +1,6 @@
 import dynamic from 'next/dynamic'
 import { LoadingSkeleton } from '@/components/loading-skeleton'
 
-// Lazy load the settings content for better initial load performance
 const SettingsContent = dynamic(
   () => import('@/features/settings/components/SettingsContent'),
   {
@@ -20,17 +19,8 @@ const SettingsContent = dynamic(
   }
 )
 
-// Export metadata from separate file for better code organization
 export { metadata } from './metadata'
 
-/**
- * Settings Page
- * 
- * This page uses:
- * - Dynamic imports for lazy loading the main content
- * - Static metadata for SEO
- * - Server-side rendering for initial page load
- */
 export default function SettingsPage() {
   return <SettingsContent />
 }

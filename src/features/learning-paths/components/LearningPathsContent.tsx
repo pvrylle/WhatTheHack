@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import Link from 'next/link'
-import { ChevronRight, Zap, Search, X, Trophy, Target, TrendingUp, Map } from 'lucide-react'
+import { ChevronRight, Zap, Search, X, Trophy, Target, TrendingUp, Map, Shield, Database, Globe, type LucideIcon } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -16,8 +16,57 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Container, Text } from '@/components/atoms'
-import { missionPaths } from '@/data/challenges'
+import { LoadingSkeleton } from '@/components/loading-skeleton'
 import { cn } from '@/lib/utils'
+
+const iconMap: Record<string, LucideIcon> = {
+  Shield,
+  Target,
+  Database,
+  Globe,
+}
+
+type CategoryData = {
+  id: string
+  name: string
+  description: string
+  icon: string
+  color: 'primary' | 'secondary' | 'accent' | 'success'
+}
+
+type ChallengeData = {
+  id: string
+  title: string
+  description: string
+  difficulty: 'Beginner' | 'Intermediate' | 'Advanced'
+  xp_reward: number
+  time_estimate: string
+  is_completed: boolean
+  is_unlocked: boolean
+  category_id: string
+}
+
+type ApiLearningPath = {
+  id: string
+  name: string
+  description: string
+  icon: string
+  color?: string
+  totalChallenges?: number
+  completedChallenges?: number
+  challenges?: ChallengeData[]
+}
+
+type LearningPath = {
+  id: string
+  title: string
+  description: string
+  icon: LucideIcon
+  color: 'primary' | 'secondary' | 'accent' | 'success'
+  totalChallenges: number
+  completedChallenges: number
+  challenges: ChallengeData[]
+}
 
 const difficultyStyles: Record<string, string> = {
   Beginner: 'bg-success/20 text-success border-success/30',
@@ -25,7 +74,7 @@ const difficultyStyles: Record<string, string> = {
   Advanced: 'bg-destructive/20 text-destructive border-destructive/30',
 }
 
-const colorStyles = {
+const colorStyles: Record<string, { wrapper: string; icon: string }> = {
   primary: {
     wrapper: 'bg-primary/15 border border-primary/25',
     icon: 'text-primary',
@@ -42,14 +91,50 @@ const colorStyles = {
     wrapper: 'bg-success/15 border border-success/25',
     icon: 'text-success',
   },
-} as const
+}
 
 export default function LearningPathsContent() {
   const [searchQuery, setSearchQuery] = useState('')
   const [difficultyFilter, setDifficultyFilter] = useState<string>('all')
   const [progressFilter, setProgressFilter] = useState<string>('all')
+  const [learningPaths, setLearningPaths] = useState<LearningPath[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  const learningPaths = Object.values(missionPaths)
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        setLoading(true)
+        const response = await fetch('/api/challenges')
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch learning paths')
+        }
+        
+        const data = await response.json()
+        
+        const paths: LearningPath[] = (data.learningPaths || []).map((path: ApiLearningPath) => ({
+          id: path.id,
+          title: path.name,
+          description: path.description,
+          icon: iconMap[path.icon] || Shield,
+          color: (path.color || 'primary') as 'primary' | 'secondary' | 'accent' | 'success',
+          totalChallenges: path.totalChallenges || path.challenges?.length || 0,
+          completedChallenges: path.completedChallenges || 0,
+          challenges: path.challenges || [],
+        }))
+        
+        setLearningPaths(paths)
+      } catch (err) {
+        console.error('Error fetching learning paths:', err)
+        setError('Failed to load learning paths')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchData()
+  }, [])
 
   const filteredPaths = useMemo(() => {
     return learningPaths.filter((path) => {
@@ -62,7 +147,7 @@ export default function LearningPathsContent() {
       const matchesDifficulty =
         difficultyFilter === 'all' || pathDifficulty === difficultyFilter
 
-      const progress = Math.round((path.completedChallenges / path.totalChallenges) * 100)
+      const progress = path.totalChallenges > 0 ? Math.round((path.completedChallenges / path.totalChallenges) * 100) : 0
       const matchesProgress =
         progressFilter === 'all' ||
         (progressFilter === 'completed' && progress === 100) ||
@@ -87,11 +172,34 @@ export default function LearningPathsContent() {
     (sum, path) => sum + path.completedChallenges,
     0
   )
-  const totalProgress = Math.round((completedChallenges / totalChallenges) * 100)
+  const totalProgress = totalChallenges > 0 ? Math.round((completedChallenges / totalChallenges) * 100) : 0
   const totalXP = learningPaths.reduce(
     (sum, path) => sum + path.completedChallenges * 150,
     0
   )
+
+  if (loading) {
+    return (
+      <Container className="py-4 sm:py-6">
+        <LoadingSkeleton variant="page" />
+      </Container>
+    )
+  }
+
+  if (error) {
+    return (
+      <Container className="py-4 sm:py-6">
+        <div className="text-center py-16">
+          <Text variant="h1" size="xl" weight="bold" orbitron glow className="mb-2 text-destructive">
+            Error Loading Paths
+          </Text>
+          <Text color="muted" mono size="sm">
+            {error}
+          </Text>
+        </div>
+      </Container>
+    )
+  }
 
   if (learningPaths.length === 0) {
     return (
@@ -212,8 +320,8 @@ export default function LearningPathsContent() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
             {filteredPaths.map((path) => {
               const IconComponent = path.icon
-              const progress = Math.round((path.completedChallenges / path.totalChallenges) * 100)
-              const palette = colorStyles[path.color]
+              const progress = path.totalChallenges > 0 ? Math.round((path.completedChallenges / path.totalChallenges) * 100) : 0
+              const palette = colorStyles[path.color] || colorStyles.primary
               const pathDifficulty = path.challenges[0]?.difficulty || 'Beginner'
               const isCompleted = progress === 100
 

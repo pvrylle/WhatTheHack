@@ -1,7 +1,6 @@
 import dynamic from 'next/dynamic'
 import { LoadingSkeleton } from '@/components/loading-skeleton'
 
-// Lazy load the achievements content for better initial load performance
 const AchievementsContent = dynamic(
   () => import('@/features/achievements/components/AchievementsContent'),
   {
@@ -30,17 +29,8 @@ const AchievementsContent = dynamic(
   }
 )
 
-// Export metadata from separate file for better code organization
 export { metadata } from './metadata'
 
-/**
- * Achievements Page
- * 
- * This page uses:
- * - Dynamic imports for lazy loading the main content
- * - Static metadata for SEO
- * - Server-side rendering for initial page load
- */
 export default function AchievementsPage() {
   return <AchievementsContent />
 }

@@ -1,156 +1,133 @@
 import { NextResponse } from 'next/server'
+import { getSupabaseAdmin, DbChallenge } from '@/lib/supabase'
 
-// Mock data for challenges - in production, this would come from a database
-const challenges = {
-  'web-security': {
-    id: 'web-security',
-    title: 'Web Application Security',
-    description: 'Master web penetration testing and vulnerability assessment',
-    icon: 'Shield',
-    color: 'primary',
-    totalChallenges: 12,
-    completedChallenges: 4,
-    challenges: [
-      {
-        id: 'sql-injection-1',
-        title: 'SQL Injection Detective',
-        description: 'Analyze vulnerable login forms and identify SQL injection payloads',
-        difficulty: 'Beginner',
-        xpReward: 250,
-        timeEstimate: '30 min',
-        isCompleted: true,
-        isUnlocked: true,
-        category: 'SQL Injection',
-      },
-      {
-        id: 'xss-basic',
-        title: 'Cross-Site Scripting Hunter',
-        description: 'Find and exploit XSS vulnerabilities in web applications',
-        difficulty: 'Beginner',
-        xpReward: 200,
-        timeEstimate: '25 min',
-        isCompleted: true,
-        isUnlocked: true,
-        category: 'XSS',
-      },
-      {
-        id: 'csrf-protection',
-        title: 'CSRF Token Bypass',
-        description: 'Learn to identify and exploit CSRF vulnerabilities',
-        difficulty: 'Intermediate',
-        xpReward: 300,
-        timeEstimate: '45 min',
-        isCompleted: true,
-        isUnlocked: true,
-        category: 'CSRF',
-      },
-      {
-        id: 'file-upload',
-        title: 'Malicious File Upload',
-        description: 'Exploit file upload vulnerabilities to gain system access',
-        difficulty: 'Intermediate',
-        xpReward: 350,
-        timeEstimate: '40 min',
-        isCompleted: true,
-        isUnlocked: true,
-        category: 'File Upload',
-      },
-      {
-        id: 'authentication-bypass',
-        title: 'Authentication Bypass',
-        description: 'Break authentication mechanisms using various techniques',
-        difficulty: 'Intermediate',
-        xpReward: 400,
-        timeEstimate: '50 min',
-        isCompleted: false,
-        isUnlocked: true,
-        category: 'Authentication',
-      },
-    ],
-  },
-  'network-exploitation': {
-    id: 'network-exploitation',
-    title: 'Network Exploitation',
-    description: 'Learn network scanning, enumeration, and exploitation techniques',
-    icon: 'Target',
-    color: 'secondary',
-    totalChallenges: 15,
-    completedChallenges: 9,
-    challenges: [
-      {
-        id: 'port-scanning',
-        title: 'Port Scanning Detective',
-        description: 'Master network reconnaissance and port scanning techniques',
-        difficulty: 'Intermediate',
-        xpReward: 300,
-        timeEstimate: '40 min',
-        isCompleted: true,
-        isUnlocked: true,
-        category: 'Reconnaissance',
-      },
-    ],
-  },
-  cryptography: {
-    id: 'cryptography',
-    title: 'Cryptography & Encryption',
-    description: 'Understand encryption algorithms and learn to break weak implementations',
-    icon: 'Globe',
-    color: 'accent',
-    totalChallenges: 18,
-    completedChallenges: 3,
-    challenges: [
-      {
-        id: 'caesar-cipher',
-        title: 'Caesar Cipher Detective',
-        description: 'Crack ancient encryption methods and decode secret messages',
-        difficulty: 'Beginner',
-        xpReward: 200,
-        timeEstimate: '30 min',
-        isCompleted: true,
-        isUnlocked: true,
-        category: 'Classical Ciphers',
-      },
-    ],
-  },
-  'database-security': {
-    id: 'database-security',
-    title: 'Database Security',
-    description: 'SQL injection mastery and database security assessment',
-    icon: 'Database',
-    color: 'success',
-    totalChallenges: 10,
-    completedChallenges: 8,
-    challenges: [
-      {
-        id: 'sql-injection',
-        title: 'SQL Injection Hunter',
-        description: 'Master advanced SQL injection techniques and bypasses',
-        difficulty: 'Intermediate',
-        xpReward: 400,
-        timeEstimate: '50 min',
-        isCompleted: true,
-        isUnlocked: true,
-        category: 'SQL Injection',
-      },
-    ],
-  },
+type CategoryInfo = {
+  id: string
+  name: string
+  description: string
+  icon: string
+  color: string
+  totalChallenges: number
+  completedChallenges: number
 }
 
-// GET /api/challenges - Get all mission paths
+type TransformedChallenge = {
+  id: string
+  title: string | null
+  description: string | null
+  difficulty: string
+  xp_reward: number
+  time_estimate: string
+  is_completed: boolean
+  is_unlocked: boolean
+  category_id: string
+}
+
+type DbCategory = {
+  id?: number
+  name: string
+  description?: string
+  icon?: string
+  color?: string
+}
+
 export async function GET() {
   try {
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 100))
+    const supabaseAdmin = getSupabaseAdmin()
+
+    const { data: challenges, error } = await supabaseAdmin
+      .from('challenges')
+      .select('*')
+      .order('category', { ascending: true })
+
+    if (error) {
+      console.error('Supabase challenges error:', error)
+      return NextResponse.json(
+        { success: false, error: 'Failed to fetch challenges' },
+        { status: 500 }
+      )
+    }
+
+    const { data: categoriesData, error: catError } = await supabaseAdmin
+      .from('categories')
+      .select('*')
+
+    if (catError) {
+      console.error('Supabase categories error:', catError)
+    }
+
+    const categoriesMap: Record<string, CategoryInfo> = {}
+
+    if (categoriesData && categoriesData.length > 0) {
+      (categoriesData as DbCategory[]).forEach((cat) => {
+        categoriesMap[cat.name] = {
+          id: cat.name.toLowerCase().replace(/\s+/g, '-'),
+          name: cat.name,
+          description: cat.description || `Master ${cat.name.toLowerCase()} challenges and techniques`,
+          icon: cat.icon || 'Shield',
+          color: cat.color || 'primary',
+          totalChallenges: 0,
+          completedChallenges: 0,
+        }
+      })
+    }
+
+    const challengesByCategory: Record<string, TransformedChallenge[]> = {}
+
+    ;((challenges || []) as DbChallenge[]).forEach((challenge) => {
+      const categoryName = challenge.category || 'General'
+      const categoryKey = categoryName.toLowerCase().replace(/\s+/g, '-')
+
+      if (!categoriesMap[categoryName]) {
+        categoriesMap[categoryName] = {
+          id: categoryKey,
+          name: categoryName,
+          description: `Master ${categoryName.toLowerCase()} challenges`,
+          icon: 'Shield',
+          color: 'primary',
+          totalChallenges: 0,
+          completedChallenges: 0,
+        }
+      }
+
+      if (!challengesByCategory[categoryKey]) {
+        challengesByCategory[categoryKey] = []
+      }
+
+      challengesByCategory[categoryKey].push({
+        id: challenge.id,
+        title: challenge.title,
+        description: challenge.description,
+        difficulty: challenge.difficulty || 'Beginner',
+        xp_reward: challenge.xp_reward || 100,
+        time_estimate: '30 min',
+        is_completed: (challenge.completed_challenges || 0) >= (challenge.total_challenges || 1),
+        is_unlocked: true,
+        category_id: categoryKey,
+      })
+
+      categoriesMap[categoryName].totalChallenges += 1
+      if ((challenge.completed_challenges || 0) >= (challenge.total_challenges || 1)) {
+        categoriesMap[categoryName].completedChallenges += 1
+      }
+    })
+
+    const learningPaths = Object.values(categoriesMap).map((cat) => ({
+      ...cat,
+      challenges: challengesByCategory[cat.id] || [],
+    }))
 
     return NextResponse.json({
       success: true,
-      data: challenges,
+      learningPaths,
       meta: {
-        total: Object.keys(challenges).length,
+        total: learningPaths.length,
+        totalChallenges: challenges?.length || 0,
         timestamp: new Date().toISOString(),
       },
     })
   } catch (error) {
+    console.error('Challenges API error:', error)
     return NextResponse.json(
       { success: false, error: 'Failed to fetch challenges' },
       { status: 500 }

@@ -1,13 +1,3 @@
-/**
- * Mock Service
- * Provides mock data for the application
- * 
- * This is the PRIMARY data source - no backend required!
- * All data is simulated locally for demonstration purposes.
- * 
- * To use public APIs instead, set NEXT_PUBLIC_USE_MOCK=false
- */
-
 import { USE_MOCK_DATA } from '@/constants/api'
 import type {
   LoginRequest,
@@ -21,12 +11,8 @@ import type {
 } from '@/types'
 import { missionPaths } from '@/data/challenges'
 
-// Mock delay to simulate network request
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
-/**
- * Mock Authentication Service
- */
 export const mockAuthService = {
   login: async (credentials: LoginRequest): Promise<AuthResponse> => {
     await delay(1500)
@@ -117,9 +103,6 @@ export const mockAuthService = {
   },
 }
 
-/**
- * Mock Challenges Service
- */
 export const mockChallengesService = {
   getMissions: async (): Promise<Mission[]> => {
     await delay(800)
@@ -127,7 +110,7 @@ export const mockChallengesService = {
       id: path.id,
       title: path.title,
       description: path.description,
-      category: path.id, // Use id as category for now
+      category: path.id,
       total_challenges: path.totalChallenges,
       completed_challenges: path.completedChallenges,
       challenges: path.challenges.map((ch) => ({
@@ -177,14 +160,10 @@ export const mockChallengesService = {
 
   getChallenge: async (category: string, id: string): Promise<ChallengeDetail | undefined> => {
     await delay(500)
-    // This would need to be implemented based on your challenge data structure
     return undefined
   },
 }
 
-/**
- * Check if mock service should be used
- */
 export const shouldUseMock = (): boolean => {
   return USE_MOCK_DATA
 }

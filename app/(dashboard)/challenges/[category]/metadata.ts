@@ -1,68 +1,89 @@
 import type { Metadata, ResolvingMetadata } from 'next'
-import { missionPaths } from '@/data/challenges'
 import { siteConfig } from '@/lib/seo'
+import { getSupabaseAdmin } from '@/lib/supabase'
 
 type Props = {
   params: Promise<{ category: string }>
 }
 
-/**
- * Generate dynamic metadata for challenge category pages
- * Uses ISR pattern - metadata is generated at build time for known categories
- * and on-demand for new categories
- */
 export async function generateMetadata(
   { params }: Props,
   parent: ResolvingMetadata
 ): Promise<Metadata> {
   const { category } = await params
-  const mission = missionPaths[category]
+  
+  try {
+    const supabase = getSupabaseAdmin()
 
-  if (!mission) {
-    return {
-      title: 'Mission Not Found',
-      description: 'The requested mission could not be found.',
+    const { data: categoryData, error } = await supabase
+      .from('categories')
+      .select('*')
+      .eq('id', category)
+      .single()
+
+    if (error || !categoryData) {
+      return {
+        title: 'Mission Not Found',
+        description: 'The requested mission could not be found.',
+      }
     }
-  }
 
-  const title = `${mission.title} | Challenges`
-  const description = `${mission.description} Complete ${mission.totalChallenges} challenges to master ${mission.title.toLowerCase()}.`
+    const { count: totalChallenges } = await supabase
+      .from('challenges')
+      .select('*', { count: 'exact', head: true })
+      .eq('category_id', category)
 
-  return {
-    title,
-    description,
-    keywords: [
-      mission.title.toLowerCase(),
-      'challenges',
-      'cybersecurity',
-      'hacking',
-      'learning',
-      category.replace(/-/g, ' '),
-    ],
-    openGraph: {
-      title: `${title} | ${siteConfig.name}`,
+    const title = `${categoryData.name} | Challenges`
+    const description = `${categoryData.description} Complete ${totalChallenges || 0} challenges to master ${categoryData.name.toLowerCase()}.`
+
+    return {
+      title,
       description,
-      type: 'website',
-      url: `${siteConfig.url}/challenges/${category}`,
-      siteName: siteConfig.name,
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: `${title} | ${siteConfig.name}`,
-      description,
-    },
-    alternates: {
-      canonical: `/challenges/${category}`,
-    },
+      keywords: [
+        categoryData.name.toLowerCase(),
+        'challenges',
+        'cybersecurity',
+        'hacking',
+        'learning',
+        category.replace(/-/g, ' '),
+      ],
+      openGraph: {
+        title: `${title} | ${siteConfig.name}`,
+        description,
+        type: 'website',
+        url: `${siteConfig.url}/challenges/${category}`,
+        siteName: siteConfig.name,
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: `${title} | ${siteConfig.name}`,
+        description,
+      },
+      alternates: {
+        canonical: `/challenges/${category}`,
+      },
+    }
+  } catch (error) {
+    console.error('Error generating metadata:', error)
+    return {
+      title: 'Challenges',
+      description: 'Cybersecurity challenges and learning paths.',
+    }
   }
 }
 
-/**
- * Generate static params for known challenge categories
- * This enables SSG for all mission paths at build time
- */
 export async function generateStaticParams() {
-  return Object.keys(missionPaths).map((category) => ({
-    category,
-  }))
+  try {
+    const supabase = getSupabaseAdmin()
+    const { data: categories } = await supabase
+      .from('categories')
+      .select('id')
+
+    return (categories || []).map((category) => ({
+      category: category.id,
+    }))
+  } catch (error) {
+    console.error('Error generating static params:', error)
+    return []
+  }
 }

@@ -1,14 +1,12 @@
 import { NextResponse } from 'next/server'
+import { getSupabaseAdmin } from '@/lib/supabase'
 
-// POST /api/auth/register - Register new user
 export async function POST(request: Request) {
   try {
+    const supabaseAdmin = getSupabaseAdmin()
     const body = await request.json()
     const { email, password, username } = body
 
-    await new Promise((resolve) => setTimeout(resolve, 300))
-
-    // Validate input
     if (!email || !password || !username) {
       return NextResponse.json(
         { success: false, error: 'Email, password, and username are required' },
@@ -23,23 +21,78 @@ export async function POST(request: Request) {
       )
     }
 
-    // In production, check if email/username already exists, hash password, save to DB
-    const newUser = {
-      id: `user-${Date.now()}`,
-      email,
-      username,
-      rank: 'Recruit',
-      level: 1,
-      xp: 0,
-      createdAt: new Date().toISOString(),
+    const { data: existingEmail } = await supabaseAdmin
+      .from('users')
+      .select('id')
+      .eq('email', email)
+      .single()
+
+    if (existingEmail) {
+      return NextResponse.json(
+        { success: false, error: 'Email already registered' },
+        { status: 409 }
+      )
     }
 
-    const mockToken = Buffer.from(JSON.stringify({ userId: newUser.id, exp: Date.now() + 86400000 })).toString('base64')
+    const { data: existingUsername } = await supabaseAdmin
+      .from('users')
+      .select('id')
+      .eq('username', username)
+      .single()
+
+    if (existingUsername) {
+      return NextResponse.json(
+        { success: false, error: 'Username already taken' },
+        { status: 409 }
+      )
+    }
+
+    const { data: newUser, error: insertError } = await supabaseAdmin
+      .from('users')
+      .insert({
+        email,
+        username,
+        password,
+        rank: 'Recruit',
+        level: 1,
+        xp: 0,
+        total_points: 0,
+        streak_days: 0,
+        badges: [],
+      })
+      .select()
+      .single()
+
+    if (insertError) {
+      console.error('Supabase insert error:', insertError)
+      return NextResponse.json(
+        { success: false, error: 'Failed to create user' },
+        { status: 500 }
+      )
+    }
+
+    const mockToken = Buffer.from(
+      JSON.stringify({ 
+        userId: newUser.id, 
+        email: newUser.email,
+        exp: Date.now() + 86400000 
+      })
+    ).toString('base64')
 
     return NextResponse.json({
       success: true,
       data: {
-        user: newUser,
+        user: {
+          id: newUser.id,
+          email: newUser.email,
+          username: newUser.username,
+          rank: newUser.rank,
+          level: newUser.level,
+          xp: newUser.xp,
+          totalPoints: newUser.total_points,
+          streakDays: newUser.streak_days,
+          badges: newUser.badges,
+        },
         token: mockToken,
       },
       meta: {
@@ -47,6 +100,7 @@ export async function POST(request: Request) {
       },
     })
   } catch (error) {
+    console.error('Registration API error:', error)
     return NextResponse.json(
       { success: false, error: 'Registration failed' },
       { status: 500 }

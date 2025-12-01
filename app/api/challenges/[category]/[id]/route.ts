@@ -1,102 +1,53 @@
 import { NextResponse } from 'next/server'
+import { getSupabaseAdmin } from '@/lib/supabase'
+import type { ChallengeQuestion } from '@/lib/supabase'
 
-// Mock challenge details data
-const challengeDetails: Record<string, any> = {
-  'sql-injection-1': {
-    id: 'sql-injection-1',
-    title: 'SQL Injection Detective',
-    description: 'Analyze vulnerable login forms and identify SQL injection payloads',
-    xpReward: 250,
-    difficulty: 'Beginner',
-    category: 'Web Security',
-    questions: [
-      {
-        type: 'code-analysis',
-        question: 'Identify the vulnerability in this PHP login code:',
-        code: `$username = $_POST['username'];
-$password = $_POST['password'];
-$query = "SELECT * FROM users WHERE username='$username' AND password='$password'";
-$result = mysqli_query($connection, $query);`,
-        answer: 'sql injection',
-        hint: 'Look at how user input is directly inserted into the SQL query',
-        explanation: 'Direct string concatenation without input validation allows SQL injection attacks.',
-      },
-      {
-        type: 'payload-craft',
-        question: 'What payload would bypass this login check? (Username field)',
-        context: "Query: SELECT * FROM users WHERE username='INPUT' AND password='test'",
-        answer: "admin' --",
-        hint: 'Use SQL comments to ignore the password requirement',
-        explanation: "The payload 'admin' --' logs in as admin and comments out the password check.",
-      },
-      {
-        type: 'multiple-choice',
-        question: 'Which of these is the BEST defense against SQL injection?',
-        options: [
-          'Input length validation',
-          'Prepared statements with parameterized queries',
-          'HTML entity encoding',
-          'CAPTCHA verification',
-        ],
-        answer: 1,
-        explanation: 'Prepared statements separate SQL logic from user data, preventing injection.',
-      },
-    ],
-  },
-  'xss-basic': {
-    id: 'xss-basic',
-    title: 'Cross-Site Scripting Hunter',
-    description: 'Find and exploit XSS vulnerabilities in web applications',
-    xpReward: 200,
-    difficulty: 'Beginner',
-    category: 'Web Security',
-    questions: [
-      {
-        type: 'vulnerability-spot',
-        question: 'Find the XSS vulnerability in this PHP code:',
-        code: `<?php
-$search = $_GET['q'];
-echo "<h2>Search results for: " . $search . "</h2>";
-?>`,
-        answer: 'no sanitization',
-        hint: 'User input is directly displayed without any filtering or encoding',
-        explanation: 'The search parameter is echoed directly without HTML encoding, allowing XSS.',
-      },
-    ],
-  },
-}
-
-// GET /api/challenges/[category]/[id] - Get specific challenge details
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ category: string; id: string }> }
 ) {
   try {
+    const supabaseAdmin = getSupabaseAdmin()
     const { category, id } = await params
 
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 100))
+    const { data: challenge, error } = await supabaseAdmin
+      .from('challenges')
+      .select('*')
+      .eq('id', id)
+      .single()
 
-    const challenge = challengeDetails[id]
-
-    if (!challenge) {
+    if (error || !challenge) {
+      console.error('Supabase challenge error:', error)
       return NextResponse.json(
         { success: false, error: 'Challenge not found' },
         { status: 404 }
       )
     }
 
-    return NextResponse.json({
-      success: true,
-      data: {
-        ...challenge,
-        pathCategory: category,
-      },
-      meta: {
-        timestamp: new Date().toISOString(),
-      },
-    })
+    let questions = challenge.questions || []
+    if (typeof questions === 'string') {
+      try {
+        questions = JSON.parse(questions)
+      } catch {
+        console.error('Failed to parse questions JSON')
+        questions = []
+      }
+    }
+
+    const transformedChallenge = {
+      id: challenge.id,
+      title: challenge.title,
+      description: challenge.description,
+      xp_reward: challenge.xp_reward,
+      difficulty: challenge.difficulty,
+      category: challenge.category,
+      category_id: category,
+      questions: questions,
+    }
+
+    return NextResponse.json(transformedChallenge)
   } catch (error) {
+    console.error('Challenge detail API error:', error)
     return NextResponse.json(
       { success: false, error: 'Failed to fetch challenge' },
       { status: 500 }
@@ -104,28 +55,42 @@ export async function GET(
   }
 }
 
-// POST /api/challenges/[category]/[id] - Submit challenge answer
 export async function POST(
   request: Request,
   { params }: { params: Promise<{ category: string; id: string }> }
 ) {
   try {
+    const supabaseAdmin = getSupabaseAdmin()
     const { category, id } = await params
     const body = await request.json()
     const { questionIndex, answer } = body
 
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 200))
+    const { data: challenge, error } = await supabaseAdmin
+      .from('challenges')
+      .select('*')
+      .eq('id', id)
+      .single()
 
-    const challenge = challengeDetails[id]
-    if (!challenge) {
+    if (error || !challenge) {
       return NextResponse.json(
         { success: false, error: 'Challenge not found' },
         { status: 404 }
       )
     }
 
-    const question = challenge.questions[questionIndex]
+    let questions: ChallengeQuestion[] = []
+    if (typeof challenge.questions === 'string') {
+      try {
+        questions = JSON.parse(challenge.questions)
+      } catch {
+        questions = []
+      }
+    } else {
+      questions = (challenge.questions as ChallengeQuestion[]) || []
+    }
+    
+    const question = questions[questionIndex]
+    
     if (!question) {
       return NextResponse.json(
         { success: false, error: 'Question not found' },
@@ -133,21 +98,34 @@ export async function POST(
       )
     }
 
-    // Check answer (case-insensitive for text, exact for numbers)
     const isCorrect =
       typeof question.answer === 'number'
         ? answer === question.answer
-        : answer.toLowerCase().includes(question.answer.toLowerCase())
+        : String(answer).toLowerCase().includes(String(question.answer).toLowerCase())
+
+    if (isCorrect && challenge.completed_challenges !== null && challenge.total_challenges !== null) {
+      if (challenge.completed_challenges < challenge.total_challenges) {
+        await supabaseAdmin
+          .from('challenges')
+          .update({ completed_challenges: challenge.completed_challenges + 1 })
+          .eq('id', id)
+      }
+    }
+
+    const xpPerQuestion = questions.length > 0 
+      ? Math.round((challenge.xp_reward || 0) / questions.length) 
+      : 0
 
     return NextResponse.json({
       success: true,
       data: {
         isCorrect,
         explanation: question.explanation,
-        xpEarned: isCorrect ? Math.round(challenge.xpReward / challenge.questions.length) : 0,
+        xpEarned: isCorrect ? xpPerQuestion : 0,
       },
     })
   } catch (error) {
+    console.error('Challenge submit API error:', error)
     return NextResponse.json(
       { success: false, error: 'Failed to submit answer' },
       { status: 500 }

@@ -1,7 +1,6 @@
 import dynamic from 'next/dynamic'
 import { LoadingSkeleton } from '@/components/loading-skeleton'
 
-// Lazy load the learning paths content for better initial load performance
 const LearningPathsContent = dynamic(
   () => import('@/features/learning-paths/components/LearningPathsContent'),
   {
@@ -24,17 +23,8 @@ const LearningPathsContent = dynamic(
   }
 )
 
-// Export metadata from separate file for better code organization
 export { metadata } from './metadata'
 
-/**
- * Learning Paths Page
- * 
- * This page uses:
- * - Dynamic imports for lazy loading the main content
- * - Static metadata for SEO
- * - Server-side rendering for initial page load
- */
 export default function LearningPathsPage() {
   return <LearningPathsContent />
 }
