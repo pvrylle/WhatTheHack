@@ -1,55 +1,76 @@
 import { NextResponse } from 'next/server'
+import { createSupabaseServerClient } from '@/lib/supabase-server'
 
-// Mock auth - in production, use proper authentication (NextAuth, Clerk, etc.)
-const mockUsers = [
-  {
-    id: 'user-001',
-    email: 'demo@whatthehack.dev',
-    password: 'demo123', // In production, NEVER store plain passwords!
-    username: 'CyberAgent_X',
-    rank: 'Elite Hacker',
-    level: 15,
-  },
-]
-
-// POST /api/auth/login - Login
+// POST /api/auth/login - Login with email and password
 export async function POST(request: Request) {
   try {
     const body = await request.json()
     const { email, password } = body
 
-    await new Promise((resolve) => setTimeout(resolve, 300))
-
-    // Find user (mock validation)
-    const user = mockUsers.find((u) => u.email === email && u.password === password)
-
-    if (!user) {
+    if (!email || !password) {
       return NextResponse.json(
-        { success: false, error: 'Invalid email or password' },
+        { success: false, error: 'Email and password are required' },
+        { status: 400 }
+      )
+    }
+
+    const supabase = await createSupabaseServerClient()
+
+    // Sign in with Supabase Auth
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
+
+    if (error) {
+      console.error('Login error:', error.message)
+      return NextResponse.json(
+        { success: false, error: error.message },
         { status: 401 }
       )
     }
 
-    // In production, create a proper JWT token
-    const mockToken = Buffer.from(JSON.stringify({ userId: user.id, exp: Date.now() + 86400000 })).toString('base64')
+    // Fetch user profile and stats
+    const [profileResult, statsResult] = await Promise.all([
+      supabase
+        .from('user_profiles')
+        .select('*')
+        .eq('id', data.user.id)
+        .single(),
+      supabase
+        .from('user_stats')
+        .select('*')
+        .eq('id', data.user.id)
+        .single(),
+    ])
+
+    const profile = profileResult.data
+    const stats = statsResult.data
 
     return NextResponse.json({
       success: true,
       data: {
         user: {
-          id: user.id,
-          email: user.email,
-          username: user.username,
-          rank: user.rank,
-          level: user.level,
+          id: data.user.id,
+          email: data.user.email,
+          username: profile?.username || 'Agent',
+          rank: profile?.rank || 'Recruit',
+          level: stats?.level || 1,
+          xp: stats?.total_xp || 0,
+          avatar: profile?.avatar_url,
         },
-        token: mockToken,
+        session: {
+          access_token: data.session.access_token,
+          refresh_token: data.session.refresh_token,
+          expires_at: data.session.expires_at,
+        },
       },
       meta: {
         timestamp: new Date().toISOString(),
       },
     })
   } catch (error) {
+    console.error('Login error:', error)
     return NextResponse.json(
       { success: false, error: 'Login failed' },
       { status: 500 }

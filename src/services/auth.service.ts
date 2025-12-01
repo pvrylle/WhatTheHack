@@ -1,20 +1,40 @@
 /**
  * Authentication Service
  * Handles all authentication-related API calls
- * Compatible with Django REST Framework authentication
+ * Now uses Next.js API routes with Supabase
  */
 
-import httpService from './request.service'
-import { API_ENDPOINTS } from '@/constants/api'
 import type {
   LoginRequest,
   RegisterRequest,
   AuthResponse,
-  User,
   UserProfile,
-  ApiResponse,
 } from '@/types'
 import { setAuthTokens, clearAuthTokens } from './request.service'
+
+// API response type from our routes
+interface ApiAuthResponse {
+  success: boolean
+  data?: {
+    user: {
+      id: string
+      email: string
+      username: string
+      rank?: string
+      level?: number
+      xp?: number
+      avatar?: string
+    }
+    session?: {
+      access_token: string
+      refresh_token: string
+      expires_at?: number
+    }
+    message?: string
+    requiresConfirmation?: boolean
+  }
+  error?: string
+}
 
 /**
  * Authentication Service
@@ -22,100 +42,146 @@ import { setAuthTokens, clearAuthTokens } from './request.service'
 export const authService = {
   /**
    * Login user
-   * POST /api/v1/auth/login/
+   * POST /api/auth/login
    */
   login: async (credentials: LoginRequest): Promise<AuthResponse> => {
-    const response = await httpService.post<AuthResponse>(API_ENDPOINTS.AUTH.LOGIN, credentials, {
-      skipAuth: true,
+    const response = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(credentials),
     })
 
-    if (response.data) {
-      // Store tokens
-      setAuthTokens(response.data.access, response.data.refresh)
-      return response.data
+    const result: ApiAuthResponse = await response.json()
+
+    if (!response.ok || !result.success) {
+      throw new Error(result.error || 'Login failed')
     }
 
-    throw new Error('Login failed')
+    if (result.data?.session) {
+      setAuthTokens(result.data.session.access_token, result.data.session.refresh_token)
+    }
+
+    return {
+      access: result.data?.session?.access_token || '',
+      refresh: result.data?.session?.refresh_token || '',
+      user: {
+        id: result.data?.user.id || '',
+        email: result.data?.user.email || '',
+        username: result.data?.user.username || '',
+        rank: result.data?.user.rank,
+        level: result.data?.user.level,
+        xp: result.data?.user.xp,
+      },
+    }
   },
 
   /**
    * Register new user
-   * POST /api/v1/auth/register/
+   * POST /api/auth/register
    */
   register: async (userData: RegisterRequest): Promise<AuthResponse> => {
-    const response = await httpService.post<AuthResponse>(API_ENDPOINTS.AUTH.REGISTER, userData, {
-      skipAuth: true,
+    const response = await fetch('/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(userData),
     })
 
-    if (response.data) {
-      // Store tokens
-      setAuthTokens(response.data.access, response.data.refresh)
-      return response.data
+    const result: ApiAuthResponse = await response.json()
+
+    if (!response.ok || !result.success) {
+      throw new Error(result.error || 'Registration failed')
     }
 
-    throw new Error('Registration failed')
+    // Handle email confirmation required
+    if (result.data?.requiresConfirmation) {
+      return {
+        access: '',
+        refresh: '',
+        user: {
+          id: result.data.user.id,
+          email: result.data.user.email,
+          username: result.data.user.username,
+        },
+      }
+    }
+
+    if (result.data?.session) {
+      setAuthTokens(result.data.session.access_token, result.data.session.refresh_token)
+    }
+
+    return {
+      access: result.data?.session?.access_token || '',
+      refresh: result.data?.session?.refresh_token || '',
+      user: {
+        id: result.data?.user.id || '',
+        email: result.data?.user.email || '',
+        username: result.data?.user.username || '',
+        rank: result.data?.user.rank,
+        level: result.data?.user.level,
+        xp: result.data?.user.xp,
+      },
+    }
   },
 
   /**
    * Logout user
-   * POST /api/v1/auth/logout/
    */
   logout: async (): Promise<void> => {
     try {
-      await httpService.post(API_ENDPOINTS.AUTH.LOGOUT)
+      await fetch('/api/auth/logout', { method: 'POST' })
     } catch (error) {
       console.error('Logout error:', error)
     } finally {
-      // Clear tokens regardless of API response
       clearAuthTokens()
     }
   },
 
   /**
    * Get current user profile
-   * GET /api/v1/auth/profile/
+   * GET /api/user
    */
   getProfile: async (): Promise<UserProfile> => {
-    const response = await httpService.get<UserProfile>(API_ENDPOINTS.AUTH.PROFILE)
+    const response = await fetch('/api/user')
+    const result = await response.json()
 
-    if (response.data) {
-      return response.data
+    if (!response.ok || !result.success) {
+      throw new Error(result.error || 'Failed to fetch profile')
     }
 
-    throw new Error('Failed to fetch profile')
+    return result.data.user
   },
 
   /**
    * Update user profile
-   * PATCH /api/v1/auth/profile/
+   * PATCH /api/user
    */
   updateProfile: async (userData: Partial<UserProfile>): Promise<UserProfile> => {
-    const response = await httpService.patch<UserProfile>(API_ENDPOINTS.AUTH.PROFILE, userData)
+    const response = await fetch('/api/user', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(userData),
+    })
+    const result = await response.json()
 
-    if (response.data) {
-      return response.data
+    if (!response.ok || !result.success) {
+      throw new Error(result.error || 'Failed to update profile')
     }
 
-    throw new Error('Failed to update profile')
+    return result.data
   },
 
   /**
-   * Change password
-   * POST /api/v1/auth/password/change/
+   * Change password (not implemented yet)
    */
   changePassword: async (oldPassword: string, newPassword: string): Promise<void> => {
-    await httpService.post(API_ENDPOINTS.AUTH.PASSWORD_CHANGE, {
-      old_password: oldPassword,
-      new_password: newPassword,
-    })
+    console.log('Password change not implemented')
   },
 
   /**
-   * Request password reset
-   * POST /api/v1/auth/password/reset/
+   * Request password reset (not implemented yet)
    */
   requestPasswordReset: async (email: string): Promise<void> => {
-    await httpService.post(API_ENDPOINTS.AUTH.PASSWORD_RESET, { email }, { skipAuth: true })
+    console.log('Password reset not implemented')
   },
 }
 

@@ -28,34 +28,6 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
-// Hardcoded user accounts for demo
-const DEMO_ACCOUNTS = [
-  {
-    email: 'demo@hack.com',
-    password: 'demo123',
-    username: 'CyberAgent001',
-    rank: 'Elite Hacker',
-    level: 12,
-    xp: 2850,
-  },
-  {
-    email: 'admin@hack.com',
-    password: 'admin123',
-    username: 'SystemAdmin',
-    rank: 'Master Hacker',
-    level: 25,
-    xp: 8420,
-  },
-  {
-    email: 'test@hack.com',
-    password: 'test123',
-    username: 'TestAgent',
-    rank: 'Rookie Hacker',
-    level: 5,
-    xp: 1200,
-  },
-]
-
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -83,27 +55,37 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     email: string,
     password: string
   ): Promise<{ success: boolean; error?: string }> => {
-    // Simulate network delay
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      })
 
-    const account = DEMO_ACCOUNTS.find((acc) => acc.email === email && acc.password === password)
+      const data = await response.json()
 
-    if (account) {
-      const userData: User = {
-        id: Math.random().toString(36).substr(2, 9),
-        email: account.email,
-        username: account.username,
-        rank: account.rank,
-        level: account.level,
-        xp: account.xp,
+      if (data.success && data.data?.user) {
+        const userData: User = {
+          id: data.data.user.id,
+          email: data.data.user.email,
+          username: data.data.user.username || 'Agent',
+          rank: data.data.user.rank || 'Recruit',
+          level: data.data.user.level || 1,
+          xp: data.data.user.xp || 0,
+        }
+        setUser(userData)
+        localStorage.setItem('whathehack_user', JSON.stringify(userData))
+        // Sync with cookie for middleware
+        setAuthCookie(userData.id)
+        return { success: true }
+      } else {
+        return { success: false, error: data.error || 'Login failed' }
       }
-      setUser(userData)
-      localStorage.setItem('whathehack_user', JSON.stringify(userData))
-      // Sync with cookie for middleware
-      setAuthCookie(userData.id)
-      return { success: true }
-    } else {
-      return { success: false, error: 'Invalid credentials' }
+    } catch (error) {
+      console.error('Login error:', error)
+      return { success: false, error: 'Network error. Please try again.' }
     }
   }
 
@@ -112,30 +94,46 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     email: string,
     password: string
   ): Promise<{ success: boolean; error?: string }> => {
-    // Simulate network delay
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+    try {
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, email, password }),
+      })
 
-    // Check if email already exists
-    const existingAccount = DEMO_ACCOUNTS.find((acc) => acc.email === email)
-    if (existingAccount) {
-      return { success: false, error: 'Email already exists' }
+      const data = await response.json()
+
+      if (data.success && data.data?.user) {
+        // Check if email confirmation is required
+        if (data.data.requiresConfirmation) {
+          return { 
+            success: false, 
+            error: 'Please check your email to confirm your account before logging in.' 
+          }
+        }
+        
+        const userData: User = {
+          id: data.data.user.id,
+          email: data.data.user.email,
+          username: data.data.user.username || username,
+          rank: data.data.user.rank || 'Recruit',
+          level: data.data.user.level || 1,
+          xp: data.data.user.xp || 0,
+        }
+        setUser(userData)
+        localStorage.setItem('whathehack_user', JSON.stringify(userData))
+        // Sync with cookie for middleware
+        setAuthCookie(userData.id)
+        return { success: true }
+      } else {
+        return { success: false, error: data.error || 'Registration failed' }
+      }
+    } catch (error) {
+      console.error('Signup error:', error)
+      return { success: false, error: 'Network error. Please try again.' }
     }
-
-    // For demo purposes, create a new user
-    const userData: User = {
-      id: Math.random().toString(36).substr(2, 9),
-      email,
-      username,
-      rank: 'Rookie Hacker',
-      level: 1,
-      xp: 0,
-    }
-    setUser(userData)
-    localStorage.setItem('whathehack_user', JSON.stringify(userData))
-    // Sync with cookie for middleware
-    setAuthCookie(userData.id)
-
-    return { success: true }
   }
 
   const logout = useCallback(() => {

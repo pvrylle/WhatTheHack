@@ -1,11 +1,9 @@
 /**
  * Challenges Service
  * Handles all challenges and missions related API calls
- * Compatible with Django REST Framework
+ * Uses Next.js API routes with Supabase backend
  */
 
-import httpService from './request.service'
-import { API_ENDPOINTS } from '@/constants/api'
 import type {
   Challenge,
   ChallengeDetail,
@@ -13,7 +11,6 @@ import type {
   ChallengeSubmissionResponse,
   Mission,
   MissionProgress,
-  ApiResponse,
   PaginatedResponse,
 } from '@/types'
 
@@ -23,7 +20,7 @@ import type {
 export const challengesService = {
   /**
    * Get all challenges
-   * GET /api/v1/challenges/
+   * GET /api/challenges
    */
   getChallenges: async (params?: {
     category?: string
@@ -35,34 +32,37 @@ export const challengesService = {
     if (params?.difficulty) queryParams.append('difficulty', params.difficulty)
     if (params?.page) queryParams.append('page', params.page.toString())
 
-    const endpoint = `${API_ENDPOINTS.CHALLENGES.LIST}${queryParams.toString() ? `?${queryParams}` : ''}`
-    const response = await httpService.get<PaginatedResponse<Challenge>>(endpoint)
+    const endpoint = `/api/challenges${queryParams.toString() ? `?${queryParams}` : ''}`
+    const response = await fetch(endpoint)
+    const data = await response.json()
 
-    let results: Challenge[] = []
-    if (response.results && Array.isArray(response.results)) {
-      results = response.results as unknown as Challenge[]
-    } else if (Array.isArray(response.data)) {
-      results = response.data as unknown as Challenge[]
+    if (data.success && data.data?.challenges) {
+      return {
+        count: data.data.challenges.length,
+        next: null,
+        previous: null,
+        results: data.data.challenges,
+      }
     }
+
     return {
-      count: response.count || 0,
-      next: response.next || null,
-      previous: response.previous || null,
-      results: results,
+      count: 0,
+      next: null,
+      previous: null,
+      results: [],
     }
   },
 
   /**
    * Get challenge by ID
-   * GET /api/v1/challenges/{id}/
+   * GET /api/challenges/[category]?challengeId={id}
    */
   getChallenge: async (id: string | number): Promise<ChallengeDetail> => {
-    const response = await httpService.get<ChallengeDetail>(
-      API_ENDPOINTS.CHALLENGES.DETAIL(String(id))
-    )
+    const response = await fetch(`/api/challenges?challengeId=${id}`)
+    const data = await response.json()
 
-    if (response.data) {
-      return response.data
+    if (data.success && data.data) {
+      return data.data
     }
 
     throw new Error('Challenge not found')
@@ -70,37 +70,36 @@ export const challengesService = {
 
   /**
    * Get challenges by category
-   * GET /api/v1/challenges/category/{category}/
+   * GET /api/challenges/[category]
    */
   getChallengesByCategory: async (category: string): Promise<Challenge[]> => {
-    const response = await httpService.get<Challenge[] | PaginatedResponse<Challenge>>(
-      API_ENDPOINTS.CHALLENGES.CATEGORY(category)
-    )
+    const response = await fetch(`/api/challenges/${category}`)
+    const data = await response.json()
 
-    if (response.results && Array.isArray(response.results)) {
-      return response.results as unknown as Challenge[]
+    if (data.success && data.data?.challenges) {
+      return data.data.challenges
     }
-    if (Array.isArray(response.data)) {
-      return response.data as unknown as Challenge[]
-    }
+    
     return []
   },
 
   /**
    * Submit challenge answer
-   * POST /api/v1/challenges/{id}/submit/
+   * POST /api/challenges/[category] with challengeId
    */
   submitChallenge: async (
     id: string | number,
     submission: ChallengeSubmission
   ): Promise<ChallengeSubmissionResponse> => {
-    const response = await httpService.post<ChallengeSubmissionResponse>(
-      API_ENDPOINTS.CHALLENGES.SUBMIT(String(id)),
-      submission
-    )
+    const response = await fetch(`/api/challenges`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ challengeId: id, ...submission }),
+    })
+    const data = await response.json()
 
-    if (response.data) {
-      return response.data
+    if (data.success && data.data) {
+      return data.data
     }
 
     throw new Error('Submission failed')
@@ -108,41 +107,38 @@ export const challengesService = {
 
   /**
    * Get challenge progress
-   * GET /api/v1/challenges/{id}/progress/
    */
   getChallengeProgress: async (id: string | number): Promise<any> => {
-    const response = await httpService.get(API_ENDPOINTS.CHALLENGES.PROGRESS(String(id)))
+    const response = await fetch(`/api/challenges?challengeId=${id}&progress=true`)
+    const data = await response.json()
 
-    return response.data
+    return data.data
   },
 
   /**
    * Get all missions
-   * GET /api/v1/missions/
+   * GET /api/challenges
    */
   getMissions: async (): Promise<Mission[]> => {
-    const response = await httpService.get<Mission[] | PaginatedResponse<Mission>>(
-      API_ENDPOINTS.MISSIONS.LIST
-    )
+    const response = await fetch('/api/challenges')
+    const data = await response.json()
 
-    if (response.results && Array.isArray(response.results)) {
-      return response.results as unknown as Mission[]
+    if (data.success && data.data?.missions) {
+      return data.data.missions
     }
-    if (Array.isArray(response.data)) {
-      return response.data as unknown as Mission[]
-    }
+    
     return []
   },
 
   /**
    * Get mission by ID
-   * GET /api/v1/missions/{id}/
    */
   getMission: async (id: string): Promise<Mission> => {
-    const response = await httpService.get<Mission>(API_ENDPOINTS.MISSIONS.DETAIL(id))
+    const response = await fetch(`/api/challenges?missionId=${id}`)
+    const data = await response.json()
 
-    if (response.data) {
-      return response.data
+    if (data.success && data.data) {
+      return data.data
     }
 
     throw new Error('Mission not found')
@@ -150,31 +146,27 @@ export const challengesService = {
 
   /**
    * Get mission challenges
-   * GET /api/v1/missions/{id}/challenges/
    */
   getMissionChallenges: async (id: string): Promise<Challenge[]> => {
-    const response = await httpService.get<Challenge[] | PaginatedResponse<Challenge>>(
-      API_ENDPOINTS.MISSIONS.CHALLENGES(id)
-    )
+    const response = await fetch(`/api/challenges?missionId=${id}`)
+    const data = await response.json()
 
-    if (response.results && Array.isArray(response.results)) {
-      return response.results as unknown as Challenge[]
+    if (data.success && data.data?.challenges) {
+      return data.data.challenges
     }
-    if (Array.isArray(response.data)) {
-      return response.data as unknown as Challenge[]
-    }
+    
     return []
   },
 
   /**
    * Get mission progress
-   * GET /api/v1/missions/{id}/progress/
    */
   getMissionProgress: async (id: string): Promise<MissionProgress> => {
-    const response = await httpService.get<MissionProgress>(API_ENDPOINTS.MISSIONS.PROGRESS(id))
+    const response = await fetch(`/api/challenges?missionId=${id}&progress=true`)
+    const data = await response.json()
 
-    if (response.data) {
-      return response.data
+    if (data.success && data.data) {
+      return data.data
     }
 
     throw new Error('Failed to fetch mission progress')
