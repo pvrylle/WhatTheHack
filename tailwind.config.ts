@@ -80,8 +80,9 @@ export default {
         },
       },
       fontFamily: {
-        mono: ['var(--font-jetbrains-mono)', 'Share Tech Mono', 'monospace'],
-        orbitron: ['var(--font-orbitron)', 'Orbitron', 'monospace'],
+        mono: ['var(--font-jetbrains-mono)', 'JetBrains Mono', 'monospace'],
+        pixel: ['var(--font-press-start)', 'Press Start 2P', 'cursive'],
+        orbitron: ['var(--font-press-start)', 'Press Start 2P', 'cursive'],
       },
       borderRadius: {
         lg: 'var(--radius)',
