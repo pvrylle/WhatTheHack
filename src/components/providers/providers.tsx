@@ -16,7 +16,7 @@ import { TooltipProvider } from '@/components/ui/tooltip'
 export function Providers({ children }: { children: ReactNode }) {
   return (
     <ErrorBoundary>
-      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
+      <ThemeProvider attribute="class" defaultTheme="dark" forcedTheme="dark" disableTransitionOnChange>
         <AuthProvider>
           <QueryProvider>
             <TooltipProvider>

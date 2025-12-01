@@ -35,7 +35,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Badge } from '@/components/ui/badge'
-import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { useAuth } from '@/components/providers/auth-provider'
 
 export const Navigation = () => {
@@ -83,8 +82,6 @@ export const Navigation = () => {
           <div className="hidden md:flex items-center gap-3">
             {isLoggedIn ? (
               <>
-                <ThemeToggle />
-                <div className="h-6 w-px bg-border/50" />
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
@@ -160,8 +157,6 @@ export const Navigation = () => {
               </>
             ) : (
               <div className="flex items-center gap-4">
-                <ThemeToggle />
-                <div className="h-6 w-px bg-border/50" />
                 <Button
                   asChild
                   variant="default"
@@ -179,7 +174,6 @@ export const Navigation = () => {
 
           {/* Mobile Navigation */}
           <div className="flex md:hidden items-center gap-2">
-            <ThemeToggle />
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon" className="h-9 w-9">
@@ -257,10 +251,7 @@ export const Navigation = () => {
                   </>
                 ) : (
                   <div className="space-y-4">
-                    <div className="flex items-center justify-center pb-2">
-                      <ThemeToggle />
-                    </div>
-                    <div className="pt-2 border-t border-border/50">
+                    <div className="pt-2">
                       <Button
                         asChild
                         variant="default"

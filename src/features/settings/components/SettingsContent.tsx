@@ -25,7 +25,7 @@ import {
 } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { Textarea } from '@/components/ui/textarea'
-import { ThemeToggle } from '@/components/ui/theme-toggle'
+// Theme toggle removed - dark mode only
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Container, Text } from '@/components/atoms'
 
@@ -363,17 +363,6 @@ export default function SettingsContent() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label className="font-mono">Theme</Label>
-                    <p className="text-sm text-muted-foreground font-mono">
-                      Switch between light and dark mode
-                    </p>
-                  </div>
-                  <ThemeToggle />
-                </div>
-
-                <Separator />
 
                 <div className="space-y-2">
                   <Label htmlFor="density" className="font-mono">

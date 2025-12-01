@@ -4,65 +4,12 @@
 
 /* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
 All colors MUST be HSL.
+Dark mode only (Stealth Mode) - Hacker Theme
 */
 
 @layer base {
   :root {
-    /* Light mode (Day Shift) - Light version of hacker colors */
-
-    /* Base Colors */
-    --base: 0 0% 100%;
-    --base-foreground: 200 30% 10%; /* Darker for better visibility in light mode */
-
-    /* Background & Foreground */
-    --background: 136 20% 97%;
-    --foreground: 200 30% 10%; /* Darker for better visibility in light mode */
-
-    /* Card & Surfaces */
-    --card: 136 15% 95%;
-    --card-foreground: 200 30% 10%; /* Darker for better visibility in light mode */
-    --popover: 136 15% 95%;
-    --popover-foreground: 200 30% 10%; /* Darker for better visibility in light mode */
-
-    /* Brand Colors */
-    --primary: 136 80% 35%;
-    --primary-foreground: 136 20% 97%;
-    --secondary: 190 85% 35%;
-    --secondary-foreground: 136 20% 97%;
-    --accent: 275 85% 40%;
-    --accent-foreground: 136 20% 97%;
-
-    /* Semantic Colors */
-    --success: 74 80% 35%;
-    --success-foreground: 136 20% 97%;
-    --warning: 38 92% 50%;
-    --warning-foreground: 200 25% 15%;
-    --info: 190 85% 35%;
-    --info-foreground: 136 20% 97%;
-    --destructive: 0 84% 50%;
-    --destructive-foreground: 136 20% 97%;
-
-    /* UI Elements */
-    --muted: 136 15% 88%;
-    --muted-foreground: 200 30% 12%; /* Darker for better visibility in light mode */
-    --border: 136 15% 85%;
-    --input: 136 15% 85%;
-    --ring: 136 80% 35%;
-    --radius: 0.25rem;
-
-    /* Sidebar specific colors for light mode */
-    --sidebar-background: 136 20% 93%;
-    --sidebar-foreground: 200 30% 10%; /* Darker for better visibility in light mode */
-    --sidebar-primary: 136 80% 35%;
-    --sidebar-primary-foreground: 136 20% 97%;
-    --sidebar-accent: 275 85% 40%;
-    --sidebar-accent-foreground: 136 20% 97%;
-    --sidebar-border: 136 15% 85%;
-    --sidebar-ring: 136 80% 35%;
-  }
-
-  .dark {
-    /* Dark mode (Stealth Mode) - Original Hacker Theme */
+    /* Dark mode (Stealth Mode) - Hacker Theme */
 
     /* Base Colors */
     --base: 150 27% 3%;
@@ -102,8 +49,9 @@ All colors MUST be HSL.
     --border: 200 17% 25%;
     --input: 200 17% 15%;
     --ring: 136 100% 50%;
+    --radius: 0.25rem;
 
-    /* Sidebar specific colors for dark mode */
+    /* Sidebar specific colors */
     --sidebar-background: 150 27% 3%;
     --sidebar-foreground: 136 100% 80%;
     --sidebar-primary: 136 100% 50%;
