@@ -204,6 +204,20 @@ All colors MUST be HSL.
     image-rendering: crisp-edges;
   }
 
+  /* Shimmer animation for progress bars */
+  @keyframes shimmer {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  .animate-shimmer {
+    animation: shimmer 2s infinite;
+  }
+
   /* Diagonal stripe pattern background */
   .diagonal-stripes {
     background-image: linear-gradient(
