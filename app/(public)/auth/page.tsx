@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
@@ -178,17 +178,7 @@ export default function AuthPage() {
     setPasswordStrength(getPasswordStrength(password))
   }
 
-  const demoAccounts = [
-    { email: 'demo@hack.com', password: 'demo123', rank: 'Elite', color: 'bg-primary/20 text-primary border-primary/30' },
-    { email: 'admin@hack.com', password: 'admin123', rank: 'Master', color: 'bg-accent/20 text-accent border-accent/30' },
-  ]
 
-  const fillDemoAccount = useCallback((email: string, password: string) => {
-    const emailInput = document.getElementById('email') as HTMLInputElement
-    const passwordInput = document.getElementById('password') as HTMLInputElement
-    if (emailInput) emailInput.value = email
-    if (passwordInput) passwordInput.value = password
-  }, [])
 
   return (
     <div className="min-h-screen h-screen bg-background flex relative overflow-hidden">
@@ -323,30 +313,7 @@ export default function AuthPage() {
                 ))}
               </div>
 
-              {/* Demo Accounts - Only show on login */}
-              {activeTab === 'login' && (
-                <div className="mb-3 sm:mb-4 p-2.5 sm:p-3 rounded-lg sm:rounded-xl bg-primary/[0.05] border border-primary/20">
-                  <div className="flex items-center gap-1.5 sm:gap-2 mb-1.5 sm:mb-2">
-                    <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-primary" />
-                    <span className="text-[10px] sm:text-xs font-medium text-primary">Quick Access</span>
-                  </div>
-                  <div className="flex gap-2">
-                    {demoAccounts.map((account, i) => (
-                      <button
-                        key={i}
-                        type="button"
-                        onClick={() => fillDemoAccount(account.email, account.password)}
-                        className={cn(
-                          'flex-1 py-1.5 px-2 rounded-md sm:rounded-lg border text-[10px] sm:text-xs font-mono transition-all hover:scale-[1.02]',
-                          account.color
-                        )}
-                      >
-                        {account.rank}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
+
 
               {/* Error/Success Messages */}
               {error && (
@@ -376,8 +343,7 @@ export default function AuthPage() {
                         id="email"
                         name="email"
                         type="email"
-                        placeholder="agent@whatthehack.dev"
-                        defaultValue="demo@hack.com"
+                        placeholder="Enter your email"
                         className={cn(
                           'pl-8 sm:pl-10 h-9 sm:h-10 bg-input/50 border-border rounded-lg sm:rounded-xl font-mono text-xs sm:text-sm text-foreground placeholder:text-muted-foreground/50',
                           'focus:border-primary/50 focus:ring-primary/20 focus:bg-input',
@@ -404,8 +370,7 @@ export default function AuthPage() {
                         id="password"
                         name="password"
                         type={showPassword ? 'text' : 'password'}
-                        placeholder="••••••••"
-                        defaultValue="demo123"
+                        placeholder="Enter your password"
                         className={cn(
                           'pl-8 sm:pl-10 pr-8 sm:pr-10 h-9 sm:h-10 bg-input/50 border-border rounded-lg sm:rounded-xl font-mono text-xs sm:text-sm text-foreground placeholder:text-muted-foreground/50',
                           'focus:border-primary/50 focus:ring-primary/20 focus:bg-input',

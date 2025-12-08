@@ -1,48 +1,92 @@
 import { NextResponse } from 'next/server'
-
-// Mock user data - in production, this would come from a database
-const mockUser = {
-  id: 'user-001',
-  username: 'CyberAgent_X',
-  email: 'agent@whatthehack.dev',
-  avatar: null,
-  rank: 'Elite Hacker',
-  level: 15,
-  xp: 8420,
-  xpToNext: 10000,
-  totalPoints: 8420,
-  hacksCompleted: 24,
-  streakDays: 15,
-  badges: ['first-blood', 'sql-master', 'streak-7'],
-  joinedAt: '2025-01-01T00:00:00Z',
-  lastActiveAt: new Date().toISOString(),
-}
-
-// Mock stats
-const mockStats = [
-  { label: 'Level', value: 15, icon: 'Star', color: 'primary' },
-  { label: 'XP', value: '8,420', icon: 'Zap', color: 'success' },
-  { label: 'Completed', value: 24, icon: 'Trophy', color: 'accent' },
-  { label: 'Streak', value: '15 days', icon: 'Flame', color: 'secondary' },
-  { label: 'Rank', value: '#6', icon: 'TrendingUp', color: 'primary' },
-]
+import { createSupabaseServerClient } from '@/lib/supabase-server'
 
 // GET /api/user - Get current user profile
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    await new Promise((resolve) => setTimeout(resolve, 100))
+    const supabase = await createSupabaseServerClient()
+    
+    // Get the user ID from the authorization header or cookie
+    const authHeader = request.headers.get('authorization')
+    const userId = authHeader?.replace('Bearer ', '')
+    
+    if (!userId) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
+
+    // Get user profile
+    const { data: profile, error: profileError } = await supabase
+      .from('user_profiles')
+      .select('*')
+      .eq('id', userId)
+      .single()
+
+    if (profileError || !profile) {
+      return NextResponse.json(
+        { success: false, error: 'User not found' },
+        { status: 404 }
+      )
+    }
+
+    // Get user stats
+    const { data: stats, error: statsError } = await supabase
+      .from('user_stats')
+      .select('*')
+      .eq('user_id', userId)
+      .single()
+
+    // Get daily streak
+    const { data: streak } = await supabase
+      .from('daily_streaks')
+      .select('*')
+      .eq('user_id', userId)
+      .single()
+
+    // Get user rank from leaderboard
+    const { data: leaderboard } = await supabase
+      .from('leaderboard_view')
+      .select('rank')
+      .eq('user_id', userId)
+      .single()
+
+    const formattedStats = [
+      { label: 'Level', value: profile.level || 1, icon: 'Star', color: 'primary' },
+      { label: 'XP', value: (profile.xp || 0).toLocaleString(), icon: 'Zap', color: 'success' },
+      { label: 'Completed', value: stats?.challenges_completed || 0, icon: 'Trophy', color: 'accent' },
+      { label: 'Streak', value: `${streak?.current_streak || 0} days`, icon: 'Flame', color: 'secondary' },
+      { label: 'Rank', value: leaderboard?.rank ? `#${leaderboard.rank}` : 'N/A', icon: 'TrendingUp', color: 'primary' },
+    ]
 
     return NextResponse.json({
       success: true,
       data: {
-        user: mockUser,
-        stats: mockStats,
+        user: {
+          id: profile.id,
+          username: profile.username,
+          email: profile.email,
+          avatar: profile.avatar_url,
+          rank: profile.rank,
+          level: profile.level,
+          xp: profile.xp,
+          xpToNext: Math.ceil((profile.level || 1) * 1000 * 1.5),
+          totalPoints: profile.xp,
+          hacksCompleted: stats?.challenges_completed || 0,
+          streakDays: streak?.current_streak || 0,
+          badges: [], // Could be populated from achievements
+          joinedAt: profile.created_at,
+          lastActiveAt: profile.updated_at,
+        },
+        stats: formattedStats,
       },
       meta: {
         timestamp: new Date().toISOString(),
       },
     })
   } catch (error) {
+    console.error('Error fetching user:', error)
     return NextResponse.json(
       { success: false, error: 'Failed to fetch user' },
       { status: 500 }
@@ -53,24 +97,51 @@ export async function GET() {
 // PATCH /api/user - Update user profile
 export async function PATCH(request: Request) {
   try {
-    const body = await request.json()
-    await new Promise((resolve) => setTimeout(resolve, 200))
+    const supabase = await createSupabaseServerClient()
+    
+    // Get the user ID from the authorization header or cookie
+    const authHeader = request.headers.get('authorization')
+    const userId = authHeader?.replace('Bearer ', '')
+    
+    if (!userId) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
 
-    // In production, validate and save to database
-    const updatedUser = {
-      ...mockUser,
-      ...body,
-      lastActiveAt: new Date().toISOString(),
+    const body = await request.json()
+    
+    // Only allow certain fields to be updated
+    const allowedUpdates: Record<string, unknown> = {}
+    if (body.username) allowedUpdates.username = body.username
+    if (body.avatar_url) allowedUpdates.avatar_url = body.avatar_url
+    allowedUpdates.updated_at = new Date().toISOString()
+
+    const { data: updatedProfile, error } = await supabase
+      .from('user_profiles')
+      .update(allowedUpdates)
+      .eq('id', userId)
+      .select()
+      .single()
+
+    if (error) {
+      console.error('Error updating user:', error)
+      return NextResponse.json(
+        { success: false, error: 'Failed to update user' },
+        { status: 500 }
+      )
     }
 
     return NextResponse.json({
       success: true,
-      data: updatedUser,
+      data: updatedProfile,
       meta: {
         timestamp: new Date().toISOString(),
       },
     })
   } catch (error) {
+    console.error('Error updating user:', error)
     return NextResponse.json(
       { success: false, error: 'Failed to update user' },
       { status: 500 }

@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
-import { ChevronRight, Zap, Search, X, Trophy, Target, TrendingUp, Map } from 'lucide-react'
+import { ChevronRight, Zap, Search, X, Trophy, Target, TrendingUp, Map, Lock, CheckCircle2, Play, RotateCcw } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -19,28 +19,63 @@ import { Container, Text } from '@/components/atoms'
 import { missionPaths } from '@/data/challenges'
 import { cn } from '@/lib/utils'
 
-const difficultyStyles: Record<string, string> = {
-  Beginner: 'bg-success/20 text-success border-success/30',
-  Intermediate: 'bg-secondary/20 text-secondary border-secondary/30',
-  Advanced: 'bg-destructive/20 text-destructive border-destructive/30',
+const difficultyConfig: Record<string, { label: string; color: string; bg: string; border: string }> = {
+  Beginner: { 
+    label: 'BEGINNER', 
+    color: 'text-emerald-400', 
+    bg: 'bg-emerald-500/10', 
+    border: 'border-emerald-500/30' 
+  },
+  Intermediate: { 
+    label: 'INTERMEDIATE', 
+    color: 'text-amber-400', 
+    bg: 'bg-amber-500/10', 
+    border: 'border-amber-500/30' 
+  },
+  Advanced: { 
+    label: 'ADVANCED', 
+    color: 'text-rose-400', 
+    bg: 'bg-rose-500/10', 
+    border: 'border-rose-500/30' 
+  },
 }
 
-const colorStyles = {
+const pathColors = {
   primary: {
-    wrapper: 'bg-primary/15 border border-primary/25',
-    icon: 'text-primary',
+    gradient: 'from-cyan-500/20 via-cyan-500/5 to-transparent',
+    border: 'border-cyan-500/30 hover:border-cyan-400/60',
+    glow: 'hover:shadow-[0_0_30px_-5px_rgba(6,182,212,0.3)]',
+    icon: 'text-cyan-400',
+    iconBg: 'bg-cyan-500/20 border-cyan-500/30',
+    accent: 'text-cyan-400',
+    progress: 'bg-cyan-500',
   },
   secondary: {
-    wrapper: 'bg-secondary/15 border border-secondary/25',
-    icon: 'text-secondary',
+    gradient: 'from-violet-500/20 via-violet-500/5 to-transparent',
+    border: 'border-violet-500/30 hover:border-violet-400/60',
+    glow: 'hover:shadow-[0_0_30px_-5px_rgba(139,92,246,0.3)]',
+    icon: 'text-violet-400',
+    iconBg: 'bg-violet-500/20 border-violet-500/30',
+    accent: 'text-violet-400',
+    progress: 'bg-violet-500',
   },
   accent: {
-    wrapper: 'bg-accent/15 border border-accent/25',
-    icon: 'text-accent',
+    gradient: 'from-fuchsia-500/20 via-fuchsia-500/5 to-transparent',
+    border: 'border-fuchsia-500/30 hover:border-fuchsia-400/60',
+    glow: 'hover:shadow-[0_0_30px_-5px_rgba(217,70,239,0.3)]',
+    icon: 'text-fuchsia-400',
+    iconBg: 'bg-fuchsia-500/20 border-fuchsia-500/30',
+    accent: 'text-fuchsia-400',
+    progress: 'bg-fuchsia-500',
   },
   success: {
-    wrapper: 'bg-success/15 border border-success/25',
-    icon: 'text-success',
+    gradient: 'from-emerald-500/20 via-emerald-500/5 to-transparent',
+    border: 'border-emerald-500/30 hover:border-emerald-400/60',
+    glow: 'hover:shadow-[0_0_30px_-5px_rgba(16,185,129,0.3)]',
+    icon: 'text-emerald-400',
+    iconBg: 'bg-emerald-500/20 border-emerald-500/30',
+    accent: 'text-emerald-400',
+    progress: 'bg-emerald-500',
   },
 } as const
 
@@ -159,7 +194,7 @@ export default function LearningPathsContent() {
       </section>
 
       {/* Compact Filters */}
-      <section aria-label="Filter missions" className="mb-4">
+      <section aria-label="Filter missions" className="mb-6">
         <Card className="border-0 bg-card/50">
           <CardContent className="p-3 sm:p-4">
             <div className="flex flex-col sm:flex-row gap-2">
@@ -206,95 +241,207 @@ export default function LearningPathsContent() {
         </Card>
       </section>
 
-      {/* Mission Paths Grid */}
+      {/* Mission Paths Grid - Redesigned Cards */}
       <main>
         {filteredPaths.length > 0 ? (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {filteredPaths.map((path) => {
               const IconComponent = path.icon
               const progress = Math.round((path.completedChallenges / path.totalChallenges) * 100)
-              const palette = colorStyles[path.color]
+              const colors = pathColors[path.color]
               const pathDifficulty = path.challenges[0]?.difficulty || 'Beginner'
+              const difficulty = difficultyConfig[pathDifficulty]
               const isCompleted = progress === 100
+              const isStarted = progress > 0
 
               return (
                 <Link
                   key={path.id}
                   href={`/challenges/${path.id}`}
-                  className={cn(
-                    'block p-4 rounded-xl border transition-all hover:scale-[1.01] group',
-                    isCompleted
-                      ? 'bg-success/5 border-success/30 hover:border-success/50'
-                      : progress > 0
-                        ? 'bg-primary/5 border-primary/30 hover:border-primary/50'
-                        : 'bg-card/50 border-border/50 hover:border-primary/30'
-                  )}
+                  className="group block"
                 >
-                  <div className="flex items-start gap-3">
-                    {/* Icon */}
-                    <div className={cn('p-2.5 rounded-xl shrink-0', palette.wrapper)}>
-                      <IconComponent className={cn('w-5 h-5', palette.icon)} />
-                    </div>
+                  <div
+                    className={cn(
+                      'relative overflow-hidden rounded-2xl border-2 transition-all duration-300',
+                      'bg-gradient-to-br from-slate-900/80 via-slate-900/60 to-slate-950/80',
+                      'backdrop-blur-sm',
+                      colors.border,
+                      colors.glow,
+                      'hover:translate-y-[-2px]'
+                    )}
+                  >
+                    {/* Gradient overlay */}
+                    <div className={cn(
+                      'absolute inset-0 bg-gradient-to-br opacity-60',
+                      colors.gradient
+                    )} />
+                    
+                    {/* Scan line effect */}
+                    <div className="absolute inset-0 bg-[linear-gradient(transparent_50%,rgba(0,0,0,0.1)_50%)] bg-[length:100%_4px] pointer-events-none opacity-20" />
 
                     {/* Content */}
-                    <div className="flex-1 min-w-0">
-                      {/* Title Row */}
-                      <div className="flex items-center gap-2 mb-1">
-                        <Text size="sm" weight="semibold" orbitron className="truncate group-hover:text-primary transition-colors">
-                          {path.title}
-                        </Text>
-                        <Badge variant="outline" className={cn('font-mono text-[9px] shrink-0', difficultyStyles[pathDifficulty])}>
-                          {pathDifficulty}
-                        </Badge>
-                        {isCompleted && (
-                          <Trophy className="w-3.5 h-3.5 text-success shrink-0" />
-                        )}
+                    <div className="relative p-5">
+                      {/* Top Row - Icon, Title, Badges */}
+                      <div className="flex items-start gap-4 mb-4">
+                        {/* Large Icon */}
+                        <div className={cn(
+                          'relative p-4 rounded-xl border-2 shrink-0',
+                          'transition-all duration-300 group-hover:scale-110',
+                          colors.iconBg
+                        )}>
+                          <IconComponent className={cn('w-7 h-7', colors.icon)} />
+                          {isCompleted && (
+                            <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-emerald-500 flex items-center justify-center">
+                              <CheckCircle2 className="w-3 h-3 text-white" />
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Title & Description */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                            <h3 className={cn(
+                              'font-orbitron font-bold text-lg tracking-wide',
+                              'transition-colors duration-300',
+                              isCompleted ? 'text-emerald-400' : 'text-white group-hover:' + colors.accent
+                            )}>
+                              {path.title}
+                            </h3>
+                            <Badge 
+                              variant="outline" 
+                              className={cn(
+                                'font-mono text-[10px] font-bold tracking-widest uppercase border',
+                                difficulty.color,
+                                difficulty.bg,
+                                difficulty.border
+                              )}
+                            >
+                              {difficulty.label}
+                            </Badge>
+                          </div>
+                          <p className="text-sm text-slate-400 font-mono line-clamp-2 leading-relaxed">
+                            {path.description}
+                          </p>
+                        </div>
                       </div>
 
-                      {/* Description */}
-                      <Text size="xs" color="muted" mono className="line-clamp-1 mb-2">
-                        {path.description}
-                      </Text>
-
-                      {/* Progress Bar */}
-                      <div className="flex items-center gap-2 mb-2">
-                        <Progress value={progress} className="h-1.5 flex-1" />
-                        <Text size="xs" weight="semibold" color={isCompleted ? 'success' : 'primary'} mono>
-                          {progress}%
-                        </Text>
-                      </div>
-
-                      {/* Stats Row */}
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3 text-[10px] text-muted-foreground font-mono">
-                          <span className="flex items-center gap-1">
-                            <Target className="w-3 h-3" />
-                            {path.completedChallenges}/{path.totalChallenges}
+                      {/* Progress Section */}
+                      <div className="mb-4">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-xs font-mono text-slate-500 uppercase tracking-wider">
+                            Mission Progress
                           </span>
-                          <span className="flex items-center gap-1">
-                            <Zap className="w-3 h-3 text-success" />
-                            {path.completedChallenges * 150} XP
+                          <span className={cn(
+                            'text-sm font-bold font-orbitron',
+                            isCompleted ? 'text-emerald-400' : colors.accent
+                          )}>
+                            {progress}%
                           </span>
                         </div>
-                        <div className="flex items-center gap-1 text-xs font-mono text-primary opacity-0 group-hover:opacity-100 transition-opacity">
-                          {isCompleted ? 'Review' : progress > 0 ? 'Continue' : 'Start'}
-                          <ChevronRight className="w-3.5 h-3.5" />
+                        <div className="relative h-2 bg-slate-800 rounded-full overflow-hidden">
+                          <div 
+                            className={cn(
+                              'absolute inset-y-0 left-0 rounded-full transition-all duration-500',
+                              isCompleted ? 'bg-gradient-to-r from-emerald-500 to-emerald-400' : colors.progress,
+                              'shadow-[0_0_10px_currentColor]'
+                            )}
+                            style={{ width: `${progress}%` }}
+                          />
+                          {/* Animated shimmer */}
+                          {isStarted && !isCompleted && (
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shimmer" />
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Bottom Stats Row */}
+                      <div className="flex items-center justify-between pt-3 border-t border-slate-800/50">
+                        <div className="flex items-center gap-4">
+                          {/* Challenges */}
+                          <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 rounded-lg bg-slate-800/80 flex items-center justify-center">
+                              <Target className="w-4 h-4 text-slate-400" />
+                            </div>
+                            <div>
+                              <p className="text-xs text-slate-500 font-mono uppercase">Challenges</p>
+                              <p className={cn('text-sm font-bold font-orbitron', colors.accent)}>
+                                {path.completedChallenges}/{path.totalChallenges}
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* XP */}
+                          <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center">
+                              <Zap className="w-4 h-4 text-amber-400" />
+                            </div>
+                            <div>
+                              <p className="text-xs text-slate-500 font-mono uppercase">XP Earned</p>
+                              <p className="text-sm font-bold font-orbitron text-amber-400">
+                                {(path.completedChallenges * 150).toLocaleString()}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Action Button */}
+                        <div className={cn(
+                          'flex items-center gap-2 px-4 py-2 rounded-lg font-mono text-sm font-semibold',
+                          'transition-all duration-300',
+                          'opacity-70 group-hover:opacity-100',
+                          isCompleted 
+                            ? 'bg-emerald-500/20 text-emerald-400' 
+                            : isStarted 
+                              ? 'bg-primary/20 text-primary'
+                              : 'bg-slate-800 text-slate-300'
+                        )}>
+                          {isCompleted ? (
+                            <>
+                              <RotateCcw className="w-4 h-4" />
+                              <span>Review</span>
+                            </>
+                          ) : isStarted ? (
+                            <>
+                              <Play className="w-4 h-4" />
+                              <span>Continue</span>
+                            </>
+                          ) : (
+                            <>
+                              <ChevronRight className="w-4 h-4" />
+                              <span>Start</span>
+                            </>
+                          )}
                         </div>
                       </div>
                     </div>
+
+                    {/* Corner accent */}
+                    <div className={cn(
+                      'absolute top-0 right-0 w-20 h-20',
+                      'bg-gradient-to-bl',
+                      colors.gradient,
+                      'opacity-40'
+                    )} />
                   </div>
                 </Link>
               )
             })}
           </div>
         ) : (
-          <Card className="border-2 border-dashed">
-            <CardContent className="py-8 text-center">
-              <Search className="w-6 h-6 text-muted-foreground mx-auto mb-2" />
-              <Text size="sm" weight="semibold" className="mb-1">No missions found</Text>
-              <Text size="xs" color="muted" mono>
+          <Card className="border-2 border-dashed border-slate-700">
+            <CardContent className="py-12 text-center">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-slate-800/50 flex items-center justify-center">
+                <Search className="w-8 h-8 text-slate-500" />
+              </div>
+              <Text size="lg" weight="bold" className="mb-2">No missions found</Text>
+              <Text size="sm" color="muted" mono>
                 {hasActiveFilters ? 'Try adjusting your filters' : 'No missions available'}
               </Text>
+              {hasActiveFilters && (
+                <Button variant="outline" size="sm" onClick={clearFilters} className="mt-4">
+                  Clear Filters
+                </Button>
+              )}
             </CardContent>
           </Card>
         )}
