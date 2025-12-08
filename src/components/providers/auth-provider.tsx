@@ -51,6 +51,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setIsLoading(false)
   }, [])
 
+  // Keep cookie alive - refresh it every 5 minutes if user is logged in
+  useEffect(() => {
+    if (!user) return
+
+    const refreshCookie = () => {
+      if (user?.id) {
+        setAuthCookie(user.id)
+      }
+    }
+
+    // Refresh immediately
+    refreshCookie()
+
+    // Set up interval to refresh every 5 minutes
+    const interval = setInterval(refreshCookie, 5 * 60 * 1000)
+
+    return () => clearInterval(interval)
+  }, [user])
+
   const login = async (
     email: string,
     password: string

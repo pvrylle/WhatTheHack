@@ -33,6 +33,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {/* PWA Manifest */}
+        <link rel="manifest" href="/site.webmanifest" />
+        
         {/* Structured Data for SEO */}
         <script
           type="application/ld+json"

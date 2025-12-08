@@ -6,7 +6,7 @@
  */
 
 const AUTH_COOKIE_NAME = 'whathehack_auth'
-const COOKIE_MAX_AGE = 60 * 60 * 24 * 7 // 7 days in seconds
+const COOKIE_MAX_AGE = 60 * 60 * 24 * 30 // 30 days in seconds
 
 /**
  * Set the authentication cookie when user logs in
@@ -17,7 +17,11 @@ export function setAuthCookie(userId: string): void {
   const expires = new Date()
   expires.setTime(expires.getTime() + COOKIE_MAX_AGE * 1000)
   
-  document.cookie = `${AUTH_COOKIE_NAME}=${encodeURIComponent(userId)}; expires=${expires.toUTCString()}; path=/; SameSite=Lax; Secure`
+  // Use secure only in production (https)
+  const isProduction = window.location.protocol === 'https:'
+  const secureFlag = isProduction ? '; Secure' : ''
+  
+  document.cookie = `${AUTH_COOKIE_NAME}=${encodeURIComponent(userId)}; expires=${expires.toUTCString()}; path=/; SameSite=Lax${secureFlag}`
 }
 
 /**
