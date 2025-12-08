@@ -903,7 +903,7 @@ if (decoded.role === 'admin') {
     title: 'RSA Cryptanalysis',
     description: 'Break weak RSA implementations and understand asymmetric encryption',
     xpReward: 500,
-    difficulty: 'Expert',
+    difficulty: 'Advanced',
     category: 'Cryptography',
     questions: [
       {
