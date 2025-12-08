@@ -11,19 +11,21 @@ export async function GET(
     const supabase = await createSupabaseServerClient()
 
     // Fetch the challenge
-    const { data: challenge, error: challengeError } = await supabase
+    const { data: challengeData, error: challengeError } = await supabase
       .from('challenges')
       .select('*')
       .eq('id', id)
       .eq('is_active', true)
       .single()
 
-    if (challengeError || !challenge) {
+    if (challengeError || !challengeData) {
       return NextResponse.json(
         { success: false, error: 'Challenge not found' },
         { status: 404 }
       )
     }
+
+    const challenge = challengeData as any
 
     // Fetch questions for this challenge
     const { data: questions, error: questionsError } = await supabase
@@ -88,18 +90,20 @@ export async function POST(
     const { data: { user } } = await supabase.auth.getUser()
 
     // Fetch the challenge
-    const { data: challenge, error: challengeError } = await supabase
+    const { data: challengeData, error: challengeError } = await supabase
       .from('challenges')
       .select('*')
       .eq('id', id)
       .single()
 
-    if (challengeError || !challenge) {
+    if (challengeError || !challengeData) {
       return NextResponse.json(
         { success: false, error: 'Challenge not found' },
         { status: 404 }
       )
     }
+
+    const challenge = challengeData as any
 
     // Fetch the specific question
     const { data: questions, error: questionsError } = await supabase
@@ -115,7 +119,7 @@ export async function POST(
       )
     }
 
-    const question = questions[questionIndex]
+    const question = questions[questionIndex] as any as any
 
     // Check answer (case-insensitive for text, exact for numbers)
     let isCorrect = false
@@ -138,12 +142,14 @@ export async function POST(
       const isLastQuestion = questionIndex === questions.length - 1
 
       // Update or create user progress
-      const { data: existingProgress } = await supabase
+      const { data: existingProgressData } = await supabase
         .from('user_challenge_progress')
         .select('*')
         .eq('user_id', user.id)
         .eq('challenge_id', id)
         .single()
+
+      const existingProgress = existingProgressData as any
 
       if (existingProgress) {
         const newQuestionsAnswered = (existingProgress.questions_answered || 0) + 1
@@ -151,6 +157,7 @@ export async function POST(
 
         await supabase
           .from('user_challenge_progress')
+          // @ts-expect-error - Supabase type inference issue
           .update({
             questions_answered: newQuestionsAnswered,
             xp_earned: totalXpEarned,
@@ -162,6 +169,7 @@ export async function POST(
       } else {
         await supabase
           .from('user_challenge_progress')
+          // @ts-expect-error - Supabase type inference issue
           .insert({
             user_id: user.id,
             challenge_id: id,

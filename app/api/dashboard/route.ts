@@ -97,8 +97,8 @@ export async function GET() {
         .limit(3)
     ])
 
-    const profile = profileResult.data
-    const stats = statsResult.data
+    const profile = profileResult.data as any
+    const stats = statsResult.data as any
 
     if (!profile || !stats) {
       return NextResponse.json(

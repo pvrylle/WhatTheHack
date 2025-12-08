@@ -29,7 +29,7 @@ export async function GET(request: Request) {
     }
 
     // Format for frontend
-    const formattedLeaderboard = leaderboard?.map((entry) => ({
+    const formattedLeaderboard = leaderboard?.map((entry: any) => ({
       rank: entry.rank,
       username: entry.username,
       points: entry.total_xp,
@@ -50,13 +50,14 @@ export async function GET(request: Request) {
         .single()
       
       if (userRankData && !formattedLeaderboard?.find(e => e.isCurrentUser)) {
+        const userData = userRankData as any
         userRank = {
-          rank: userRankData.rank,
-          username: userRankData.username,
-          points: userRankData.total_xp,
-          streak: userRankData.current_streak,
-          level: userRankData.level,
-          avatar: userRankData.avatar_url,
+          rank: userData.rank,
+          username: userData.username,
+          points: userData.total_xp,
+          streak: userData.current_streak,
+          level: userData.level,
+          avatar: userData.avatar_url,
           isCurrentUser: true,
         }
       }

@@ -52,32 +52,37 @@ export async function GET(request: Request) {
       .eq('user_id', userId)
       .single()
 
+    const userProfile = profile as any
+    const userStats = stats as any
+    const userStreak = streak as any
+    const userLeaderboard = leaderboard as any
+
     const formattedStats = [
-      { label: 'Level', value: profile.level || 1, icon: 'Star', color: 'primary' },
-      { label: 'XP', value: (profile.xp || 0).toLocaleString(), icon: 'Zap', color: 'success' },
-      { label: 'Completed', value: stats?.challenges_completed || 0, icon: 'Trophy', color: 'accent' },
-      { label: 'Streak', value: `${streak?.current_streak || 0} days`, icon: 'Flame', color: 'secondary' },
-      { label: 'Rank', value: leaderboard?.rank ? `#${leaderboard.rank}` : 'N/A', icon: 'TrendingUp', color: 'primary' },
+      { label: 'Level', value: userProfile.level || 1, icon: 'Star', color: 'primary' },
+      { label: 'XP', value: (userProfile.xp || 0).toLocaleString(), icon: 'Zap', color: 'success' },
+      { label: 'Completed', value: userStats?.challenges_completed || 0, icon: 'Trophy', color: 'accent' },
+      { label: 'Streak', value: `${userStreak?.current_streak || 0} days`, icon: 'Flame', color: 'secondary' },
+      { label: 'Rank', value: userLeaderboard?.rank ? `#${userLeaderboard.rank}` : 'N/A', icon: 'TrendingUp', color: 'primary' },
     ]
 
     return NextResponse.json({
       success: true,
       data: {
         user: {
-          id: profile.id,
-          username: profile.username,
-          email: profile.email,
-          avatar: profile.avatar_url,
-          rank: profile.rank,
-          level: profile.level,
-          xp: profile.xp,
-          xpToNext: Math.ceil((profile.level || 1) * 1000 * 1.5),
-          totalPoints: profile.xp,
-          hacksCompleted: stats?.challenges_completed || 0,
-          streakDays: streak?.current_streak || 0,
+          id: userProfile.id,
+          username: userProfile.username,
+          email: userProfile.email,
+          avatar: userProfile.avatar_url,
+          rank: userProfile.rank,
+          level: userProfile.level,
+          xp: userProfile.xp,
+          xpToNext: Math.ceil((userProfile.level || 1) * 1000 * 1.5),
+          totalPoints: userProfile.xp,
+          hacksCompleted: userStats?.challenges_completed || 0,
+          streakDays: userStreak?.current_streak || 0,
           badges: [], // Could be populated from achievements
-          joinedAt: profile.created_at,
-          lastActiveAt: profile.updated_at,
+          joinedAt: userProfile.created_at,
+          lastActiveAt: userProfile.updated_at,
         },
         stats: formattedStats,
       },
@@ -113,13 +118,14 @@ export async function PATCH(request: Request) {
     const body = await request.json()
     
     // Only allow certain fields to be updated
-    const allowedUpdates: Record<string, unknown> = {}
+    const allowedUpdates: any = {}
     if (body.username) allowedUpdates.username = body.username
     if (body.avatar_url) allowedUpdates.avatar_url = body.avatar_url
     allowedUpdates.updated_at = new Date().toISOString()
 
     const { data: updatedProfile, error } = await supabase
       .from('user_profiles')
+      // @ts-expect-error - Supabase typing issue
       .update(allowedUpdates)
       .eq('id', userId)
       .select()

@@ -44,20 +44,20 @@ export async function POST(request: Request) {
         .single(),
     ])
 
-    const profile = profileResult.data
-    const stats = statsResult.data
+    const profile = profileResult.data || null
+    const stats = statsResult.data || null
 
     return NextResponse.json({
       success: true,
       data: {
         user: {
           id: data.user.id,
-          email: data.user.email,
-          username: profile?.username || 'Agent',
-          rank: profile?.rank || 'Recruit',
-          level: stats?.level || 1,
-          xp: stats?.total_xp || 0,
-          avatar: profile?.avatar_url,
+          email: data.user.email ?? '',
+          username: profile?.username ?? 'Agent',
+          rank: profile?.rank ?? 'Recruit',
+          level: stats?.level ?? 1,
+          xp: stats?.total_xp ?? 0,
+          avatar: profile?.avatar_url ?? undefined,
         },
         session: {
           access_token: data.session.access_token,
