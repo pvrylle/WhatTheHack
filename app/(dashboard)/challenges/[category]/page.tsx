@@ -1,6 +1,7 @@
 'use client'
 
 import { use } from 'react'
+import { useRouter } from 'next/navigation'
 import { notFound } from 'next/navigation'
 import { ChallengeListTemplate } from '@/components/templates'
 import { missionPaths } from '@/data/challenges'
@@ -16,6 +17,7 @@ export default function MissionChallengesPage({
   params: Promise<{ category: string }>
 }) {
   const { category } = use(params)
+  const router = useRouter()
   const mission = missionPaths[category]
 
   if (!mission) {
@@ -35,7 +37,7 @@ export default function MissionChallengesPage({
   }))
 
   const handleChallengeStart = (id: string | number) => {
-    window.location.href = ROUTES.DASHBOARD.CHALLENGE_DETAIL(category, id)
+    router.push(ROUTES.DASHBOARD.CHALLENGE_DETAIL(category, id))
   }
 
   return (
